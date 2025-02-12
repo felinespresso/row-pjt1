@@ -78,6 +78,7 @@ model inventarisasi {
   desakelurahan  String   @default("-")
   kecamatan      String   @default("-")
   kabupatenkota  String   @default("-")
+  pekerjaan      String   @default("-") // Properti baru
   alashak        String   @default("-")
   luastanah      String   @default("-")
   jnsbangunan    inventbangunan[]
@@ -97,7 +98,6 @@ model jenistanaman {
   produktif      String   @default("-")
   besar          String   @default("-")
   kecil          String   @default("-")
-  bibit          String   @default("-")
   invent         inventtanaman[]
 }
 
@@ -136,6 +136,7 @@ model Evidences {
   id          String       @id @default(cuid())  
   file        String
   namaPemilik String
+  bidangLahan String?
   desaId      String  
   desa        Identifikasi @relation(fields: [desaId], references: [id], onDelete: Cascade)
 }
@@ -147,8 +148,8 @@ model Sosialisasi {
   namaDesa         String              
   spanTower        String              
   tanggalPelaksanaan DateTime
-  beritaAcara      Bytes?
-  daftarHadir      Bytes?
+  beritaAcara      String?
+  daftarHadir      String?
   keterangan       String              @default("-")
   evidence         EvidenceSosialisasi[] 
   createdAt        DateTime            @default(now())
@@ -160,6 +161,7 @@ model Sosialisasi {
 model EvidenceSosialisasi {
   id              String       @id @default(cuid())
   file            String
+  fileName        String?
   sosialisasiId   String
   sosialisasi     Sosialisasi @relation(fields: [sosialisasiId], references: [id], onDelete: Cascade)
 
@@ -167,14 +169,14 @@ model EvidenceSosialisasi {
 }
 
 model Pengumuman {
-  id                String              @id @default(cuid())
+  id               String              @id @default(cuid())
   identifikasi     Identifikasi        @relation(fields: [identifikasiId], references: [id], onDelete: Cascade)
   identifikasiId   String
   namaDesa         String              
   spanTower        String              
   tanggalPelaksanaan DateTime
+  beritaAcara      String?
   keterangan       String              @default("-")
-  beritaAcara      Bytes?
   evidence         EvidencePengumuman[] 
   createdAt        DateTime            @default(now())
   updatedAt        DateTime            @updatedAt
@@ -185,8 +187,9 @@ model Pengumuman {
 model EvidencePengumuman {
   id              String       @id @default(cuid())
   file            String
-  PengumumanId   String
-  pengumuman     Pengumuman @relation(fields: [PengumumanId], references: [id], onDelete: Cascade)
+  fileName        String?
+  pengumumanId    String
+  pengumuman      Pengumuman   @relation(fields: [pengumumanId], references: [id], onDelete: Cascade)
 
-  @@index([PengumumanId])
+  @@index([pengumumanId])
 }

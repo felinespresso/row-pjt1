@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { LoadingUI } from "@/app/_components/loading-ui/load";
 import {
   BarChart,
   Bar,
@@ -59,6 +60,7 @@ export default function Home() {
 
   if (loading) {
     return <div>Loading...</div>;
+    // <LoadingUI/>
   }
 
   const chartData = stats
@@ -109,14 +111,14 @@ export default function Home() {
   const yAxisMax = calculateYAxisMax(chartData);
 
   return (
-    <div className="justify-center items-center">
+    <div className="items-center justify-center pt-28">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
-        className="bg-white rounded-lg shadow-lg p-6"
+        className="p-6 bg-white rounded-lg shadow-lg"
       >
-        <h1 className="text-2xl font-bold mb-6 text-gray-800">
+        <h1 className="mb-6 text-2xl font-bold text-gray-800">
           Statistik Data ROW
         </h1>
         <div className="h-[500px]">

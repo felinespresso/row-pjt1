@@ -1,7 +1,8 @@
 "use client"; 
  
 import { useFormStatus } from "react-dom";
-import { useState } from "react"; 
+import { useState } from "react";
+import { deleteIdentifikasi, deleteEvidences } from "@/lib/identifikasi/action";
  
 export const LoginButton = () => { 
     const {pending} = useFormStatus(); 
@@ -37,7 +38,7 @@ export const Pagination = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
   return (
-      <div className="flex justify-center items-center space-x-2 mt-4">
+      <div className="flex items-center justify-center mt-4 space-x-2">
           <button
             onClick={() => paginate(currentPage - 1)}
             disabled={currentPage === 1}
@@ -77,4 +78,35 @@ export const Pagination = () => {
           </button>
       </div>
   );
+}
+
+export const DeleteEvidence = ({id}) => {
+  const deleteEvidenceWithId = deleteEvidences.bind(null, id);
+  
+  return (
+      <form action={deleteEvidenceWithId}>
+          <DeleteBtn/>
+      </form>
+  );
+};
+
+const DeleteBtn = () => {
+  const {pending} =  useFormStatus();
+  return (
+      <button type="submit" disabled={pending} title="Delete"
+      className={`w-full px-20 py-3 text-sm text-center border-t border-l border-gray-200 cursor-pointer rounded-br-md
+      ${pending ? "bg-gray-200" : "bg-gray-100 hover:bg-gray-200"}`}>
+          {pending ? "Deleting..." : "Delete"}
+      </button>
+  )
+}
+
+export const DeleteButton = ({id}) => {
+  const router = useRouter();
+  const DeleteDataWithId = deleteIdentifikasi.bind(null, id);
+  return (
+      <form action={DeleteDataWithId}>
+          <button onClick={() => router.push("/identifikasi-awal")} className="px-8 py-2 text-white transition-transform duration-300 rounded-lg bg-color3 hover:bg-blue-800 hover:scale-105">Yes</button>
+      </form>
+  )
 }

@@ -1,8 +1,22 @@
 import prisma from "../prisma";
  
-export const getData = async () => { 
+const ITEMS_PER_PAGE = 10; 
+ 
+export const getData = async (page: number, query: string) => { 
+    const offset = (page - 1) * ITEMS_PER_PAGE; 
     try { 
+        await new Promise((resolve) => setTimeout(resolve, 1000)); 
         const identifikasiData = await prisma.identifikasi.findMany({ 
+            where: { 
+                OR: [ 
+                    { namadesa: { contains: query, mode: "insensitive" } }, 
+                    { spantower: { contains: query, mode: "insensitive" } }, 
+                    { tanggal: { contains: query, mode: "insensitive" } }, 
+                    { fotoudara: { contains: query, mode: "insensitive" } }, 
+                ], 
+            }, 
+            skip: offset, 
+            take: ITEMS_PER_PAGE, 
             include: { 
                 evidence: true, 
             }, 
@@ -19,8 +33,28 @@ export const getData = async () => {
         // console.error("Error fetching data:", error); // Log error detail 
         throw new Error(`Failed to fetch identification data: ${error.message}`); 
     } 
-};
-
+}; 
+ 
+export const getDataPages = async (query: string) => { 
+    try { 
+        const identifikasiData = await prisma.identifikasi.count({ 
+            where: { 
+                OR: [ 
+                    { namadesa: { contains: query, mode: "insensitive" } }, 
+                    { spantower: { contains: query, mode: "insensitive" } }, 
+                    { tanggal: { contains: query, mode: "insensitive" } }, 
+                    { fotoudara: { contains: query, mode: "insensitive" } }, 
+                ], 
+            }, 
+        }); 
+        const totalPages = Math.ceil(Number(identifikasiData) / ITEMS_PER_PAGE); 
+        return totalPages; 
+    } catch (error:any) { 
+        // console.error("Error fetching data:", error); // Log error detail 
+        throw new Error(`Failed to fetch identification data: ${error.message}`); 
+    } 
+}; 
+ 
 export const getDesaById = async (id: string) => { 
     try { 
         const identifikasi = await prisma.identifikasi.findUnique({ 
@@ -35,10 +69,26 @@ export const getDesaById = async (id: string) => {
     } catch (error:any) { 
         throw new Error(`Failed to fetch data by ID: ${error.message}`); 
     } 
-};
-
+}; 
+ 
+export const getDataById = async (id: string) => { 
+    try { 
+        await new Promise((resolve) => setTimeout(resolve, 2000)); 
+        const identifikasi = await prisma.identifikasi.findUnique({ 
+            where: { id }, 
+            include: { 
+                evidence: true, 
+            }, 
+        }); 
+        return identifikasi; 
+    } catch (error:any) { 
+        throw new Error(`Failed to fetch identification data: ${error.message}`); 
+    } 
+}; 
+ 
 export const getEvidence = async (desaId: string) => { 
     try { 
+        await new Promise((resolve) => setTimeout(resolve, 1000)); 
         const result = await prisma.evidences.findMany({ 
             where: { desaId }, 
             select: { 
@@ -46,7 +96,23 @@ export const getEvidence = async (desaId: string) => {
                 id: true, 
                 file: true, 
                 namaPemilik: true, 
+                bidangLahan: true 
             }, 
+        }); 
+        return result; 
+    } catch (error) { 
+        throw new Error("Failed to fetch data"); 
+    } 
+} 
+ 
+export const getEvidenceById = async (id:string) => { 
+    try { 
+        await new Promise((resolve) => setTimeout(resolve, 2000)); 
+        const result = await prisma.evidences.findUnique({ 
+            where:{id}, 
+            include: { 
+                desa: true 
+            } 
         }); 
         return result; 
     } catch (error) { 

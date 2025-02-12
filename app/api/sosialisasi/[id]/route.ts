@@ -89,3 +89,47 @@ export async function GET(
     );
   }
 }
+
+export async function PUT(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const formData = await request.formData();
+    
+    const updateData: any = {
+      tanggalPelaksanaan: new Date(formData.get("tanggalPelaksanaan") as string),
+      keterangan: formData.get("keterangan") as string,
+    };
+
+    // Handle file updates
+    const beritaAcara = formData.get("beritaAcara") as File | null;
+    const daftarHadir = formData.get("daftarHadir") as File | null;
+
+    if (beritaAcara) {
+      const buffer = await beritaAcara.arrayBuffer();
+      updateData.beritaAcara = Buffer.from(buffer);
+    }
+
+    if (daftarHadir) {
+      const buffer = await daftarHadir.arrayBuffer();
+      updateData.daftarHadir = Buffer.from(buffer);
+    }
+
+    const updatedSosialisasi = await prisma.sosialisasi.update({
+      where: { id: params.id },
+      data: updateData,
+    });
+
+    return NextResponse.json({
+      success: true,
+      data: updatedSosialisasi,
+    });
+  } catch (error) {
+    console.error("Error updating sosialisasi:", error);
+    return NextResponse.json(
+      { error: "Gagal mengupdate data sosialisasi" },
+      { status: 500 }
+    );
+  }
+}

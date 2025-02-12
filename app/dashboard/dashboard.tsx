@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { redirect } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import * as XLSX from "xlsx";
 import "./globals.css";
 import { item } from "@prisma/client";
@@ -9,8 +9,9 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { MdOutlineEdit } from "react-icons/md";
+import ExportButtonDashboard from "@/app/_components/export/ExportButtonDashboard";
 
-export const Dashboard = () => {
+export const Dashboard = ({session}: {session:any}) => {
   const [items, setItems] = useState<item[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -282,7 +283,7 @@ export const Dashboard = () => {
           method: "DELETE",
         });
         if (response.ok) {
-          setItems(items.filter(item => item.id !== itemToDelete));
+          setItems(items.filter((item) => item.id !== itemToDelete));
           setShowConfirmDelete(false);
           setItemToDelete(null);
         } else {
@@ -297,35 +298,20 @@ export const Dashboard = () => {
 
   return (
     <div className="p-8">
-      <div className="bg-white rounded-lg shadow-lg p-6">
+      <div className="p-6 bg-white rounded-lg shadow-lg">
         {/* Header */}
-        <div className="flex justify-between items-center mb-6 ">
+        <div className="flex items-center justify-between mb-6 ">
           <h1 className="text-2xl font-bold text-gray-800">
             Daftar Proyek ROW
           </h1>
+          {session.user.role === "admin" ? (
           <div className="space-x-4">
-            <button
-              onClick={exportToExcel}
-              className="transition ease-in-out duration-200 bg-green-1 hover:-translate-1 hover:scale-110 hover:bg-green-2 text-white px-4 py-2 rounded-xl"
-            >
-              <div className="ml-auto flex items-center space-x-4 font-semibold">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 48 48"
-                  width="20px"
-                  height="20px"
-                  fill="white"
-                >
-                  <path d="M 24.607422 4.0429688 C 24.347041 4.0335549 24.0813 4.0541387 23.814453 4.1074219 L 8.6171875 7.1464844 C 6.5228355 7.5659519 5 9.4229991 5 11.558594 L 5 36.441406 C 5 38.576376 6.5230144 40.434668 8.6171875 40.853516 L 23.814453 43.892578 C 25.758786 44.281191 27.556602 42.890921 27.875 41 L 37.5 41 C 40.519774 41 43 38.519774 43 35.5 L 43 13.5 C 43 10.480226 40.519774 8 37.5 8 L 28 8 L 28 7.5390625 C 28 5.6340003 26.430086 4.1088659 24.607422 4.0429688 z M 24.402344 7.0488281 C 24.741566 6.9810934 25 7.1922764 25 7.5390625 L 25 40.460938 C 25 40.807724 24.741273 41.019122 24.402344 40.951172 A 1.50015 1.50015 0 0 0 24.402344 40.949219 L 9.2070312 37.910156 A 1.50015 1.50015 0 0 0 9.2050781 37.910156 C 8.4941947 37.768284 8 37.165812 8 36.441406 L 8 11.558594 C 8 10.834188 8.4953832 10.230423 9.2070312 10.087891 L 24.402344 7.0488281 z M 28 11 L 37.5 11 C 38.898226 11 40 12.101774 40 13.5 L 40 35.5 C 40 36.898226 38.898226 38 37.5 38 L 28 38 L 28 11 z M 31.5 15 A 1.50015 1.50015 0 1 0 31.5 18 L 35.5 18 A 1.50015 1.50015 0 1 0 35.5 15 L 31.5 15 z M 12.998047 17.158203 C 12.709209 17.150498 12.414094 17.226453 12.152344 17.392578 C 11.454344 17.837578 11.249359 18.763891 11.693359 19.462891 L 14.681641 24.158203 L 11.693359 28.853516 C 11.249359 29.552516 11.454344 30.478828 12.152344 30.923828 C 12.402344 31.081828 12.681031 31.158203 12.957031 31.158203 C 13.452031 31.158203 13.938609 30.913844 14.224609 30.464844 L 16.458984 26.953125 L 18.693359 30.462891 C 18.980359 30.911891 19.465937 31.158203 19.960938 31.158203 C 20.236938 31.158203 20.513672 31.083828 20.763672 30.923828 C 21.461672 30.478828 21.668609 29.550563 21.224609 28.851562 L 18.238281 24.158203 L 21.224609 19.464844 C 21.668609 18.765844 21.461672 17.837578 20.763672 17.392578 C 20.066672 16.948578 19.139359 17.153516 18.693359 17.853516 L 16.458984 21.363281 L 14.224609 17.851562 C 13.946484 17.414062 13.479443 17.171045 12.998047 17.158203 z M 31.5 23 A 1.50015 1.50015 0 1 0 31.5 26 L 35.5 26 A 1.50015 1.50015 0 1 0 35.5 23 L 31.5 23 z M 31.5 31 A 1.50015 1.50015 0 1 0 31.5 34 L 35.5 34 A 1.50015 1.50015 0 1 0 35.5 31 L 31.5 31 z" />
-                </svg>
-                EXPORT
-              </div>
-            </button>
+            <ExportButtonDashboard currentItems={currentItems} />
             <button
               onClick={() => router.push("/dashboard/form")}
-              className="transition ease-in-out duration-200 bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3 text-white px-4 py-2 rounded-xl"
+              className="px-4 py-2 text-white transition duration-200 ease-in-out bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3 rounded-xl"
             >
-              <div className="ml-auto flex items-center space-x-4 font-semibold">
+              <div className="flex items-center ml-auto space-x-4 font-semibold">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   height="20px"
@@ -339,35 +325,38 @@ export const Dashboard = () => {
               </div>
             </button>
           </div>
+          ): null}
         </div>
 
         {/* Table */}
-        <div className="bg-transparent rounded-md border-2 border-gray-400">
+        <div className="bg-transparent border-2 border-gray-400 rounded-md">
           <div className="overflow-x-auto rounded">
             <table className="min-w-full divide-y-2 divide-gray-400">
               <thead className="bg-gray-50">
-                <tr className="divide-x-2 divide-gray-400 text-xs">
-                  <th className="px-6 py-3 text-center text-gray-500 uppercase tracking-wider font-semibold">
+                <tr className="text-xs divide-x-2 divide-gray-400">
+                  <th className="px-6 py-3 font-semibold tracking-wider text-center text-gray-500 uppercase">
                     No.
                   </th>
-                  <th className="px-6 py-3 text-center text-gray-500 uppercase tracking-wider font-semibold">
+                  <th className="px-6 py-3 font-semibold tracking-wider text-center text-gray-500 uppercase">
                     Nama Proyek
                   </th>
-                  <th className="px-6 py-3 text-center text-gray-500 uppercase tracking-wider font-semibold">
+                  <th className="px-6 py-3 font-semibold tracking-wider text-center text-gray-500 uppercase">
                     Nomor Kontrak
                   </th>
-                  <th className="px-6 py-3 text-center text-gray-500 uppercase tracking-wider font-semibold">
+                  <th className="px-6 py-3 font-semibold tracking-wider text-center text-gray-500 uppercase">
                     Kode Proyek
                   </th>
-                  <th className="px-6 py-3 text-center text-gray-500 uppercase tracking-wider font-semibold">
+                  <th className="px-6 py-3 font-semibold tracking-wider text-center text-gray-500 uppercase">
                     Tanggal Kontrak
                   </th>
-                  <th className="px-6 py-3 text-center text-gray-500 uppercase tracking-wider font-semibold">
+                  <th className="px-6 py-3 font-semibold tracking-wider text-center text-gray-500 uppercase">
                     Tanggal Berakhir Kontrak
                   </th>
-                  <th className="px-6 py-3 text-center text-gray-500 uppercase tracking-wider font-semibold">
+                  {session.user.role === "admin" ? (
+                  <th className="px-6 py-3 font-semibold tracking-wider text-center text-gray-500 uppercase">
                     Aksi
                   </th>
+                  ): null}
                 </tr>
               </thead>
               <tbody className="divide-y-2 divide-gray-400">
@@ -378,10 +367,10 @@ export const Dashboard = () => {
                       index % 2 === 0 ? "bg-gray-200" : "bg-white"
                     } h-16`}
                   >
-                    <td className="px-6 py-4 whitespace-nowrap text-center align-middle">
+                    <td className="px-6 py-4 text-center align-middle whitespace-nowrap">
                       {indexOfFirstItem + index + 1}
                     </td>
-                    <td className="px-6 py-4 whitespace-normal text-center">
+                    <td className="px-6 py-4 text-center whitespace-normal">
                       <button
                         onClick={() => handleProjectClick(item.id)}
                         className="text-blue-2 hover:text-blue-3 active:text-blue-4"
@@ -399,26 +388,27 @@ export const Dashboard = () => {
                           .join("\n")}
                       </button>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                    <td className="px-6 py-4 text-center whitespace-nowrap">
                       {item.nomorkontrak || "-"}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                    <td className="px-6 py-4 text-center whitespace-nowrap">
                       {item.kodeproyek || "-"}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                    <td className="px-6 py-4 text-center whitespace-nowrap">
                       {item.tanggalkontrak
                         ? new Date(item.tanggalkontrak).toLocaleDateString()
                         : "-"}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                    <td className="px-6 py-4 text-center whitespace-nowrap">
                       {item.tanggalakhirkontrak
                         ? new Date(
                             item.tanggalakhirkontrak
                           ).toLocaleDateString()
                         : "-"}
                     </td>
-                    <td className="px-4 py-2">
-                      <div className="flex space-x-2">
+                    {session.user.role === "admin" ? (
+                    <td className="px-2 py-4 text-center whitespace-nowrap">
+                      <div className="flex justify-center space-x-3">
                         <button
                           onClick={() =>
                             router.push(`/dashboard/edit/${item.id}`)
@@ -431,10 +421,11 @@ export const Dashboard = () => {
                           onClick={() => handleDeleteClick(item.id)}
                           className="flex px-[6px] py-1 transition duration-100 ease-in-out bg-red-500 rounded-md hover:-translate-1 hover:scale-110 hover:shadow-lg"
                         >
-                          <FaRegTrashAlt className="text-lg text-white" />
+                          <FaRegTrashAlt className="text-xl text-white" />
                         </button>
                       </div>
                     </td>
+                    ): null}
                   </tr>
                 ))}
               </tbody>
@@ -443,7 +434,7 @@ export const Dashboard = () => {
         </div>
 
         {/* Pagination */}
-        <div className="flex justify-center items-center space-x-2 mt-4">
+        <div className="flex items-center justify-center mt-4 space-x-2">
           <button
             onClick={() => paginate(currentPage - 1)}
             disabled={currentPage === 1}
@@ -486,14 +477,14 @@ export const Dashboard = () => {
 
       {/* Password Modal */}
       {isPasswordModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg w-96">
-            <h2 className="text-xl font-bold mb-4">Masukkan Password Proyek</h2>
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="p-6 bg-white rounded-lg w-96">
+            <h2 className="mb-4 text-xl font-bold">Masukkan Password Proyek</h2>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full mr-3 p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400"
+              className="w-full p-2 mr-3 transition duration-300 ease-in-out border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400"
               placeholder="Password"
               onKeyPress={(e) => {
                 if (e.key === "Enter") {
@@ -502,18 +493,18 @@ export const Dashboard = () => {
               }}
             />
             {passwordError && (
-              <p className="text-red-500 text-sm mb-4">{passwordError}</p>
+              <p className="mb-4 text-sm text-red-500">{passwordError}</p>
             )}
             <div className="flex justify-end space-x-4">
               <button
                 onClick={() => setIsPasswordModalOpen(false)}
-                className="mt-2 transition ease-in-out duration-200 bg-white hover:-translate-1 hover:scale-110 hover:bg-gray-200 duration-300 px-4 py-2 text-gray-500 border-2 border-gray-500 rounded-xl font-semibold"
+                className="px-4 py-2 mt-2 font-semibold text-gray-500 transition duration-200 ease-in-out bg-white border-2 border-gray-500 hover:-translate-1 hover:scale-110 hover:bg-gray-200 rounded-xl"
               >
                 Cancel
               </button>
               <button
                 onClick={handlePasswordSubmit}
-                className="mt-2 transition ease-in-out duration-200 bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3 text-white px-4 py-2 rounded-xl font-semibold"
+                className="px-4 py-2 mt-2 font-semibold text-white transition duration-200 ease-in-out bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3 rounded-xl"
               >
                 Submit
               </button>
@@ -524,26 +515,40 @@ export const Dashboard = () => {
 
       {/* Modal Konfirmasi Hapus */}
       {showConfirmDelete && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-md shadow-lg">
-            <h2 className="text-lg font-semibold mb-4 text-red-500">KONFIRMASI HAPUS</h2>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+        >
+          <motion.div
+            initial={{ scale: 0.9, y: 20 }}
+            animate={{ scale: 1, y: 0 }}
+            exit={{ scale: 0.9, y: 20 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+            className="p-6 bg-white rounded-md shadow-lg"
+          >
+            <h2 className="mb-4 text-lg font-semibold text-red-500">
+              KONFIRMASI HAPUS
+            </h2>
             <p>Apakah Anda yakin ingin menghapus data ini?</p>
             <div className="flex justify-end mt-4">
               <button
                 onClick={cancelDelete}
-                className="mt-2 mr-4 transition ease-in-out duration-200 bg-white border-2 border-gray-500 hover:-translate-1 hover:scale-110 hover:bg-gray-300 text-gray-500 px-4 py-2 rounded-xl font-semibold"
+                className="px-4 py-2 mt-2 mr-4 font-semibold text-gray-500 transition duration-200 ease-in-out bg-white border-2 border-gray-500 hover:-translate-1 hover:scale-110 hover:bg-gray-300 rounded-xl"
               >
                 Tidak
               </button>
               <button
                 onClick={confirmDelete}
-                className="mt-2 transition ease-in-out duration-200 bg-red-500 hover:-translate-1 hover:scale-110 hover:bg-red-600 text-white px-4 py-2 rounded-xl font-semibold"
+                className="px-4 py-2 mt-2 font-semibold text-white transition duration-200 ease-in-out bg-red-500 hover:-translate-1 hover:scale-110 hover:bg-red-600 rounded-xl"
               >
                 Ya
               </button>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
     </div>
   );

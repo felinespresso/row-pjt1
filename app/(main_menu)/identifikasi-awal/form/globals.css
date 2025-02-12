@@ -3,11 +3,11 @@
 @tailwind utilities;
 
 input[type="date"]::-webkit-calendar-picker-indicator {
-  font-size: 22px; /* Perbesar ikon kalender */
-  color: gray; /* Warna default ikon */
-  cursor: pointer;
+    font-size: 22px; /* Perbesar ikon kalender */
+    color: gray; /* Warna default ikon */
+    cursor: pointer;
 }
 
 input[type="date"]:focus::-webkit-calendar-picker-indicator {
-  color: blue; /* Warna ikon saat ditekan */
+    color: blue; /* Warna ikon saat ditekan */
 }

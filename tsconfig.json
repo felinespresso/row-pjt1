@@ -28,6 +28,6 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "app/dashboard/dashboard.tsx"
-, "app/layout.js", "app/(main_menu)/identifikasi-awal/page.js", "app/(main_menu)/identifikasi-awal/form/page.js", "app/(main_menu)/pengumuman-hasil-inventarisasi/page.tsx", "app/(main_menu)/pengumuman-hasil-inventarisasi/form/page.tsx"  ],
+, "app/layout.js", "app/(main_menu)/identifikasi-awal/page.js", "app/(main_menu)/identifikasi-awal/form/page.js", "app/(main_menu)/pengumuman-hasil-inventarisasi/pengumuman.tsx", "app/(main_menu)/pengumuman-hasil-inventarisasi/form/page.tsx", "app/_components/skeleton.tsx"  ],
   "exclude": ["node_modules"]
 }

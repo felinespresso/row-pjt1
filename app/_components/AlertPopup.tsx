@@ -31,21 +31,24 @@ const AlertPopup = ({ message, type, isVisible, onClose }: AlertPopupProps) => {
           transition={{ type: "spring", stiffness: 300, damping: 25 }}
           className="fixed top-4 left-0 right-0 mx-auto z-50 flex justify-center"
         >
-          <div 
+          <div
             className="flex items-center gap-3 w-[90%] max-w-md px-4 py-3 rounded-lg shadow-lg bg-white border-l-4 border-r-4 border-t-2 border-b-2 border-opacity-50"
             style={{
               borderColor: type === "success" ? "#22c55e" : "#ef4444",
-              boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
+              boxShadow:
+                "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
             }}
           >
-            <div className="flex-shrink-0">
+            <div className="flex items-center gap-3 w-[90%] max-w-md px-4 py-3 rounded-lg shadow-lg bg-white border-l-4 border-r-4 border-t-2 border-b-2 border-green-500 border-opacity-50">
               {type === "success" ? (
                 <IoMdCheckmarkCircleOutline className="w-6 h-6 text-green-500" />
               ) : (
                 <MdErrorOutline className="w-6 h-6 text-red-500" />
               )}
             </div>
-            <p className="flex-1 text-sm font-semibold text-gray-600">{message}</p>
+            <p className="flex-1 text-sm font-semibold text-gray-600">
+              {message}
+            </p>
             <button
               onClick={onClose}
               className="px-3 py-1 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-100 transition-colors duration-200"
@@ -59,4 +62,4 @@ const AlertPopup = ({ message, type, isVisible, onClose }: AlertPopupProps) => {
   );
 };
 
-export default AlertPopup; 
+export default AlertPopup;

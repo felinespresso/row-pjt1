@@ -11,7 +11,7 @@ export async function GET(
 
     if (!params.id || !type) {
       return NextResponse.json(
-        { error: "ID atau tipe tidak ditemukan" },
+        { error: "ID atau tipe file tidak ditemukan" },
         { status: 400 }
       );
     }
@@ -19,44 +19,32 @@ export async function GET(
     const sosialisasi = await prisma.sosialisasi.findUnique({
       where: { id: params.id },
       select: {
-        beritaAcara: type === "beritaAcara",
-        daftarHadir: type === "daftarHadir",
+        beritaAcara: true,
+        daftarHadir: true,
       },
     });
 
     if (!sosialisasi) {
       return NextResponse.json(
-        { error: "Data tidak ditemukan" },
+        { error: "Data sosialisasi tidak ditemukan" },
         { status: 404 }
       );
     }
 
-    const file = type === "beritaAcara" ? sosialisasi.beritaAcara : sosialisasi.daftarHadir;
+    const fileUrl =
+      type === "beritaAcara"
+        ? sosialisasi.beritaAcara
+        : sosialisasi.daftarHadir;
 
-    if (!file) {
+    if (!fileUrl) {
       return NextResponse.json(
         { error: "File tidak ditemukan" },
         { status: 404 }
       );
     }
 
-    // Menggunakan Buffer.from dengan encoding yang tepat
-    let buffer;
-    if (typeof file === 'string') {
-      // Jika file adalah string base64
-      buffer = Buffer.from(file, 'base64');
-    } else {
-      // Jika file adalah Uint8Array atau Buffer
-      buffer = Buffer.from(file);
-    }
-
-    return new NextResponse(buffer, {
-      headers: {
-        "Content-Type": "application/pdf",
-        "Content-Disposition": `inline; filename="${type}.pdf"`,
-        "Cache-Control": "public, max-age=31536000",
-      },
-    });
+    // Kembalikan URL file sebagai JSON response
+    return NextResponse.json({ url: fileUrl });
   } catch (error) {
     console.error("Error mengambil file:", error);
     return NextResponse.json(

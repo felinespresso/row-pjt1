@@ -6,12 +6,20 @@ import { useRouter } from "next/navigation";
 import "./globals.css";
 import { MdAddCircleOutline, MdRemoveCircleOutline } from "react-icons/md";
 import { motion } from "framer-motion";
+import { useAlert } from "@/app/_contexts/AlertContext";
+import LoadingIndicator from "@/app/_components/LoadingIndicator";
+import SaveLoading from "@/app/_components/SaveLoading";
+import SuccessPopup from "@/app/_components/SuccessPopup";
 
-const FormInvent: React.FC = () => {
+const FormInventarisasi: React.FC = () => {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const { showAlert } = useAlert();
 
   // State untuk form utama dengan nilai default kosong
   const [mainForm, setMainForm] = useState({
@@ -24,6 +32,7 @@ const FormInvent: React.FC = () => {
     desakelurahan: "",
     kecamatan: "",
     kabupatenkota: "",
+    pekerjaan: "",
     alashak: "",
     luastanah: "",
     pelaksanaan: "",
@@ -35,8 +44,14 @@ const FormInvent: React.FC = () => {
   ]);
 
   const [tanamanList, setTanamanList] = useState([
-    { namatanaman: "", produktif: "", besar: "", kecil: "", bibit: "" },
+    { namatanaman: "", produktif: "", besar: "", kecil: "" },
   ]);
+
+  // State untuk menyimpan pesan kesalahan
+  const [mainFormErrors, setMainFormErrors] = useState({
+    span: "",
+    pelaksanaan: "",
+  });
 
   // Load data dari localStorage saat komponen dimount
   useEffect(() => {
@@ -71,8 +86,35 @@ const FormInvent: React.FC = () => {
     e.preventDefault();
     if (isSubmitting) return;
 
+    setIsSaving(true);
+    setIsSubmitting(true);
+
+    // Reset error messages
+    const newErrors = {
+      span: "",
+      pelaksanaan: "",
+    };
+    let hasError = false;
+
+    if (!mainForm.span) {
+      newErrors.span = "Span Tower wajib diisi!";
+      hasError = true;
+    }
+
+    if (!mainForm.pelaksanaan) {
+      newErrors.pelaksanaan = "Tanggal pelaksanaan wajib diisi!";
+      hasError = true;
+    }
+
+    if (hasError) {
+      setMainFormErrors(newErrors);
+      showAlert("Mohon isi semua form yang wajib diisi!", "error");
+      setIsSaving(false);
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
-      setIsSubmitting(true);
       const formData = new FormData();
 
       // Proses mainForm tanpa formulir terlebih dahulu
@@ -103,15 +145,13 @@ const FormInvent: React.FC = () => {
             tanaman.namatanaman ||
             tanaman.produktif ||
             tanaman.besar ||
-            tanaman.kecil ||
-            tanaman.bibit
+            tanaman.kecil
         )
         .map((tanaman) => ({
           namatanaman: tanaman.namatanaman || "-",
           produktif: tanaman.produktif || "-",
           besar: tanaman.besar || "-",
           kecil: tanaman.kecil || "-",
-          bibit: tanaman.bibit || "-",
         }));
 
       formData.append("jnsbangunan", JSON.stringify(processedBangunanList));
@@ -132,13 +172,17 @@ const FormInvent: React.FC = () => {
       localStorage.removeItem("tanamanList");
       localStorage.removeItem("currentStep");
 
-      router.push("/inventarisasi");
-      router.refresh();
+      setSuccessMessage("Data berhasil disimpan!");
+      setShowSuccessPopup(true);
+      setTimeout(() => {
+        router.push("/inventarisasi");
+      }, 2000);
     } catch (error) {
       console.error("Error:", error);
-      alert(error instanceof Error ? error.message : "Gagal menyimpan data");
+      showAlert("Gagal menyimpan data", "error");
     } finally {
       setIsSubmitting(false);
+      setIsSaving(false);
     }
   };
 
@@ -191,7 +235,7 @@ const FormInvent: React.FC = () => {
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+        className="block w-full p-2 mt-1 border border-gray-300 rounded-md shadow-sm"
       />
     </div>
   );
@@ -200,20 +244,27 @@ const FormInvent: React.FC = () => {
   const renderStepOne = () => {
     return (
       <div>
-        <div className="row flex justify-between items-center">
-          <label className="block text-sm font-semibold text-black ml-3">
+        <div className="flex items-center justify-between row">
+          <label className="block ml-3 text-sm font-semibold text-black">
             Span Tower
           </label>
-          <input
-            type="text"
-            value={mainForm.span}
-            onChange={(e) => handleMainFormChange("span", e.target.value)}
-            className="w-8/12 mr-3 p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400"
-            placeholder="Masukkan span tower"
-          />
+          <div className="w-8/12 mr-3">
+            <input
+              type="text"
+              value={mainForm.span}
+              onChange={(e) => handleMainFormChange("span", e.target.value)}
+              className={`w-full mr-3 p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400 ${
+                mainFormErrors.span ? "border-red-500" : ""
+              }`}
+              placeholder="Masukkan span tower"
+            />
+            {mainFormErrors.span && (
+              <p className="mt-1 text-sm text-red-500">{mainFormErrors.span}</p>
+            )}
+          </div>
         </div>
-        <div className="row flex justify-between items-center">
-          <label className="block text-sm font-semibold text-black ml-3">
+        <div className="flex items-center justify-between row">
+          <label className="block ml-3 text-sm font-semibold text-black">
             No. Bidang Lahan
           </label>
           <input
@@ -222,12 +273,12 @@ const FormInvent: React.FC = () => {
             onChange={(e) =>
               handleMainFormChange("bidanglahan", e.target.value)
             }
-            className="w-8/12 mr-3 p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400"
+            className="w-8/12 p-2 mr-3 transition duration-300 ease-in-out border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400"
             placeholder="Masukkan nomor bidang lahan"
           />
         </div>
-        <div className="row flex justify-between items-center">
-          <label className="block text-sm font-semibold text-black ml-3">
+        <div className="flex items-center justify-between row">
+          <label className="block ml-3 text-sm font-semibold text-black">
             Formulir
           </label>
           <div className="w-8/12 mr-3">
@@ -235,7 +286,7 @@ const FormInvent: React.FC = () => {
               type="file"
               onChange={handleFileChange}
               accept=".pdf"
-              className="w-full p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              className="w-full p-2 transition duration-300 ease-in-out border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
             />
             {selectedFile && (
               <p className="mt-1 text-sm text-gray-500">
@@ -244,8 +295,30 @@ const FormInvent: React.FC = () => {
             )}
           </div>
         </div>
-        <div className="row flex justify-between items-center">
-          <label className="block text-sm font-semibold text-black ml-3">
+        <div className="flex items-center justify-between row">
+          <label className="block ml-3 text-sm font-semibold text-black">
+            Tanggal Pelaksanaan
+          </label>
+          <div className="w-8/12 mr-3">
+            <input
+              type="date"
+              value={mainForm.pelaksanaan}
+              onChange={(e) =>
+                handleMainFormChange("pelaksanaan", e.target.value)
+              }
+              className={`w-full mr-3 p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400 ${
+                mainFormErrors.pelaksanaan ? "border-red-500" : ""
+              }`}
+            />
+            {mainFormErrors.pelaksanaan && (
+              <p className="mt-1 text-sm text-red-500">
+                {mainFormErrors.pelaksanaan}
+              </p>
+            )}
+          </div>
+        </div>
+        <div className="flex items-center justify-between row">
+          <label className="block ml-3 text-sm font-semibold text-black">
             Nama Pemilik
           </label>
           <input
@@ -254,36 +327,36 @@ const FormInvent: React.FC = () => {
             onChange={(e) =>
               handleMainFormChange("namapemilik", e.target.value)
             }
-            className="w-8/12 mr-3 p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400"
+            className="w-8/12 p-2 mr-3 transition duration-300 ease-in-out border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400"
             placeholder="Masukkan nama pemilik"
           />
         </div>
-        <div className="row flex justify-between items-center">
-          <label className="block text-sm font-semibold text-black ml-3">
+        <div className="flex items-center justify-between row">
+          <label className="block ml-3 text-sm font-semibold text-black">
             NIK
           </label>
           <input
             type="number"
             value={mainForm.nik}
             onChange={(e) => handleMainFormChange("nik", e.target.value)}
-            className="w-8/12 mr-3 p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400"
+            className="w-8/12 p-2 mr-3 transition duration-300 ease-in-out border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400"
             placeholder="Masukkan NIK"
           />
         </div>
-        <div className="row flex justify-between items-center">
-          <label className="block text-sm font-semibold text-black ml-3">
+        <div className="flex items-center justify-between row">
+          <label className="block ml-3 text-sm font-semibold text-black">
             Tempat Tanggal Lahir
           </label>
           <input
             type="text"
             value={mainForm.ttl}
             onChange={(e) => handleMainFormChange("ttl", e.target.value)}
-            className="w-8/12 mr-3 p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400"
+            className="w-8/12 p-2 mr-3 transition duration-300 ease-in-out border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400"
             placeholder="Masukkan tempat tanggal lahir"
           />
         </div>
-        <div className="row flex justify-between items-center">
-          <label className="block text-sm font-semibold text-black ml-3">
+        <div className="flex items-center justify-between row">
+          <label className="block ml-3 text-sm font-semibold text-black">
             Desa/Kelurahan
           </label>
           <input
@@ -292,24 +365,24 @@ const FormInvent: React.FC = () => {
             onChange={(e) =>
               handleMainFormChange("desakelurahan", e.target.value)
             }
-            className="w-8/12 mr-3 p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400"
+            className="w-8/12 p-2 mr-3 transition duration-300 ease-in-out border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400"
             placeholder="Masukkan nama desa/kelurahan"
           />
         </div>
-        <div className="row flex justify-between items-center">
-          <label className="block text-sm font-semibold text-black ml-3">
+        <div className="flex items-center justify-between row">
+          <label className="block ml-3 text-sm font-semibold text-black">
             Kecamatan
           </label>
           <input
             type="text"
             value={mainForm.kecamatan}
             onChange={(e) => handleMainFormChange("kecamatan", e.target.value)}
-            className="w-8/12 mr-3 p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400"
+            className="w-8/12 p-2 mr-3 transition duration-300 ease-in-out border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400"
             placeholder="Masukkan nama kecamatan"
           />
         </div>
-        <div className="row flex justify-between items-center">
-          <label className="block text-sm font-semibold text-black ml-3">
+        <div className="flex items-center justify-between row">
+          <label className="block ml-3 text-sm font-semibold text-black">
             Kabupaten/Kota
           </label>
           <input
@@ -318,22 +391,20 @@ const FormInvent: React.FC = () => {
             onChange={(e) =>
               handleMainFormChange("kabupatenkota", e.target.value)
             }
-            className="w-8/12 mr-3 p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400"
+            className="w-8/12 p-2 mr-3 transition duration-300 ease-in-out border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400"
             placeholder="Masukkan nama kabupaten/kota"
           />
         </div>
-        <div className="row flex justify-between items-center rounded-b">
-          <label className="block text-sm font-semibold text-black ml-3">
-            Tanggal Pelaksanaan
+        <div className="flex items-center justify-between rounded-b row">
+          <label className="block ml-3 text-sm font-semibold text-black">
+            Pekerjaan
           </label>
           <input
-            type="date"
-            value={mainForm.pelaksanaan}
-            onChange={(e) =>
-              handleMainFormChange("pelaksanaan", e.target.value)
-            }
-            className="w-8/12 mr-3 p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400"
-            placeholder="Masukkan tanggal pelaksanaan"
+            type="text"
+            value={mainForm.pekerjaan}
+            onChange={(e) => handleMainFormChange("pekerjaan", e.target.value)}
+            className="w-8/12 p-2 mr-3 transition duration-300 ease-in-out border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400"
+            placeholder="Masukkan pekerjaan"
           />
         </div>
       </div>
@@ -344,31 +415,33 @@ const FormInvent: React.FC = () => {
     return (
       <div>
         {/* Form alas hak dan luas tanah */}
-        <div className="row flex justify-between items-center">
-          <label className="block text-sm font-semibold text-black ml-3">
+        <div className="flex items-center justify-between row">
+          <label className="block ml-3 text-sm font-semibold text-black">
             Alas Hak
           </label>
-          <div className="w-8/12 mr-3 flex items-center">
+          <div className="flex items-center w-8/12 mr-3">
             <input
               type="text"
               value={mainForm.alashak}
               onChange={(e) => handleMainFormChange("alashak", e.target.value)}
-              className="flex-1 p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400"
+              className="flex-1 p-2 transition duration-300 ease-in-out border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400"
               placeholder="Masukkan alas hak"
             />
           </div>
         </div>
 
-        <div className="row flex justify-between items-center">
-          <label className="block text-sm font-semibold text-black ml-3">
+        <div className="flex items-center justify-between row">
+          <label className="block ml-3 text-sm font-semibold text-black">
             Luas Tanah
           </label>
-          <div className="w-8/12 mr-3 flex items-center">
+          <div className="flex items-center w-8/12 mr-3">
             <input
               type="text"
               value={mainForm.luastanah}
-              onChange={(e) => handleMainFormChange("luastanah", e.target.value)}
-              className="flex-1 p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400"
+              onChange={(e) =>
+                handleMainFormChange("luastanah", e.target.value)
+              }
+              className="flex-1 p-2 transition duration-300 ease-in-out border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400"
               placeholder="Masukkan luas tanah"
             />
           </div>
@@ -377,18 +450,18 @@ const FormInvent: React.FC = () => {
         {/* Form bangunan */}
         {bangunanList.map((bangunan, index) => (
           <div key={index}>
-            <div className="row flex justify-between items-center">
-              <label className="block text-sm font-semibold text-black ml-3">
+            <div className="flex items-center justify-between row">
+              <label className="block ml-3 text-sm font-semibold text-black">
                 Jenis Bangunan
               </label>
-              <div className="w-8/12 mr-3 flex items-center">
+              <div className="flex items-center w-8/12 mr-3">
                 <input
                   type="text"
                   value={bangunan.namabangunan}
                   onChange={(e) =>
                     handleBangunanChange(index, "namabangunan", e.target.value)
                   }
-                  className="flex-1 p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400"
+                  className="flex-1 p-2 transition duration-300 ease-in-out border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400"
                   placeholder="Masukkan jenis bangunan"
                 />
                 {index === 0 && (
@@ -409,7 +482,9 @@ const FormInvent: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => {
-                      const newList = bangunanList.filter((_, i) => i !== index);
+                      const newList = bangunanList.filter(
+                        (_, i) => i !== index
+                      );
                       setBangunanList(newList);
                     }}
                     className="ml-4 text-3xl"
@@ -419,10 +494,14 @@ const FormInvent: React.FC = () => {
                 )}
               </div>
             </div>
-            <div className={`row flex justify-between items-center ${
-              index === bangunanList.length - 1 ? "rounded-b-lg overflow-hidden" : ""
-            }`}>
-              <label className="block text-sm font-semibold text-black ml-3">
+            <div
+              className={`row flex justify-between items-center ${
+                index === bangunanList.length - 1
+                  ? "rounded-b-lg overflow-hidden"
+                  : ""
+              }`}
+            >
+              <label className="block ml-3 text-sm font-semibold text-black">
                 Luas Bangunan
               </label>
               <div className="w-[66.6%] mr-3 flex items-center pr-11">
@@ -432,7 +511,7 @@ const FormInvent: React.FC = () => {
                   onChange={(e) =>
                     handleBangunanChange(index, "luasbangunan", e.target.value)
                   }
-                  className="flex-1 p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400"
+                  className="flex-1 p-2 transition duration-300 ease-in-out border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400"
                   placeholder="Masukkan luas bangunan"
                 />
               </div>
@@ -447,22 +526,26 @@ const FormInvent: React.FC = () => {
     return (
       <div>
         {tanamanList.map((tanaman, index) => (
-          <div 
-            key={index} 
-            className={`${index === tanamanList.length - 1 ? "rounded-b overflow-hidden" : ""}`}
+          <div
+            key={index}
+            className={`${
+              index === tanamanList.length - 1
+                ? "rounded-b overflow-hidden"
+                : ""
+            }`}
           >
-            <div className="row flex justify-between items-center">
-              <label className="block text-sm font-semibold text-black ml-3">
+            <div className="flex items-center justify-between row">
+              <label className="block ml-3 text-sm font-semibold text-black">
                 Jenis Tanaman
               </label>
-              <div className="w-8/12 mr-3 flex items-center">
+              <div className="flex items-center w-8/12 mr-3">
                 <input
                   type="text"
                   value={tanaman.namatanaman}
                   onChange={(e) =>
                     handleTanamanChange(index, "namatanaman", e.target.value)
                   }
-                  className="flex-1 p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400"
+                  className="flex-1 p-2 transition duration-300 ease-in-out border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400"
                   placeholder="Masukkan jenis tanaman"
                 />
                 {index === 0 && (
@@ -476,7 +559,6 @@ const FormInvent: React.FC = () => {
                           produktif: "",
                           besar: "",
                           kecil: "",
-                          bibit: "",
                         },
                       ])
                     }
@@ -499,67 +581,51 @@ const FormInvent: React.FC = () => {
                 )}
               </div>
             </div>
-            <div className="row flex justify-between items-center">
-              <label className="block text-sm font-semibold text-black ml-3">
+            <div className="flex items-center justify-between row">
+              <label className="block ml-3 text-sm font-semibold text-black">
                 Tanaman Produktif
               </label>
-              <div className="w-8/12 mr-3 flex items-center pr-11">
+              <div className="flex items-center w-8/12 mr-3 pr-11">
                 <input
                   type="text"
                   value={tanaman.produktif}
                   onChange={(e) =>
                     handleTanamanChange(index, "produktif", e.target.value)
                   }
-                  className="flex-1 p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400"
+                  className="flex-1 p-2 transition duration-300 ease-in-out border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400"
                   placeholder="Masukkan jumlah tanaman produktif"
                 />
               </div>
             </div>
-            <div className="row flex justify-between items-center">
-              <label className="block text-sm font-semibold text-black ml-3">
+            <div className="flex items-center justify-between row">
+              <label className="block ml-3 text-sm font-semibold text-black">
                 Tanaman Besar
               </label>
-              <div className="w-8/12 mr-3 flex items-center pr-11">
+              <div className="flex items-center w-8/12 mr-3 pr-11">
                 <input
                   type="text"
                   value={tanaman.besar}
                   onChange={(e) =>
                     handleTanamanChange(index, "besar", e.target.value)
                   }
-                  className="flex-1 p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400"
+                  className="flex-1 p-2 transition duration-300 ease-in-out border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400"
                   placeholder="Masukkan jumlah tanaman besar"
                 />
               </div>
             </div>
-            <div className="row flex justify-between items-center">
-              <label className="block text-sm font-semibold text-black ml-3">
+            <div className="flex items-center justify-between row">
+              <label className="block ml-3 text-sm font-semibold text-black">
                 Tanaman Kecil
               </label>
-              <div className="w-8/12 mr-3 flex items-center pr-11">
+              <div className="flex items-center w-8/12 mr-3 pr-11">
                 <input
                   type="text"
                   value={tanaman.kecil}
                   onChange={(e) =>
                     handleTanamanChange(index, "kecil", e.target.value)
                   }
-                  className="flex-1 p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400"
+                  className="flex-1 p-2 transition duration-300 ease-in-out border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400"
                   placeholder="Masukkan jumlah tanaman kecil"
-                />
-              </div>
-            </div>
-            <div className="row flex justify-between items-center">
-              <label className="block text-sm font-semibold text-black ml-3">
-                Bibit Tanaman
-              </label>
-              <div className="w-8/12 mr-3 flex items-center pr-11">
-                <input
-                  type="text"
-                  value={tanaman.bibit}
-                  onChange={(e) =>
-                    handleTanamanChange(index, "bibit", e.target.value)
-                  }
-                  className="flex-1 p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400"
-                  placeholder="Masukkan jumlah bibit tanaman"
                 />
               </div>
             </div>
@@ -570,68 +636,80 @@ const FormInvent: React.FC = () => {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: 20 }}
-      transition={{ 
-        type: "spring",
-        stiffness: 300,
-        damping: 30
-      }}
-      className="p-6"
-    >
-      <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-        <form onSubmit={handleSubmit}>
-          <div className="bg-transparent rounded-md border-2 border-gray-400">
-            <div className="flex justify-between items-center m-4">
-              <h2 className="text-xl font-bold">Form Inventarisasi</h2>
-              <div className="flex justify-end space-x-4">
-                <button
-                  type="button"
-                  onClick={() => router.push("/inventarisasi")}
-                  className="transition ease-in-out duration-200 bg-white hover:-translate-1 hover:scale-110 hover:bg-gray-200 duration-300 px-4 py-2 text-gray-500 border-2 border-gray-500 rounded-lg font-semibold w-32"
-                >
-                  CANCEL
-                </button>
-                {currentStep > 1 && (
+    <div className="relative px-6 pt-32 pb-20">
+      {/* Loading overlay dengan backdrop blur */}
+      {isSaving && <SaveLoading />}
+
+      <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: 20 }}
+        transition={{
+          type: "spring",
+          stiffness: 300,
+          damping: 30,
+        }}
+      >
+        <div className="p-6 mb-6 bg-white rounded-lg shadow-lg">
+          <form onSubmit={handleSubmit}>
+            <div className="pt-2 bg-transparent border-2 border-gray-400 rounded-md">
+              <div className="flex items-center justify-between px-4 m-4">
+                <h2 className="text-xl font-bold">Form Inventarisasi</h2>
+                <div className="flex justify-end space-x-4">
                   <button
                     type="button"
-                    onClick={() => setCurrentStep(currentStep - 1)}
-                    className="transition ease-in-out duration-200 bg-white hover:-translate-1 hover:scale-110 hover:bg-gray-200 duration-300 px-4 py-2 text-blue-2 border-2 border-blue-2 rounded-lg font-semibold w-32"
+                    onClick={() => router.push("/inventarisasi")}
+                    className="w-32 px-4 py-2 font-semibold text-gray-500 transition duration-200 ease-in-out bg-white border-2 border-gray-500 rounded-lg hover:-translate-1 hover:scale-110 hover:bg-gray-200"
                   >
-                    PREVIOUS
+                    BATAL
                   </button>
-                )}
-                {currentStep < 3 && (
-                  <button
-                    type="button"
-                    onClick={() => setCurrentStep(currentStep + 1)}
-                    className="transition ease-in-out duration-200 bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3 px-4 py-2 text-white rounded-lg font-semibold w-32"
-                  >
-                    NEXT
-                  </button>
-                )}
-                {currentStep === 3 && (
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="transition ease-in-out duration-200 bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3 px-4 py-2 text-white rounded-lg font-semibold w-32"
-                  >
-                    {isSubmitting ? "Saving..." : "SAVE"}
-                  </button>
-                )}
+                  {currentStep > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => setCurrentStep(currentStep - 1)}
+                      className="px-4 py-2 font-semibold transition duration-200 ease-in-out bg-white border-2 rounded-lg hover:-translate-1 hover:scale-110 hover:bg-gray-200 text-blue-2 border-blue-2 w-38"
+                    >
+                      SEBELUMNYA
+                    </button>
+                  )}
+                  {currentStep < 3 && (
+                    <button
+                      type="button"
+                      onClick={() => setCurrentStep(currentStep + 1)}
+                      className="px-4 py-2 font-semibold text-white transition duration-200 ease-in-out rounded-lg bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3 w-38"
+                    >
+                      SELANJUTNYA
+                    </button>
+                  )}
+                  {currentStep === 3 && (
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className={`transition ease-in-out duration-200 bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3 px-4 py-2 text-white rounded-lg font-semibold w-32 ${
+                        isSubmitting ? "bg-gray-400 cursor-not-allowed" : ""
+                      }`}
+                    >
+                      {isSubmitting ? "MENYIMPAN..." : "SIMPAN"}
+                    </button>
+                  )}
+                </div>
               </div>
+              <hr />
+              {currentStep === 1 && renderStepOne()}
+              {currentStep === 2 && renderStepTwo()}
+              {currentStep === 3 && renderStepThree()}
             </div>
-            <hr />
-            {currentStep === 1 && renderStepOne()}
-            {currentStep === 2 && renderStepTwo()}
-            {currentStep === 3 && renderStepThree()}
-          </div>
-        </form>
-      </div>
-    </motion.div>
+          </form>
+        </div>
+      </motion.div>
+
+      <SuccessPopup
+        message={successMessage}
+        isVisible={showSuccessPopup}
+        onClose={() => setShowSuccessPopup(false)}
+      />
+    </div>
   );
 };
 
-export default FormInvent;
+export default FormInventarisasi;

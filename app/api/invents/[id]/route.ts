@@ -82,6 +82,7 @@ export async function PUT(
     const alashak = (formData.get("alashak") as string) || "";
     const luastanah = (formData.get("luastanah") as string) || "";
     const pelaksanaan = (formData.get("pelaksanaan") as string) || "";
+    const pekerjaan = (formData.get("pekerjaan") as string) || "";
 
     // Parse JSON string untuk data bangunan dan tanaman
     const jnsbangunanStr = formData.get("jnsbangunan");
@@ -123,6 +124,7 @@ export async function PUT(
         kabupatenkota,
         alashak,
         luastanah,
+        pekerjaan,
         jnsbangunan: {
           create: jnsbangunan.map((bangunan: { id: number }) => ({
             bangunanId: bangunan.id,
@@ -208,7 +210,7 @@ export async function DELETE(
       await tx.inventtanaman.deleteMany({
         where: { inventId: id },
       });
- 
+
       // 3. Hapus data jenisbangunan
       if (bangunanIds.length > 0) {
         await tx.jenisbangunan.deleteMany({

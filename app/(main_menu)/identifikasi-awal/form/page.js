@@ -6,7 +6,6 @@ import React, { useActionState } from "react";
 import { MdAddCircleOutline, MdRemoveCircleOutline } from "react-icons/md";
 import { SubmitButton } from "@/app/_components/buttons";
 import "./globals.css";
-import AnimatedFormContainer from "@/app/_components/motion/AnimatedFormContainer";
 
 const FormIdentifikasiAwal = () => {
   const router = useRouter();
@@ -19,8 +18,10 @@ const FormIdentifikasiAwal = () => {
     additionalEvidenceInputs.forEach((input, index) => {
       const file = event.target[`file-${index}`]?.files[0];
       const namaPemilik = event.target[`namaPemilik-${index}`]?.value;
+      const bidangLahan = event.target[`bidangLahan-${index}`]?.value;
       formData.append(`file-${index}`, file);
       formData.append(`namaPemilik-${index}`, namaPemilik);
+      formData.append(`bidangLahan-${index}`, bidangLahan);
     });
 
     startTransition(() => {
@@ -41,11 +42,11 @@ const FormIdentifikasiAwal = () => {
     );
   };
 
-  // console.log(state?.Error?.evidences);
+  // console.log(state);
 
   return (
-    <div className="px-4">
-      <AnimatedFormContainer>
+    <div className="px-6 pt-32 pb-20">
+      <div className="p-6 bg-white rounded-lg shadow-lg">
         <form action={formAction} onSubmit={handleFormSubmit}>
           <div className="pt-2 bg-transparent border-2 border-gray-400 rounded-md">
             <div className="flex items-center justify-between px-4 m-4">
@@ -54,9 +55,10 @@ const FormIdentifikasiAwal = () => {
                 <button
                   type="button"
                   onClick={() => router.push("/identifikasi-awal")}
-                  className="transition ease-in-out duration-200 bg-white hover:-translate-1 hover:scale-110 hover:bg-gray-200 duration-300 px-4 py-2 text-gray-500 border-2 border-gray-500 rounded-lg font-semibold w-32"
+                  className="w-32 px-4 py-2 font-semibold text-gray-500 transition duration-200 ease-in-out bg-white border-2 border-gray-500 rounded-lg hover:-translate-1 hover:scale-110 hover:bg-gray-200"
                 >
-                  CANCEL
+                  {" "}
+                  BATAL
                 </button>
                 <SubmitButton label="save" />
               </div>
@@ -130,102 +132,7 @@ const FormIdentifikasiAwal = () => {
                   </div>
                 </div>
               </div>
-              <div className="h-full pt-[2px] bg-white pb-2">
-                <div className="flex items-center h-16 px-4 gap-x-2 row-container">
-                  <div className="flex items-center justify-between w-[112%]">
-                    <label className="block ml-3 text-base font-semibold text-black">
-                      Evidence 1 <span className="text-red-500">*</span>
-                    </label>
-                    <div className="flex items-center w-6/12">
-                      <input
-                        type="file"
-                        name="file"
-                        accept=".png, .jpg, .jpeg"
-                        className="flex-grow p-2 text-sm transition duration-300 ease-in-out bg-white border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 file:py-1 file:px-3 file:mr-2 file:rounded-sm file:border-0 file:bg-gray-200 hover:file:bg-blue-200 file:cursor-pointer file:text-sm file:font-medium file:text-gray-700 file:shadow-md"
-                      />
-                    </div>
-                  </div>
-                  <div className="flex items-center w-full ml-10">
-                    <label className="text-base font-semibold text-black mr-11">
-                      Nama Pemilik <span className="text-red-500">*</span>
-                    </label>
-                    <div className="flex items-center w-8/12 ml-2">
-                      <input
-                        type="text"
-                        name="namaPemilik"
-                        className="flex-grow p-2 text-sm font-medium placeholder-gray-400 transition duration-300 ease-in-out bg-white border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400"
-                        placeholder="Masukkan nama pemilik"
-                      />
-                      <button
-                        type="button"
-                        onClick={addEvidenceInput}
-                        className="ml-4 text-3xl"
-                      >
-                        <MdAddCircleOutline className="text-color3" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex justify-between w-full mt-[-5px]">
-                  <div className="w-4/12"></div>
-                  <div
-                    id="evidence-error"
-                    className="w-11/12 text-red-500 text-[12px]"
-                  >
-                    <span>{state?.Error?.evidences}</span>
-                  </div>
-                </div>
-              </div>
-
-              {additionalEvidenceInputs.map((input, index) => (
-                <div key={input.id} className="h-full pb-2 bg-white">
-                  <div className="flex items-center h-16 px-4 gap-x-2 row-container">
-                    <div className="flex items-center justify-between w-[112%]">
-                      <label className="block ml-3 text-base font-semibold text-black">
-                        Evidence {input.id + 1}
-                      </label>
-                      <div className="flex items-center w-6/12">
-                        <input
-                          type="file"
-                          name={`file-${index}`}
-                          accept=".png, .jpg, .jpeg"
-                          className="flex-grow p-2 text-sm transition duration-300 ease-in-out bg-white border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 file:py-1 file:px-3 file:mr-2 file:rounded-sm file:border-0 file:bg-gray-200 hover:file:bg-blue-200 file:cursor-pointer file:text-sm file:font-medium file:text-gray-700 file:shadow-md"
-                        />
-                      </div>
-                    </div>
-                    <div className="flex items-center w-full ml-10">
-                      <label className="text-base font-semibold text-black mr-11">
-                        Nama Pemilik <span className="text-red-500">*</span>
-                      </label>
-                      <div className="flex items-center w-8/12 ml-2">
-                        <input
-                          type="text"
-                          name={`namaPemilik-${index}`}
-                          className="flex-grow p-2 text-sm font-medium placeholder-gray-400 transition duration-300 ease-in-out bg-white border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400"
-                          placeholder="Masukkan nama pemilik"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => removeEvidenceInput(input.id)}
-                          className="ml-4 text-3xl"
-                        >
-                          <MdRemoveCircleOutline className="text-red-500" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex justify-between w-full mt-[-5px]">
-                    <div className="w-4/12"></div>
-                    <div
-                      id="evidence-error"
-                      className="w-11/12 text-red-500 text-[12px]"
-                    >
-                      <span>{state?.Error?.evidences}</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-              <div className="h-full pb-2 bg-color9 rounded-b">
+              <div className="h-full pb-2 bg-white">
                 <div className="flex items-center justify-between h-16 px-4 row-container">
                   <label className="block ml-3 text-base font-semibold text-black">
                     Hasil Foto Udara <span className="text-red-500">*</span>
@@ -237,7 +144,7 @@ const FormIdentifikasiAwal = () => {
                     className="w-[70%] p-2 mr-14 text-sm transition duration-300 ease-in-out bg-white border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 file:py-1 file:px-3 file:mr-2 file:rounded-sm file:border-0 file:bg-gray-200 hover:file:bg-blue-200 file:cursor-pointer file:text-sm file:font-medium file:text-gray-700 file:shadow-md"
                   />
                 </div>
-                <div className="flex justify-between w-full mt-[-7px]">
+                <div className="flex justify-between w-full mt-[-6px]">
                   <div className="w-4/12"></div>
                   <div
                     id="fotoudara-error"
@@ -247,6 +154,112 @@ const FormIdentifikasiAwal = () => {
                   </div>
                 </div>
               </div>
+              <div className="h-full px-4 pt-3 pb-4 bg-color9">
+                <div className="grid grid-cols-1 gap-12 pl-3 pr-1 md:grid-cols-2 lg:grid-cols-3">
+                  <div className="flex flex-col">
+                    <label className="block pb-2 text-base font-semibold text-black">
+                      Evidence 1 <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="file"
+                      name="file"
+                      accept=".png, .jpg, .jpeg"
+                      className="w-full min-w-0 p-2 text-sm bg-white border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 file:py-1 file:px-3 file:mr-2 file:rounded-sm file:border-0 file:bg-gray-200 hover:file:bg-blue-200 file:cursor-pointer file:text-sm file:font-medium file:text-gray-700 file:shadow-md"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="block pt-[3px] pb-2 text-base font-semibold text-black">
+                      Nama Pemilik
+                    </label>
+                    <input
+                      type="text"
+                      name="namaPemilik"
+                      className="w-full min-w-0 py-[9px] px-2 text-sm font-medium placeholder-gray-400 bg-white border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400"
+                      placeholder="Masukkan nama pemilik"
+                    />
+                  </div>
+                  <div className="flex items-center">
+                    <div className="flex flex-col flex-grow">
+                      <label className="block pb-2 text-base font-semibold text-black">
+                        No. Bidang Lahan
+                      </label>
+                      <input
+                        type="number"
+                        name="bidangLahan"
+                        className="w-full min-w-0 p-2 text-sm font-medium placeholder-gray-400 bg-white border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400"
+                        placeholder="Masukkan nomor bidang lahan"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={addEvidenceInput}
+                      className="ml-4 text-4xl"
+                    >
+                      <MdAddCircleOutline className="text-color3" />
+                    </button>
+                  </div>
+                </div>
+                <div id="evidence-error" className="flex mt-3 text-center">
+                  <span className="text-red-500 text-[12px] w-full">
+                    {state?.Error?.evidences}
+                  </span>
+                </div>
+              </div>
+
+              {additionalEvidenceInputs.map((input, index) => (
+                <div key={input.id} className="h-full px-4 pt-3 pb-4 bg-color9">
+                  <div className="grid grid-cols-1 gap-12 pl-3 pr-1 md:grid-cols-2 lg:grid-cols-3">
+                    <div className="flex flex-col">
+                      <label className="block pb-2 text-base font-semibold text-black">
+                        Evidence {input.id + 1}{" "}
+                        <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="file"
+                        name={`file-${index}`}
+                        accept=".png, .jpg, .jpeg"
+                        className="w-full min-w-0 p-2 text-sm bg-white border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 file:py-1 file:px-3 file:mr-2 file:rounded-sm file:border-0 file:bg-gray-200 hover:file:bg-blue-200 file:cursor-pointer file:text-sm file:font-medium file:text-gray-700 file:shadow-md"
+                      />
+                    </div>
+                    <div className="flex flex-col">
+                      <label className="block pt-[3px] pb-2 text-base font-semibold text-black">
+                        Nama Pemilik
+                      </label>
+                      <input
+                        type="text"
+                        name={`namaPemilik-${index}`}
+                        className="w-full min-w-0 py-[9px] px-2 text-sm font-medium placeholder-gray-400 bg-white border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400"
+                        placeholder="Masukkan nama pemilik"
+                      />
+                    </div>
+                    <div className="flex items-center">
+                      <div className="flex flex-col flex-grow">
+                        <label className="block pb-2 text-base font-semibold text-black">
+                          No. Bidang Lahan
+                        </label>
+                        <input
+                          type="number"
+                          name={`bidangLahan-${index}`}
+                          className="w-full min-w-0 p-2 text-sm font-medium placeholder-gray-400 bg-white border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400"
+                          placeholder="Masukkan nomor bidang lahan"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeEvidenceInput(input.id)}
+                        className="ml-4 text-4xl"
+                      >
+                        <MdRemoveCircleOutline className="text-color3" />
+                      </button>
+                    </div>
+                  </div>
+                  <div id="evidence-error" className="flex text-center">
+                    <span className="text-red-500 text-[12px] w-full">
+                      {state?.Error?.evidences}
+                    </span>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
           <div
@@ -260,7 +273,7 @@ const FormIdentifikasiAwal = () => {
             </span>
           </div>
         </form>
-      </AnimatedFormContainer>
+      </div>
     </div>
   );
 };

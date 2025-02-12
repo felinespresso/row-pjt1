@@ -25,6 +25,32 @@ module.exports = {
       fontFamily: { 
         montserrat: ['Montserrat', 'sans-serif'], 
       },
+      textShadow: { 
+        'custom': '-4px 4px 9px 0 rgba(0, 0, 0, 0.5)', 
+      }, 
+      boxShadow: { 
+        custom: '-5px 5px 6px 0 rgba(71, 71, 71, 0.4)', 
+        box: '14px 14px 4px 0px rgba(0, 0, 0, 0.25)' 
+      }, 
+      keyframes: { 
+        popIn: { 
+          '0%': { 
+            transform: 'scale(0.50)', 
+            opacity: '0.5' 
+          }, 
+          '50%': { 
+            transform: 'scale(0.70)', 
+            opacity: '1' 
+          }, 
+          '100%': { 
+            transform: 'scale(1)', 
+            opacity: '1' 
+          }, 
+        }, 
+      }, 
+      animation: { 
+        popIn: 'popIn 0.3s ease-out forwards', 
+      },
     },
   },
   plugins: [],

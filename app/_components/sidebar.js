@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import {
   FaSearch,
+  FaArrowRight,
   FaFolderOpen,
   FaFileInvoiceDollar,
   FaPen,
@@ -39,17 +40,15 @@ export default function NavSidebar({ session }) {
         href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
         rel="stylesheet"
       />
-      <nav className="flex fixed top-0 items-center p-2 bg-white shadow-lg font-montserrat left-[300px] right-0 z-10">
-        <div className="flex justify-between items-center w-full">
+      <nav className="flex fixed top-0 items-center p-2 bg-white shadow-lg font-montserrat left-[300px] right-0 z-10 ">
+        <div className="flex items-center justify-between w-full px-6">
           <div className="flex items-center">
-            <Link href="/dashboard" className="mx-3">
-              <Image
-                src="/surveyor.png"
-                alt="Logo PT Surveyor Indonesia"
-                width={65}
-                height={65}
-              ></Image>
-            </Link>
+            <Image
+              src="/surveyor.png"
+              alt="Logo PT Surveyor Indonesia"
+              width={65}
+              height={65}
+            ></Image>
             <div className="ml-2">
               <h5 className="text-base font-bold text-color7">
                 Aplikasi SIROW
@@ -61,7 +60,7 @@ export default function NavSidebar({ session }) {
             {session.user.role === "admin" ? (
               <button
                 title="Add Admin"
-                className="flex relative justify-center items-center p-2 mr-2 rounded-full hover:bg-gray-100 focus:bg-gray-200 focus:bg-opacity-85 focus:outline-none"
+                className="relative flex items-center justify-center p-2 mr-2 rounded-full hover:bg-gray-100 focus:bg-gray-200 focus:bg-opacity-85 focus:outline-none"
               >
                 <MdGroupAdd className="text-[35px] text-gray-400" />
               </button>
@@ -74,6 +73,11 @@ export default function NavSidebar({ session }) {
                 className="flex-1 ml-1 text-sm font-medium placeholder-gray-500 bg-gray-300 outline-none"
               />
             </div>
+            <button>
+              <Link href="/dashboard" className="mx-3">
+                <FaArrowRight className="mr-6 text-base text-gray-500" />
+              </Link>
+            </button>
           </div>
         </div>
       </nav>
@@ -82,7 +86,7 @@ export default function NavSidebar({ session }) {
           {session && (
             <div className="profile justify-center h-[165px] py-2 text-white bg-color5">
               <Link href="/profile">
-                <FaPen className="mt-1 text-lg transition-transform duration-200 justify-self-end hover:scale-110 filter hover:drop-shadow-[0_4px_6px_rgba(0,0,0,0.3)] icon mx-4" />
+                <FaPen className="mt-1 text-lg transition-transform duration-200 justify-self-end hover:scale-110 filter hover:drop-shadow-[0_4px_6px_rgba(0,0,0,0.3)] icon mx-4 text-white" />
               </Link>
               <Image
                 src={session.user.image || "/avatar.jpg"}
@@ -90,7 +94,7 @@ export default function NavSidebar({ session }) {
                 width={60}
                 height={60}
                 className={`my-3 rounded-full justify-self-center photo ${
-                  pathname === "/profile"
+                  pathname.startsWith('/profile')
                     ? "border-2 rounded-full border-color8"
                     : ""
                 }`}
@@ -105,7 +109,7 @@ export default function NavSidebar({ session }) {
               <Link
                 href="/home"
                 className={`flex items-center px-3 py-2 text-white transition duration-200 ease-in-out border-b border-color5 hover:bg-color8 ${
-                  pathname === "/home" ? "bg-color8" : ""
+                  pathname.startsWith('/home') ? "bg-color8" : ""
                 }`}
               >
                 <MdHome className="mx-4 text-3xl align-middle" />
@@ -116,8 +120,7 @@ export default function NavSidebar({ session }) {
               <Link
                 href="/identifikasi-awal"
                 className={`flex items-center px-3 py-2 text-white border-b transition duration-200 ease-in-out border-color5 hover:bg-color8 ${
-                  pathname === "/identifikasi-awal" ||
-                  pathname === "/identifikasi-awal/form"
+                  pathname.startsWith('/identifikasi-awal')
                     ? "bg-color8"
                     : ""
                 }`}
@@ -132,12 +135,12 @@ export default function NavSidebar({ session }) {
               <Link
                 href="/sosialisasi"
                 className={`flex items-center px-3 py-2 text-white border-b transition duration-200 ease-in-out border-color5 hover:bg-color8 ${
-                  pathname === "/sosialisasi" ? "bg-color8" : ""
+                  pathname.startsWith('/sosialisasi') ? "bg-color8" : ""
                 }`}
               >
                 <MdGroups className="mx-4 text-3xl align-middle" />
                 <span className="flex-1 mt-1 text-base font-bold">
-                  Sosialisasi 
+                  Sosialisasi
                 </span>
               </Link>
             </li>
@@ -145,8 +148,9 @@ export default function NavSidebar({ session }) {
               <Link
                 href="/inventarisasi"
                 className={`flex items-center px-3 py-2 text-white border-b transition duration-200 ease-in-out border-color5 hover:bg-color8 ${
-                  pathname === "/inventarisasi" ||
-                  pathname === "/inventarisasi/form" ? "bg-color8" : ""
+                  pathname.startsWith('/inventarisasi')
+                    ? "bg-color8"
+                    : ""
                 }`}
               >
                 <Image
@@ -165,7 +169,7 @@ export default function NavSidebar({ session }) {
               <Link
                 href="/pengumuman-hasil-inventarisasi"
                 className={`flex items-center px-3 py-2 text-white border-b transition duration-200 ease-in-out border-color5 hover:bg-color8 ${
-                  pathname === "/pengumuman-hasil-inventarisasi"
+                  pathname.startsWith('/pengumuman-hasil-inventarisasi')
                     ? "bg-color8"
                     : ""
                 }`}
@@ -196,7 +200,7 @@ export default function NavSidebar({ session }) {
               <Link
                 href="/musyawarah"
                 className={`flex items-center px-3 py-2 text-white border-b transition duration-200 ease-in-out border-color5 hover:bg-color8 ${
-                  pathname === "/musyawarah" ? "bg-color8" : ""
+                  pathname.startsWith('/musyawarah') ? "bg-color8" : ""
                 }`}
               >
                 <Image
@@ -216,7 +220,7 @@ export default function NavSidebar({ session }) {
                 href="/pemberkasan"
                 className={`flex items-center px-3 py-2 text-white border-b
 transition duration-200 ease-in-out border-color5 hover:bg-color8 ${
-                  pathname === "/pemberkasan" ? "bg-color8" : ""
+                  pathname.startsWith('/pemberkasan') ? "bg-color8" : ""
                 }`}
               >
                 <FaFolderOpen className="mx-4 text-3xl align-middle" />
@@ -229,7 +233,7 @@ transition duration-200 ease-in-out border-color5 hover:bg-color8 ${
               <Link
                 href="/pembayaran"
                 className={`flex items-center px-3 py-2 text-white border-b transition duration-200 ease-in-out border-color5 hover:bg-color8 ${
-                  pathname === "/pembayaran" ? "bg-color8" : ""
+                  pathname.startsWith('/pembayaran') ? "bg-color8" : ""
                 }`}
               >
                 <FaFileInvoiceDollar className="mx-4 text-3xl align-middle" />
@@ -242,7 +246,7 @@ transition duration-200 ease-in-out border-color5 hover:bg-color8 ${
               <Link
                 href="/penebangan"
                 className={`flex items-center px-3 py-2 text-white border-b transition duration-200 ease-in-out border-color5 hover:bg-color8 ${
-                  pathname === "/penebangan" ? "bg-color8" : ""
+                  pathname.startsWith('/penebangan') ? "bg-color8" : ""
                 }`}
               >
                 <Image
@@ -257,11 +261,11 @@ transition duration-200 ease-in-out border-color5 hover:bg-color8 ${
                 </span>
               </Link>
             </li>
-            <li className="absolute bottom-0 w-full border-t transition-all duration-200 ease-in border-color5">
+            <li className="absolute bottom-0 w-full transition-all duration-200 ease-in border-t border-color5">
               <Link
                 href="/logout"
                 className={`flex items-center px-3 py-2 text-white transition duration-200 ease-in-out hover:bg-color8 ${
-                  pathname === "/logout" ? "bg-color8" : ""
+                  pathname.startsWith('/logout') ? "bg-color8" : ""
                 }`}
               >
                 <MdLogout className="mx-4 text-3xl align-middle" />

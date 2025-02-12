@@ -39,4 +39,91 @@ export async function GET(
       { status: 500 }
     );
   }
+}
+
+// Hapus evidence
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string; evidenceId: string } }
+) {
+  try {
+    const deletedEvidence = await prisma.evidenceSosialisasi.delete({
+      where: {
+        id: params.evidenceId,
+        sosialisasiId: params.id,
+      },
+    });
+
+    return NextResponse.json({
+      message: "Evidence berhasil dihapus",
+      deletedEvidence,
+    });
+  } catch (error) {
+    console.error("Error menghapus evidence:", error);
+    return NextResponse.json(
+      { error: "Gagal menghapus evidence" },
+      { status: 500 }
+    );
+  }
+}
+
+// Update evidence
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { id: string; evidenceId: string } }
+) {
+  try {
+    const formData = await request.formData();
+    const file = formData.get("file") as File;
+
+    if (!file) {
+      return NextResponse.json(
+        { error: "File tidak ditemukan" },
+        { status: 400 }
+      );
+    }
+
+    // Verifikasi evidence yang akan diupdate
+    const existingEvidence = await prisma.evidenceSosialisasi.findUnique({
+      where: {
+        id: params.evidenceId,
+        sosialisasiId: params.id,
+      },
+    });
+
+    if (!existingEvidence) {
+      return NextResponse.json(
+        { error: "Evidence tidak ditemukan" },
+        { status: 404 }
+      );
+    }
+
+    const buffer = await file.arrayBuffer();
+    const base64File = Buffer.from(buffer).toString('base64');
+
+    const updatedEvidence = await prisma.evidenceSosialisasi.update({
+      where: {
+        id: params.evidenceId,
+        sosialisasiId: params.id,
+      },
+      data: {
+        file: base64File,
+        fileName: file.name,
+      },
+    });
+
+    return NextResponse.json({
+      message: "Evidence berhasil diperbarui",
+      evidence: {
+        id: updatedEvidence.id,
+        fileName: updatedEvidence.fileName
+      }
+    });
+  } catch (error) {
+    console.error("Error memperbarui evidence:", error);
+    return NextResponse.json(
+      { error: "Gagal memperbarui evidence" },
+      { status: 500 }
+    );
+  }
 } 

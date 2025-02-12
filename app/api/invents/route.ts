@@ -19,8 +19,8 @@ export async function GET() {
       },
       orderBy: [
         {
-          id: 'desc' // Gunakan ID sebagai alternatif jika tidak ada createdAt
-        }
+          id: "desc", // Gunakan ID sebagai alternatif jika tidak ada createdAt
+        },
       ],
     });
 
@@ -58,6 +58,9 @@ export async function POST(request: Request) {
       return value ? value.toString() : "-";
     };
 
+    // Ambil pekerjaan dari formData
+    const pekerjaan = getValue("pekerjaan");
+
     // Proses file formulir jika ada
     let formulirBuffer: Buffer | null = null;
     const formulirFile = formData.get("formulir") as File | null;
@@ -69,7 +72,6 @@ export async function POST(request: Request) {
 
     // Buat data inventarisasi
     const result = await prisma.$transaction(async (tx) => {
-      // Buat record inventarisasi dengan formulir opsional
       const inventarisasi = await tx.inventarisasi.create({
         data: {
           span: getValue("span"),
@@ -85,7 +87,8 @@ export async function POST(request: Request) {
           pelaksanaan: new Date(
             getValue("pelaksanaan") || new Date().toISOString()
           ),
-          ...(formulirBuffer ? { formulir: formulirBuffer } : {}), // Hanya tambahkan jika ada
+          pekerjaan,
+          ...(formulirBuffer ? { formulir: formulirBuffer } : {}),
         },
       });
 
@@ -141,7 +144,6 @@ export async function POST(request: Request) {
               produktif: tanaman.produktif || "-",
               besar: tanaman.besar || "-",
               kecil: tanaman.kecil || "-",
-              bibit: tanaman.bibit || "-",
             },
           });
 
