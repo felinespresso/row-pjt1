@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import "./globals.css";
@@ -20,6 +20,7 @@ interface FormData {
   tanggalPelaksanaan: string;
   keterangan: string;
   beritaAcara: File | null;
+  daftarHadir: File | null;
   evidence: File[];
 }
 
@@ -27,23 +28,22 @@ interface EvidenceInput {
   file: File | null;
 }
 
-const FormPengumuman = () => {
+const FormMusyawarah = () => {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const { showAlert } = useAlert();
+
   const [formData, setFormData] = useState<FormData>({
     identifikasiId: "",
     tanggalPelaksanaan: "",
     keterangan: "",
     beritaAcara: null,
+    daftarHadir: null,
     evidence: [],
   });
-  const [identifikasiList, setIdentifikasiList] = useState<Identifikasi[]>([]);
-  const { showAlert } = useAlert();
-  const [evidenceList, setEvidenceList] = useState<EvidenceInput[]>([
-    { file: null },
-  ]);
 
   // Tambahkan state untuk error
   const [formErrors, setFormErrors] = useState({
@@ -58,6 +58,53 @@ const FormPengumuman = () => {
     namadesa: string;
     spantower: string;
   } | null>(null);
+
+  // Tambahkan useEffect untuk memulihkan data dari localStorage
+  useEffect(() => {
+    setIsClient(true);
+    const savedData = localStorage.getItem("musyawarahFormData");
+    if (savedData) {
+      const parsedData = JSON.parse(savedData);
+      setFormData((prev) => ({
+        ...prev,
+        identifikasiId: parsedData.identifikasiId || "",
+        tanggalPelaksanaan: parsedData.tanggalPelaksanaan || "",
+        keterangan: parsedData.keterangan || "",
+      }));
+
+      if (parsedData.selectedLocation) {
+        setSelectedLocation(parsedData.selectedLocation);
+      }
+    }
+  }, []);
+
+  // Update handler untuk tombol cancel
+  const handleCancel = () => {
+    localStorage.removeItem("musyawarahFormData");
+    router.push("/musyawarah");
+  };
+
+  const [identifikasiList, setIdentifikasiList] = useState<Identifikasi[]>([]);
+  const [evidenceList, setEvidenceList] = useState<EvidenceInput[]>([
+    { file: null },
+  ]);
+
+  // Tambahkan ref untuk combobox
+  const comboboxRef = useRef<HTMLInputElement>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Tambahkan state untuk pencarian
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Filter data berdasarkan pencarian
+  const filteredOptions = identifikasiList.filter((item) => {
+    const search = searchTerm.toLowerCase();
+    return (
+      item.namadesa.toLowerCase().includes(search) ||
+      item.spantower.toLowerCase().includes(search)
+    );
+  });
 
   // Update handler untuk mengubah lokasi
   const handleLocationChange = async (value: string) => {
@@ -76,7 +123,7 @@ const FormPengumuman = () => {
 
       // Simpan ke localStorage
       localStorage.setItem(
-        "pengumumanFormData",
+        "musyawarahFormData",
         JSON.stringify({
           ...newFormData,
           selectedLocation: locationData,
@@ -113,6 +160,12 @@ const FormPengumuman = () => {
     };
     initializeForm();
   }, []);
+
+  const handleEvidenceChange = (index: number, file: File | null) => {
+    const newList = [...evidenceList];
+    newList[index].file = file;
+    setEvidenceList(newList);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -161,19 +214,21 @@ const FormPengumuman = () => {
       formDataToSend.append("tanggalPelaksanaan", formData.tanggalPelaksanaan);
       formDataToSend.append("keterangan", formData.keterangan);
 
-      // Berita Acara
       if (formData.beritaAcara) {
         formDataToSend.append("beritaAcara", formData.beritaAcara);
       }
 
-      // Evidence (Revisi Bagian Ini)
+      if (formData.daftarHadir) {
+        formDataToSend.append("daftarHadir", formData.daftarHadir);
+      }
+
       evidenceList.forEach((evidence, index) => {
         if (evidence.file) {
           formDataToSend.append(`evidence`, evidence.file);
         }
       });
 
-      const response = await fetch("/api/pengumuman", {
+      const response = await fetch("/api/musyawarah", {
         method: "POST",
         body: formDataToSend,
       });
@@ -182,30 +237,17 @@ const FormPengumuman = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
+      localStorage.removeItem("musyawarahFormData");
       setShowSuccessPopup(true);
       setTimeout(() => {
-        router.push("/pengumuman-hasil-inventarisasi");
+        router.push("/musyawarah");
       }, 2000);
     } catch (error) {
-      console.error("Error:", error);
-      showAlert("Gagal menyimpan data. Silakan coba lagi.", "error");
+      console.error("Error submitting form:", error);
+      showAlert("Gagal menyimpan data", "error");
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const handleEvidenceChange = (index: number, file: File | null) => {
-    const newList = [...evidenceList];
-    newList[index].file = file;
-    setEvidenceList(newList);
-  };
-
-  const addNewEvidenceField = () => {
-    setEvidenceList([...evidenceList, { file: null }]);
-  };
-
-  const removeEvidenceField = (index: number) => {
-    setEvidenceList(evidenceList.filter((_, i) => i !== index));
   };
 
   if (isLoading) {
@@ -231,15 +273,13 @@ const FormPengumuman = () => {
         className="p-6 mb-6 bg-white rounded-lg shadow-lg"
       >
         <form onSubmit={handleSubmit}>
-          <div className="bg-transparent border-2 border-gray-400 rounded-md">
-            <div className="flex items-center justify-between m-4">
-              <h2 className="text-xl font-bold">
-                Form Pengumuman Hasil Inventarisasi
-              </h2>
+          <div className="pt-2 bg-transparent border-2 border-gray-400 rounded-md">
+            <div className="flex items-center justify-between px-4 m-4">
+              <h2 className="text-xl font-bold">Form Sosialisasi</h2>
               <div className="flex justify-end space-x-4">
                 <button
                   type="button"
-                  onClick={() => router.push("/pengumuman-hasil-inventarisasi")}
+                  onClick={handleCancel}
                   className="w-32 px-4 py-2 font-semibold text-gray-500 transition duration-200 ease-in-out bg-white border-2 border-gray-500 rounded-lg hover:-translate-1 hover:scale-110 hover:bg-gray-200"
                 >
                   BATAL
@@ -298,7 +338,7 @@ const FormPengumuman = () => {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between row">
+              <div className="flex items-center justify-between mb-2 row">
                 <label className="block ml-3 text-sm font-semibold text-black">
                   Tanggal Pelaksanaan
                 </label>
@@ -374,6 +414,25 @@ const FormPengumuman = () => {
                 </div>
               </div>
 
+              <div className="flex items-center justify-between row">
+                <label className="block ml-3 text-sm font-semibold text-black">
+                  Daftar Hadir
+                </label>
+                <div className="flex items-center w-8/12 mr-3">
+                  <input
+                    type="file"
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        daftarHadir: e.target.files?.[0] || null,
+                      })
+                    }
+                    className="w-full p-2 transition duration-300 ease-in-out border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                    accept=".pdf"
+                  />
+                </div>
+              </div>
+
               <div className="flex items-center justify-between rounded-b row">
                 <label className="block ml-3 text-sm font-semibold text-black">
                   Evidence
@@ -433,4 +492,4 @@ const FormPengumuman = () => {
   );
 };
 
-export default FormPengumuman;
+export default FormMusyawarah;

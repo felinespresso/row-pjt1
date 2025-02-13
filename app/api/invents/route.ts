@@ -1,7 +1,11 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { del, put } from "@vercel/blob";
 
-// Handler untuk GET request
+// Base URL untuk file
+const baseUrl = "http://localhost:3000/uploads/";
+
+// GET: Ambil semua data inventarisasi
 export async function GET() {
   try {
     const invents = await prisma.inventarisasi.findMany({
@@ -17,29 +21,20 @@ export async function GET() {
           },
         },
       },
-      orderBy: [
-        {
-          id: "desc", // Gunakan ID sebagai alternatif jika tidak ada createdAt
-        },
-      ],
-    });
-
-    // Konversi data binary ke base64
-    const serializedData = invents.map((item) => ({
-      ...item,
-      formulir: item.formulir
-        ? Buffer.from(item.formulir).toString("base64")
-        : null,
-    }));
-
-    return NextResponse.json(serializedData, {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
+      orderBy: {
+        id: "desc",
       },
     });
+
+    const serializedData = invents.map((item) => ({
+      ...item,
+      formulir: item.formulir ? `${baseUrl}${item.formulir}` : null,
+      pelaksanaan: item.pelaksanaan.toISOString(),
+    }));
+
+    return NextResponse.json(serializedData, { status: 200 });
   } catch (error) {
-    console.error("Error fetching inventarisasi:", error);
+    console.error("❌ Error fetching inventarisasi:", error);
     return NextResponse.json(
       { error: "Gagal mengambil data inventarisasi" },
       { status: 500 }
@@ -47,123 +42,67 @@ export async function GET() {
   }
 }
 
-// Handler untuk POST request
-export async function POST(request: Request) {
+// 📌 POST: Unggah file formulir & Simpan URL ke Database
+export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
 
-    // Fungsi helper untuk mengambil nilai dari FormData
-    const getValue = (key: string) => {
-      const value = formData.get(key);
-      return value ? value.toString() : "-";
-    };
-
-    // Ambil pekerjaan dari formData
-    const pekerjaan = getValue("pekerjaan");
-
-    // Proses file formulir jika ada
-    let formulirBuffer: Buffer | null = null;
-    const formulirFile = formData.get("formulir") as File | null;
-
-    if (formulirFile instanceof File) {
-      const arrayBuffer = await formulirFile.arrayBuffer();
-      formulirBuffer = Buffer.from(arrayBuffer);
-    }
-
-    // Buat data inventarisasi
-    const result = await prisma.$transaction(async (tx) => {
-      const inventarisasi = await tx.inventarisasi.create({
-        data: {
-          span: getValue("span"),
-          bidanglahan: getValue("bidanglahan"),
-          namapemilik: getValue("namapemilik"),
-          nik: getValue("nik"),
-          ttl: getValue("ttl"),
-          desakelurahan: getValue("desakelurahan"),
-          kecamatan: getValue("kecamatan"),
-          kabupatenkota: getValue("kabupatenkota"),
-          alashak: getValue("alashak"),
-          luastanah: getValue("luastanah"),
-          pelaksanaan: new Date(
-            getValue("pelaksanaan") || new Date().toISOString()
-          ),
-          pekerjaan,
-          ...(formulirBuffer ? { formulir: formulirBuffer } : {}),
-        },
-      });
-
-      // Parse dan validasi data bangunan
-      let bangunanData = [];
-      const bangunanStr = formData.get("jnsbangunan");
-      if (bangunanStr) {
-        try {
-          const parsedBangunan = JSON.parse(bangunanStr.toString());
-          bangunanData = Array.isArray(parsedBangunan) ? parsedBangunan : [];
-        } catch {
-          bangunanData = [];
-        }
-      }
-
-      // Parse dan validasi data tanaman
-      let tanamanData = [];
-      const tanamanStr = formData.get("jnstanaman");
-      if (tanamanStr) {
-        try {
-          const parsedTanaman = JSON.parse(tanamanStr.toString());
-          tanamanData = Array.isArray(parsedTanaman) ? parsedTanaman : [];
-        } catch {
-          tanamanData = [];
-        }
-      }
-
-      // Proses data bangunan jika ada
-      if (bangunanData.length > 0) {
-        for (const bangunan of bangunanData) {
-          const newBangunan = await tx.jenisbangunan.create({
-            data: {
-              namabangunan: bangunan.namabangunan || "-",
-              luasbangunan: bangunan.luasbangunan || "-",
-            },
-          });
-
-          await tx.inventbangunan.create({
-            data: {
-              inventId: inventarisasi.id,
-              bangunanId: newBangunan.id,
-            },
-          });
-        }
-      }
-
-      // Proses data tanaman jika ada
-      if (tanamanData.length > 0) {
-        for (const tanaman of tanamanData) {
-          const newTanaman = await tx.jenistanaman.create({
-            data: {
-              namatanaman: tanaman.namatanaman || "-",
-              produktif: tanaman.produktif || "-",
-              besar: tanaman.besar || "-",
-              kecil: tanaman.kecil || "-",
-            },
-          });
-
-          await tx.inventtanaman.create({
-            data: {
-              inventId: inventarisasi.id,
-              tanamanId: newTanaman.id,
-            },
-          });
-        }
-      }
-
-      return inventarisasi;
+    const inventarisasi = await prisma.inventarisasi.create({
+      data: {
+        span: formData.get("span") as string,
+        bidanglahan: formData.get("bidanglahan") as string,
+        namapemilik: formData.get("namapemilik") as string,
+        nik: formData.get("nik") as string,
+        ttl: formData.get("ttl") as string,
+        desakelurahan: formData.get("desakelurahan") as string,
+        kecamatan: formData.get("kecamatan") as string,
+        kabupatenkota: formData.get("kabupatenkota") as string,
+        pekerjaan: formData.get("pekerjaan") as string,
+        alashak: formData.get("alashak") as string,
+        luastanah: formData.get("luastanah") as string,
+        pelaksanaan: new Date(formData.get("pelaksanaan") as string),
+        formulir: formData.get("formulir") as string | null, // Simpan URL formulir
+      },
     });
 
-    return NextResponse.json({ success: true, data: result }, { status: 201 });
+    return NextResponse.json({ success: true, data: inventarisasi });
   } catch (error) {
-    console.error("Error creating inventarisasi:", error);
+    console.error("❌ Error menyimpan inventarisasi:", error);
     return NextResponse.json(
-      { success: false, error: "Gagal menyimpan data inventarisasi" },
+      { error: "Gagal menyimpan data inventarisasi" },
+      { status: 500 }
+    );
+  }
+}
+
+// DELETE: Hapus data inventarisasi dan file formulir jika ada
+export async function DELETE(request: NextRequest) {
+  try {
+    const { id } = await request.json();
+    const existingInvent = await prisma.inventarisasi.findUnique({
+      where: { id },
+    });
+
+    if (!existingInvent) {
+      return NextResponse.json(
+        { success: false, error: "Data tidak ditemukan" },
+        { status: 404 }
+      );
+    }
+
+    // Jika ada file formulir, hapus dari storage
+    if (existingInvent.formulir) {
+      console.log("🗑️ Menghapus file formulir:", existingInvent.formulir);
+      await del(existingInvent.formulir);
+    }
+
+    await prisma.inventarisasi.delete({ where: { id } });
+
+    return NextResponse.json({ success: true }, { status: 200 });
+  } catch (error) {
+    console.error("❌ Error deleting inventarisasi:", error);
+    return NextResponse.json(
+      { success: false, error: "Gagal menghapus data inventarisasi" },
       { status: 500 }
     );
   }

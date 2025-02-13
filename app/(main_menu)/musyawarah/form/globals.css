@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.row:nth-child(odd) {
+  background-color: #d9d9d9; /* Abu-abu */
+}
+
+.row:nth-child(even) {
+  background-color: #ffffff; /* Putih */
+}
+
+.row {
+  padding: 1.5rem;
+  /* border-radius: 5px; */
+}
+
+/* Gaya untuk scrollbar */
+::-webkit-scrollbar {
+  width: 12px; /* Lebar scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Warna track scrollbar */
+  border-radius: 4px; /* Rounded track */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888; /* Warna thumb scrollbar */
+  border-radius: 4px; /* Rounded thumb */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Warna thumb saat hover */
+}

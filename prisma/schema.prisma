@@ -70,7 +70,7 @@ model inventarisasi {
   id             Int      @id @default(autoincrement())
   span           String   @default("-")
   bidanglahan    String   @default("-")
-  formulir       Bytes?
+  formulir       String?
   pelaksanaan    DateTime @default(now())
   namapemilik    String   @default("-")
   nik            String   @default("-")
@@ -130,6 +130,7 @@ model Identifikasi {
   evidence      Evidences[]
   sosialisasi   Sosialisasi[]
   pengumuman    Pengumuman[]
+  musyawarah    Musyawarah[]
 }
 
 model Evidences {
@@ -192,4 +193,31 @@ model EvidencePengumuman {
   pengumuman      Pengumuman   @relation(fields: [pengumumanId], references: [id], onDelete: Cascade)
 
   @@index([pengumumanId])
+}
+
+model Musyawarah {
+  id               String              @id @default(cuid())
+  identifikasi     Identifikasi        @relation(fields: [identifikasiId], references: [id], onDelete: Cascade)
+  identifikasiId   String
+  namaDesa         String              
+  spanTower        String              
+  tanggalPelaksanaan DateTime
+  beritaAcara      String?
+  daftarHadir      String?
+  keterangan       String              @default("-")
+  evidence         EvidenceMusyawarah[] 
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+
+  @@index([identifikasiId])
+}
+
+model EvidenceMusyawarah {
+  id              String       @id @default(cuid())
+  file            String
+  fileName        String?
+  musyawarahId   String
+  musyawarah      Musyawarah @relation(fields: [musyawarahId], references: [id], onDelete: Cascade)
+
+  @@index([musyawarahId])
 }

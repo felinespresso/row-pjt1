@@ -49,6 +49,7 @@ const FormSosialisasi = () => {
   const [formErrors, setFormErrors] = useState({
     identifikasiId: "",
     tanggalPelaksanaan: "",
+    keterangan: "",
   });
 
   // Tambahkan state untuk menyimpan nama desa dan span tower yang terpilih
@@ -173,6 +174,7 @@ const FormSosialisasi = () => {
     setFormErrors({
       identifikasiId: "",
       tanggalPelaksanaan: "",
+      keterangan: "",
     });
 
     // Validasi form
@@ -180,6 +182,7 @@ const FormSosialisasi = () => {
     const newErrors = {
       identifikasiId: "",
       tanggalPelaksanaan: "",
+      keterangan: "",
     };
 
     if (!formData.identifikasiId) {
@@ -189,6 +192,11 @@ const FormSosialisasi = () => {
 
     if (!formData.tanggalPelaksanaan) {
       newErrors.tanggalPelaksanaan = "Tanggal pelaksanaan wajib diisi!";
+      hasError = true;
+    }
+
+    if (!formData.keterangan) {
+      newErrors.keterangan = "Keterangan wajib diisi!";
       hasError = true;
     }
 
@@ -362,16 +370,28 @@ const FormSosialisasi = () => {
                 <label className="block ml-3 text-sm font-semibold text-black">
                   Keterangan
                 </label>
-                <div className="flex items-center w-8/12 mr-3">
+                <div className="w-8/12 mr-3">
                   <input
                     type="text"
+                    placeholder="Masukkan keterangan"
                     value={formData.keterangan}
                     onChange={(e) =>
-                      setFormData({ ...formData, keterangan: e.target.value })
+                      setFormData({
+                        ...formData,
+                        keterangan: e.target.value,
+                      })
                     }
-                    className="flex-1 p-2 transition duration-300 ease-in-out border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400"
-                    placeholder="Masukkan keterangan"
+                    className={`w-full p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400 ${
+                      formErrors.keterangan
+                        ? "border-red-500"
+                        : "border-gray-400"
+                    }`}
                   />
+                  {formErrors.keterangan && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {formErrors.keterangan}
+                    </p>
+                  )}
                 </div>
               </div>
 

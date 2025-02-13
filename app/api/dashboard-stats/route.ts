@@ -8,7 +8,7 @@ export async function GET() {
       sosialisasiCount,
       inventarisasiCount,
       pengumumanCount,
-    //   musyawarahCount,
+      musyawarahCount,
     //   pemberkasanCount,
     //   pembayaranCount,
     //   penebanganCount
@@ -17,7 +17,7 @@ export async function GET() {
       prisma.sosialisasi.count(),
       prisma.inventarisasi.count(),
       prisma.pengumuman.count(), // Sesuaikan dengan model musyawarah Anda
-    //   prisma.musyawarah.count(), // Sesuaikan dengan model musyawarah Anda
+      prisma.musyawarah.count(), // Sesuaikan dengan model musyawarah Anda
     //   prisma.pemberkasan.count(), // Sesuaikan dengan model pemberkasan Anda
     //   prisma.pembayaran.count(), // Sesuaikan dengan model pembayaran Anda
     //   prisma.penebangan.count() // Sesuaikan dengan model penebangan Anda
@@ -28,7 +28,7 @@ export async function GET() {
       sosialisasi: sosialisasiCount,
       inventarisasi: inventarisasiCount,
       pengumuman: pengumumanCount,
-    //   musyawarah: musyawarahCount,
+      musyawarah: musyawarahCount,
     //   pemberkasan: pemberkasanCount,
     //   pembayaran: pembayaranCount,
     //   penebangan: penebanganCount

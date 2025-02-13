@@ -1,12 +1,15 @@
-import { NextResponse, NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { del, put } from "@vercel/blob";
 
+// GET: Ambil satu data inventarisasi berdasarkan ID
 export async function GET(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
     const id = parseInt(params.id);
+
     const inventarisasi = await prisma.inventarisasi.findUnique({
       where: { id },
       include: {
@@ -30,30 +33,9 @@ export async function GET(
       );
     }
 
-    // Ambil jenis bangunan dan tanaman yang relevan
-    const relevantBangunan = await prisma.jenisbangunan.findMany({
-      where: {
-        id: {
-          in: inventarisasi.jnsbangunan.map((b) => b.bangunanId),
-        },
-      },
-    });
-
-    const relevantTanaman = await prisma.jenistanaman.findMany({
-      where: {
-        id: {
-          in: inventarisasi.jnstanaman.map((t) => t.tanamanId),
-        },
-      },
-    });
-
-    return NextResponse.json({
-      ...inventarisasi,
-      relevantBangunan,
-      relevantTanaman,
-    });
+    return NextResponse.json(inventarisasi);
   } catch (error) {
-    console.error("Error fetching inventarisasi:", error);
+    console.error("❌ Error fetching inventarisasi:", error);
     return NextResponse.json(
       { error: "Gagal mengambil data inventarisasi" },
       { status: 500 }
@@ -61,98 +43,69 @@ export async function GET(
   }
 }
 
+// PUT: Perbarui data inventarisasi (termasuk file formulir)
 export async function PUT(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
     const id = parseInt(params.id);
     const formData = await request.formData();
 
-    // Ambil data dari FormData
-    const span = (formData.get("span") as string) || "";
-    const bidanglahan = (formData.get("bidanglahan") as string) || "";
-    const formulir = formData.get("formulir") as File | null;
-    const namapemilik = (formData.get("namapemilik") as string) || "";
-    const nik = (formData.get("nik") as string) || "";
-    const ttl = (formData.get("ttl") as string) || "";
-    const desakelurahan = (formData.get("desakelurahan") as string) || "";
-    const kecamatan = (formData.get("kecamatan") as string) || "";
-    const kabupatenkota = (formData.get("kabupatenkota") as string) || "";
-    const alashak = (formData.get("alashak") as string) || "";
-    const luastanah = (formData.get("luastanah") as string) || "";
-    const pelaksanaan = (formData.get("pelaksanaan") as string) || "";
-    const pekerjaan = (formData.get("pekerjaan") as string) || "";
+    const getValue = (key: string) => {
+      const value = formData.get(key);
+      return value ? value.toString() : "";
+    };
 
-    // Parse JSON string untuk data bangunan dan tanaman
-    const jnsbangunanStr = formData.get("jnsbangunan");
-    const jnstanamanStr = formData.get("jnstanaman");
+    // Ambil data formulir yang ada
+    const existingInvent = await prisma.inventarisasi.findUnique({
+      where: { id },
+      select: { formulir: true },
+    });
 
-    const jnsbangunan = jnsbangunanStr
-      ? JSON.parse(jnsbangunanStr as string)
-      : [];
-    const jnstanaman = jnstanamanStr ? JSON.parse(jnstanamanStr as string) : [];
+    let formulirUrl: string | null = existingInvent?.formulir || null;
+    const formulirFile = formData.get("formulir") as File | null;
 
-    // Konversi file ke buffer jika ada
-    let formulirBuffer: Buffer | null = null;
-    if (formulir) {
-      const arrayBuffer = await formulir.arrayBuffer();
-      formulirBuffer = Buffer.from(arrayBuffer);
+    if (formulirFile) {
+      // Jika ada file lama, hapus sebelum menyimpan yang baru
+      if (existingInvent?.formulir) {
+        console.log(
+          "🗑️ Menghapus file formulir lama:",
+          existingInvent.formulir
+        );
+        await del(existingInvent.formulir);
+      }
+
+      console.log("📤 Mengunggah formulir baru:", formulirFile.name);
+      const uploadResult = await put(formulirFile.name, formulirFile, {
+        access: "public",
+      });
+      formulirUrl = uploadResult.url;
     }
 
-    // Hapus relasi yang ada
-    await prisma.inventbangunan.deleteMany({
-      where: { inventId: id },
-    });
-    await prisma.inventtanaman.deleteMany({
-      where: { inventId: id },
-    });
-
-    // Update data inventarisasi
+    // Perbarui data inventarisasi
     const updatedInventarisasi = await prisma.inventarisasi.update({
       where: { id },
       data: {
-        span,
-        bidanglahan,
-        formulir: formulirBuffer,
-        pelaksanaan: pelaksanaan ? new Date(pelaksanaan) : undefined,
-        namapemilik,
-        nik,
-        ttl,
-        desakelurahan,
-        kecamatan,
-        kabupatenkota,
-        alashak,
-        luastanah,
-        pekerjaan,
-        jnsbangunan: {
-          create: jnsbangunan.map((bangunan: { id: number }) => ({
-            bangunanId: bangunan.id,
-          })),
-        },
-        jnstanaman: {
-          create: jnstanaman.map((tanaman: { id: number }) => ({
-            tanamanId: tanaman.id,
-          })),
-        },
-      },
-      include: {
-        jnsbangunan: {
-          include: {
-            jnsbangunan: true,
-          },
-        },
-        jnstanaman: {
-          include: {
-            jnstanaman: true,
-          },
-        },
+        span: getValue("span"),
+        bidanglahan: getValue("bidanglahan"),
+        namapemilik: getValue("namapemilik"),
+        nik: getValue("nik"),
+        ttl: getValue("ttl"),
+        desakelurahan: getValue("desakelurahan"),
+        kecamatan: getValue("kecamatan"),
+        kabupatenkota: getValue("kabupatenkota"),
+        pekerjaan: getValue("pekerjaan"),
+        alashak: getValue("alashak"),
+        luastanah: getValue("luastanah"),
+        pelaksanaan: new Date(getValue("pelaksanaan")),
+        formulir: formulirUrl, // Simpan URL file formulir, bukan file langsung
       },
     });
 
-    return NextResponse.json(updatedInventarisasi);
+    return NextResponse.json({ success: true, data: updatedInventarisasi });
   } catch (error) {
-    console.error("Error updating inventarisasi:", error);
+    console.error("❌ Error updating inventarisasi:", error);
     return NextResponse.json(
       { error: "Gagal mengupdate data inventarisasi" },
       { status: 500 }
@@ -160,32 +113,17 @@ export async function PUT(
   }
 }
 
+// DELETE: Hapus data inventarisasi
 export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  if (!params.id) {
-    return NextResponse.json({ error: "ID tidak ditemukan" }, { status: 400 });
-  }
-
   try {
     const id = parseInt(params.id);
 
-    // Cek apakah data exists
     const existingData = await prisma.inventarisasi.findUnique({
       where: { id },
-      include: {
-        jnsbangunan: {
-          include: {
-            jnsbangunan: true,
-          },
-        },
-        jnstanaman: {
-          include: {
-            jnstanaman: true,
-          },
-        },
-      },
+      select: { formulir: true },
     });
 
     if (!existingData) {
@@ -195,50 +133,23 @@ export async function DELETE(
       );
     }
 
-    // Kumpulkan ID bangunan dan tanaman yang akan dihapus
-    const bangunanIds = existingData.jnsbangunan.map((b) => b.bangunanId);
-    const tanamanIds = existingData.jnstanaman.map((t) => t.tanamanId);
+    // Hapus file formulir jika ada
+    if (existingData.formulir) {
+      console.log("🗑️ Menghapus file formulir:", existingData.formulir);
+      await del(existingData.formulir);
+    }
 
-    // Gunakan transaction untuk menghapus semua data terkait
-    await prisma.$transaction(async (tx) => {
-      // 1. Hapus relasi di inventbangunan
-      await tx.inventbangunan.deleteMany({
-        where: { inventId: id },
-      });
-
-      // 2. Hapus relasi di inventtanaman
-      await tx.inventtanaman.deleteMany({
-        where: { inventId: id },
-      });
-
-      // 3. Hapus data jenisbangunan
-      if (bangunanIds.length > 0) {
-        await tx.jenisbangunan.deleteMany({
-          where: { id: { in: bangunanIds } },
-        });
-      }
-
-      // 4. Hapus data jenistanaman
-      if (tanamanIds.length > 0) {
-        await tx.jenistanaman.deleteMany({
-          where: { id: { in: tanamanIds } },
-        });
-      }
-
-      // 5. Hapus data inventarisasi
-      await tx.inventarisasi.delete({
-        where: { id },
-      });
-    });
+    // Hapus data dari database
+    await prisma.inventarisasi.delete({ where: { id } });
 
     return NextResponse.json(
       { message: "Data berhasil dihapus" },
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error menghapus data:", error);
+    console.error("❌ Error deleting inventarisasi:", error);
     return NextResponse.json(
-      { error: "Gagal menghapus data" },
+      { error: "Gagal menghapus data inventarisasi" },
       { status: 500 }
     );
   }

@@ -1,13 +1,13 @@
 // app/inventarisasi/form/page.tsx
 "use client";
 
+import { put } from "@vercel/blob";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import "./globals.css";
 import { MdAddCircleOutline, MdRemoveCircleOutline } from "react-icons/md";
 import { motion } from "framer-motion";
 import { useAlert } from "@/app/_contexts/AlertContext";
-import LoadingIndicator from "@/app/_components/LoadingIndicator";
 import SaveLoading from "@/app/_components/SaveLoading";
 import SuccessPopup from "@/app/_components/SuccessPopup";
 
@@ -15,7 +15,7 @@ const FormInventarisasi: React.FC = () => {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
@@ -25,7 +25,7 @@ const FormInventarisasi: React.FC = () => {
   const [mainForm, setMainForm] = useState({
     span: "",
     bidanglahan: "",
-    formulir: null as File | null,
+    formulir: "",
     namapemilik: "",
     nik: "",
     ttl: "",
@@ -116,19 +116,9 @@ const FormInventarisasi: React.FC = () => {
 
     try {
       const formData = new FormData();
-
-      // Proses mainForm tanpa formulir terlebih dahulu
       Object.entries(mainForm).forEach(([key, value]) => {
-        if (key !== "formulir") {
-          // Skip formulir untuk diproses terpisah
-          formData.append(key, value?.toString() || "-");
-        }
+        if (value) formData.append(key, value.toString());
       });
-
-      // Hanya tambahkan formulir jika ada file yang dipilih
-      if (selectedFile instanceof File) {
-        formData.append("formulir", selectedFile);
-      }
 
       // Proses bangunanList
       const processedBangunanList = bangunanList
@@ -186,10 +176,27 @@ const FormInventarisasi: React.FC = () => {
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] || null;
-    setSelectedFile(file);
-    setMainForm((prev) => ({ ...prev, formulir: file }));
+  // Menghandle input file formulir
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await fetch("/api/invents/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await response.json();
+      if (result.url) {
+        setMainForm((prev) => ({ ...prev, formulir: result.url })); // Simpan URL
+      }
+    } catch (error) {
+      console.error("❌ Error mengunggah formulir:", error);
+    }
   };
 
   // Handler untuk form utama
@@ -290,7 +297,7 @@ const FormInventarisasi: React.FC = () => {
             />
             {selectedFile && (
               <p className="mt-1 text-sm text-gray-500">
-                File terpilih: {selectedFile.name}
+                {/* File terpilih: {selectedFile.name} */}
               </p>
             )}
           </div>

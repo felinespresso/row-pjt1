@@ -10,6 +10,7 @@ import SuccessPopup from "@/app/_components/SuccessPopup";
 import ExportButtonPengumuman from "@/app/_components/export/ExportButtonPengumuman";
 import { useRouter } from "next/navigation";
 import Pagination from "@/app/_components/pagination";
+import { format } from "date-fns";
 
 interface PengumumanData {
   id: string;
@@ -147,6 +148,10 @@ const TabelPengumuman = () => {
     );
   }
 
+  const formatDate = (dateString: string) => {
+    return format(new Date(dateString), "yyyy-MM-dd");
+  };
+
   return (
     <div className="px-6 pt-32 pb-20">
       <motion.div
@@ -224,9 +229,7 @@ const TabelPengumuman = () => {
                     {item.spanTower}
                   </td>
                   <td className="px-6 py-4 text-center whitespace-nowrap">
-                    {new Date(item.tanggalPelaksanaan).toLocaleDateString(
-                      "id-ID"
-                    )}
+                    {formatDate(item.tanggalPelaksanaan)}
                   </td>
                   <td className="px-6 py-4 text-center whitespace-nowrap">
                     {item.keterangan}
