@@ -18,7 +18,7 @@ interface ExportButtonDashboardProps {
 const ExportButton: FC<ExportButtonDashboardProps> = ({ currentItems }) => {
   const exportToExcel = async () => {
     const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet("Proyek ROW");
+    const worksheet = workbook.addWorksheet("Tabel Daftar Proyek ROW");
 
     // Header dengan style
     worksheet.columns = [
@@ -31,7 +31,7 @@ const ExportButton: FC<ExportButtonDashboardProps> = ({ currentItems }) => {
       },
       { header: "NOMOR KONTRAK", key: "nomorkontrak", width: 25 },
       { header: "KODE PROYEK", key: "kodeproyek", width: 20 },
-      { header: "TANGGAL KONTRAK", key: "tanggalkontrak", width: 23 },
+      { header: "TANGGAL KONTRAK", key: "tanggalkontrak", width: 30 },
       {
         header: "TANGGAL BERAKHIR KONTRAK",
         key: "tanggalakhirkontrak",
@@ -92,13 +92,13 @@ const ExportButton: FC<ExportButtonDashboardProps> = ({ currentItems }) => {
 
     // Generate dan simpan file Excel
     const buffer = await workbook.xlsx.writeBuffer();
-    saveAs(new Blob([buffer]), "Daftar Proyek ROW.xlsx");
+    saveAs(new Blob([buffer]), "Tabel Daftar Proyek ROW.xlsx");
   };
 
   return (
     <button
       onClick={exportToExcel}
-      className="transition ease-in-out duration-200 bg-green-600 hover:-translate-1 hover:scale-110 hover:bg-green-700 text-white px-4 py-2 rounded-xl"
+      className="px-4 py-2 text-white transition duration-200 ease-in-out bg-green-600 hover:-translate-1 hover:scale-110 hover:bg-green-700 rounded-xl"
     >
       <div className="flex items-center ml-auto space-x-3 text-sm font-semibold uppercase">
         <svg

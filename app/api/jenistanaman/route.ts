@@ -38,12 +38,6 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
-    if (!bibit || typeof bibit !== "string") {
-      return NextResponse.json(
-        { error: "Field 'bibit' wajib diisi dan harus berupa string" },
-        { status: 400 }
-      );
-    }
 
     // Simpan jenis tanaman ke database
     const tanaman = await prisma.jenistanaman.create({
@@ -52,7 +46,6 @@ export async function POST(request: Request) {
         produktif,
         besar,
         kecil,
-        bibit,
       },
     });
 

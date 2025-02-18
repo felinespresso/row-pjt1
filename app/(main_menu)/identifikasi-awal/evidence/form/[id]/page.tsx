@@ -11,7 +11,7 @@ const FormEvidence = () =>{
     const { id: desaId } = useParams();
 
     return (
-        <div className="px-4">
+        <div className="px-6 pt-32 pb-20">
             <div className="p-6 bg-white rounded-lg shadow-lg">
                 <form action={formAction}>
                     <div className="pt-2 bg-transparent border-2 border-gray-400 rounded-md">
@@ -56,7 +56,7 @@ const FormEvidence = () =>{
                                     </div>
                                 </div>
                             </div>
-                            <div className="h-full pb-2 bg-color9">
+                            <div className="h-full pb-2 rounded-b bg-color9">
                                 <div className="flex items-center justify-between h-16 px-4 row-container">
                                     <label className="block ml-4 text-base font-semibold text-black">No. Bidang Lahan <span className="text-red-500">*</span></label>
                                     <input type="text" name="bidangLahan"

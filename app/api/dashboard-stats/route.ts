@@ -10,8 +10,8 @@ export async function GET() {
       pengumumanCount,
       musyawarahCount,
     //   pemberkasanCount,
-    //   pembayaranCount,
-    //   penebanganCount
+      pembayaranCount,
+      penebanganCount
     ] = await Promise.all([
       prisma.identifikasi.count(),
       prisma.sosialisasi.count(),
@@ -19,8 +19,8 @@ export async function GET() {
       prisma.pengumuman.count(), // Sesuaikan dengan model musyawarah Anda
       prisma.musyawarah.count(), // Sesuaikan dengan model musyawarah Anda
     //   prisma.pemberkasan.count(), // Sesuaikan dengan model pemberkasan Anda
-    //   prisma.pembayaran.count(), // Sesuaikan dengan model pembayaran Anda
-    //   prisma.penebangan.count() // Sesuaikan dengan model penebangan Anda
+      prisma.pembayaran.count(), // Sesuaikan dengan model pembayaran Anda
+      prisma.penebangan.count() // Sesuaikan dengan model penebangan Anda
     ]);
 
     return NextResponse.json({
@@ -30,8 +30,8 @@ export async function GET() {
       pengumuman: pengumumanCount,
       musyawarah: musyawarahCount,
     //   pemberkasan: pemberkasanCount,
-    //   pembayaran: pembayaranCount,
-    //   penebangan: penebanganCount
+      pembayaran: pembayaranCount,
+      penebangan: penebanganCount
     });
   } catch (error) {
     console.error("Error fetching dashboard stats:", error);

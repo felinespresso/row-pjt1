@@ -11,7 +11,7 @@ const EditEvidence = ({data}:{data: Evidences}) =>{
     const [state, formAction] = useActionState(EditIdentifikasiWithId, null);
 
     return (
-        <div className="px-4">
+        <div className="px-6 pt-32 pb-20">
             <div className="p-6 bg-white rounded-lg shadow-lg">
                 <form action={formAction}>
                     <div className="pt-2 bg-transparent border-2 border-gray-400 rounded-md">

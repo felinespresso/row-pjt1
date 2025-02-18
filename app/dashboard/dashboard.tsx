@@ -9,9 +9,11 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { MdOutlineEdit } from "react-icons/md";
+import { format } from "date-fns";
+import Pagination from "@/app/_components/pagination";
 import ExportButtonDashboard from "@/app/_components/export/ExportButtonDashboard";
 
-export const Dashboard = ({session}: {session:any}) => {
+export const Dashboard = ({ session }: { session: any }) => {
   const [items, setItems] = useState<item[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -62,6 +64,11 @@ export const Dashboard = ({session}: {session:any}) => {
     } catch (error) {
       console.error("Error fetching items:", error);
     }
+  };
+
+  const formatDate = (date?: string | Date) => {
+    if (!date) return "-"; // Jika tanggal kosong, kembalikan "-"
+    return format(new Date(date), "yyyy-MM-dd"); // Format tanggal menggunakan date-fns
   };
 
   const exportToExcel = () => {
@@ -305,27 +312,27 @@ export const Dashboard = ({session}: {session:any}) => {
             Daftar Proyek ROW
           </h1>
           {session.user.role === "admin" ? (
-          <div className="space-x-4">
-            <ExportButtonDashboard currentItems={currentItems} />
-            <button
-              onClick={() => router.push("/dashboard/form")}
-              className="px-4 py-2 text-white transition duration-200 ease-in-out bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3 rounded-xl"
-            >
-              <div className="flex items-center ml-auto space-x-4 font-semibold">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  height="20px"
-                  viewBox="0 -960 960 960"
-                  width="20px"
-                  fill="white"
-                >
-                  <path d="M444-288h72v-156h156v-72H516v-156h-72v156H288v72h156v156Zm36.28 192Q401-96 331-126t-122.5-82.5Q156-261 126-330.96t-30-149.5Q96-560 126-629.5q30-69.5 82.5-122T330.96-834q69.96-30 149.5-30t149.04 30q69.5 30 122 82.5T834-629.28q30 69.73 30 149Q864-401 834-331t-82.5 122.5Q699-156 629.28-126q-69.73 30-149 30Zm-.28-72q130 0 221-91t91-221q0-130-91-221t-221-91q-130 0-221 91t-91 221q0 130 91 221t221 91Zm0-312Z" />
-                </svg>
-                ADD PROJECT
-              </div>
-            </button>
-          </div>
-          ): null}
+            <div className="space-x-4">
+              <ExportButtonDashboard currentItems={currentItems} />
+              <button
+                onClick={() => router.push("/dashboard/form")}
+                className="px-4 py-2 text-white transition duration-200 ease-in-out bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3 rounded-xl"
+              >
+                <div className="flex items-center ml-auto space-x-4 font-semibold">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    height="20px"
+                    viewBox="0 -960 960 960"
+                    width="20px"
+                    fill="white"
+                  >
+                    <path d="M444-288h72v-156h156v-72H516v-156h-72v156H288v72h156v156Zm36.28 192Q401-96 331-126t-122.5-82.5Q156-261 126-330.96t-30-149.5Q96-560 126-629.5q30-69.5 82.5-122T330.96-834q69.96-30 149.5-30t149.04 30q69.5 30 122 82.5T834-629.28q30 69.73 30 149Q864-401 834-331t-82.5 122.5Q699-156 629.28-126q-69.73 30-149 30Zm-.28-72q130 0 221-91t91-221q0-130-91-221t-221-91q-130 0-221 91t-91 221q0 130 91 221t221 91Zm0-312Z" />
+                  </svg>
+                  ADD PROJECT
+                </div>
+              </button>
+            </div>
+          ) : null}
         </div>
 
         {/* Table */}
@@ -353,10 +360,10 @@ export const Dashboard = ({session}: {session:any}) => {
                     Tanggal Berakhir Kontrak
                   </th>
                   {session.user.role === "admin" ? (
-                  <th className="px-6 py-3 font-semibold tracking-wider text-center text-gray-500 uppercase">
-                    Aksi
-                  </th>
-                  ): null}
+                    <th className="px-6 py-3 font-semibold tracking-wider text-center text-gray-500 uppercase">
+                      Aksi
+                    </th>
+                  ) : null}
                 </tr>
               </thead>
               <tbody className="divide-y-2 divide-gray-400">
@@ -372,7 +379,7 @@ export const Dashboard = ({session}: {session:any}) => {
                     </td>
                     <td className="px-6 py-4 text-center whitespace-normal">
                       <button
-                        onClick={() => handleProjectClick(item.id)}
+                        onClick={() => router.push(`/home/${item.id}`)}
                         className="text-blue-2 hover:text-blue-3 active:text-blue-4"
                       >
                         {item.namaproyek
@@ -396,36 +403,34 @@ export const Dashboard = ({session}: {session:any}) => {
                     </td>
                     <td className="px-6 py-4 text-center whitespace-nowrap">
                       {item.tanggalkontrak
-                        ? new Date(item.tanggalkontrak).toLocaleDateString()
+                        ? formatDate(new Date(item.tanggalkontrak))
                         : "-"}
                     </td>
                     <td className="px-6 py-4 text-center whitespace-nowrap">
                       {item.tanggalakhirkontrak
-                        ? new Date(
-                            item.tanggalakhirkontrak
-                          ).toLocaleDateString()
+                        ? formatDate(new Date(item.tanggalakhirkontrak))
                         : "-"}
                     </td>
                     {session.user.role === "admin" ? (
-                    <td className="px-2 py-4 text-center whitespace-nowrap">
-                      <div className="flex justify-center space-x-3">
-                        <button
-                          onClick={() =>
-                            router.push(`/dashboard/edit/${item.id}`)
-                          }
-                          className="flex px-[6px] py-1 transition duration-100 ease-in-out rounded-md bg-color5 hover:-translate-1 hover:scale-110 hover:shadow-lg"
-                        >
-                          <MdOutlineEdit className="text-xl text-white" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteClick(item.id)}
-                          className="flex px-[6px] py-1 transition duration-100 ease-in-out bg-red-500 rounded-md hover:-translate-1 hover:scale-110 hover:shadow-lg"
-                        >
-                          <FaRegTrashAlt className="text-xl text-white" />
-                        </button>
-                      </div>
-                    </td>
-                    ): null}
+                      <td className="px-2 py-4 text-center whitespace-nowrap">
+                        <div className="flex justify-center space-x-3">
+                          <button
+                            onClick={() =>
+                              router.push(`/dashboard/edit/${item.id}`)
+                            }
+                            className="flex px-[6px] py-1 transition duration-100 ease-in-out rounded-md bg-color5 hover:-translate-1 hover:scale-110 hover:shadow-lg"
+                          >
+                            <MdOutlineEdit className="text-xl text-white" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteClick(item.id)}
+                            className="flex px-[6px] py-1 transition duration-100 ease-in-out bg-red-500 rounded-md hover:-translate-1 hover:scale-110 hover:shadow-lg"
+                          >
+                            <FaRegTrashAlt className="text-xl text-white" />
+                          </button>
+                        </div>
+                      </td>
+                    ) : null}
                   </tr>
                 ))}
               </tbody>
@@ -434,44 +439,8 @@ export const Dashboard = ({session}: {session:any}) => {
         </div>
 
         {/* Pagination */}
-        <div className="flex items-center justify-center mt-4 space-x-2">
-          <button
-            onClick={() => paginate(currentPage - 1)}
-            disabled={currentPage === 1}
-            className={`px-4 py-2 rounded-md ${
-              currentPage === 1
-                ? "bg-gray-300 cursor-not-allowed"
-                : "bg-blue-2 text-white hover:bg-blue-3"
-            }`}
-          >
-            Previous
-          </button>
-
-          {[...Array(totalPages)].map((_, index) => (
-            <button
-              key={index}
-              onClick={() => paginate(index + 1)}
-              className={`px-4 py-2 rounded-md ${
-                currentPage === index + 1
-                  ? "bg-blue-3 text-white"
-                  : "bg-gray-200 hover:bg-gray-300"
-              }`}
-            >
-              {index + 1}
-            </button>
-          ))}
-
-          <button
-            onClick={() => paginate(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className={`px-4 py-2 rounded-md ${
-              currentPage === totalPages
-                ? "bg-gray-300 cursor-not-allowed"
-                : "bg-blue-2 text-white hover:bg-blue-3"
-            }`}
-          >
-            Next
-          </button>
+        <div className="mx-8 mt-8">
+          <Pagination totalPages={totalPages} />
         </div>
       </div>
 

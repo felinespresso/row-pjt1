@@ -61,7 +61,9 @@ const FormInventarisasi: React.FC = () => {
     const savedStep = localStorage.getItem("currentStep");
 
     if (savedMainForm) {
-      setMainForm(JSON.parse(savedMainForm));
+      const parsedForm = JSON.parse(savedMainForm);
+      delete parsedForm.formulir; // Hapus formulir (file) agar tidak disimpan
+      setMainForm(parsedForm);
     }
     if (savedBangunanList) {
       setBangunanList(JSON.parse(savedBangunanList));
@@ -76,7 +78,8 @@ const FormInventarisasi: React.FC = () => {
 
   // Simpan data ke localStorage setiap kali ada perubahan
   useEffect(() => {
-    localStorage.setItem("mainForm", JSON.stringify(mainForm));
+    const { formulir, ...formWithoutFormulir } = mainForm; // Hapus formulir sebelum menyimpan
+    localStorage.setItem("mainForm", JSON.stringify(formWithoutFormulir));
     localStorage.setItem("bangunanList", JSON.stringify(bangunanList));
     localStorage.setItem("tanamanList", JSON.stringify(tanamanList));
     localStorage.setItem("currentStep", currentStep.toString());
@@ -89,63 +92,16 @@ const FormInventarisasi: React.FC = () => {
     setIsSaving(true);
     setIsSubmitting(true);
 
-    // Reset error messages
-    const newErrors = {
-      span: "",
-      pelaksanaan: "",
-    };
-    let hasError = false;
-
-    if (!mainForm.span) {
-      newErrors.span = "Span Tower wajib diisi!";
-      hasError = true;
-    }
-
-    if (!mainForm.pelaksanaan) {
-      newErrors.pelaksanaan = "Tanggal pelaksanaan wajib diisi!";
-      hasError = true;
-    }
-
-    if (hasError) {
-      setMainFormErrors(newErrors);
-      showAlert("Mohon isi semua form yang wajib diisi!", "error");
-      setIsSaving(false);
-      setIsSubmitting(false);
-      return;
-    }
-
     try {
       const formData = new FormData();
       Object.entries(mainForm).forEach(([key, value]) => {
         if (value) formData.append(key, value.toString());
       });
 
-      // Proses bangunanList
-      const processedBangunanList = bangunanList
-        .filter((bangunan) => bangunan.namabangunan || bangunan.luasbangunan)
-        .map((bangunan) => ({
-          namabangunan: bangunan.namabangunan || "-",
-          luasbangunan: bangunan.luasbangunan || "-",
-        }));
-
-      // Proses tanamanList
-      const processedTanamanList = tanamanList
-        .filter(
-          (tanaman) =>
-            tanaman.namatanaman ||
-            tanaman.produktif ||
-            tanaman.besar ||
-            tanaman.kecil
-        )
-        .map((tanaman) => ({
-          namatanaman: tanaman.namatanaman || "-",
-          produktif: tanaman.produktif || "-",
-          besar: tanaman.besar || "-",
-          kecil: tanaman.kecil || "-",
-        }));
-
-      formData.append("jnsbangunan", JSON.stringify(processedBangunanList));
-      formData.append("jnstanaman", JSON.stringify(processedTanamanList));
+      // Tambahkan Base64 string formulir ke formData
+      if (mainForm.formulir) {
+        formData.append("formulir", mainForm.formulir);
+      }
 
       const response = await fetch("/api/invents", {
         method: "POST",
@@ -156,19 +112,11 @@ const FormInventarisasi: React.FC = () => {
         throw new Error("Gagal menyimpan data");
       }
 
-      // Bersihkan localStorage
-      localStorage.removeItem("mainForm");
-      localStorage.removeItem("bangunanList");
-      localStorage.removeItem("tanamanList");
-      localStorage.removeItem("currentStep");
-
       setSuccessMessage("Data berhasil disimpan!");
       setShowSuccessPopup(true);
-      setTimeout(() => {
-        router.push("/inventarisasi");
-      }, 2000);
+      setTimeout(() => router.push("/inventarisasi"), 2000);
     } catch (error) {
-      console.error("Error:", error);
+      console.error("❌ Error handleSubmit:", error);
       showAlert("Gagal menyimpan data", "error");
     } finally {
       setIsSubmitting(false);
@@ -176,26 +124,29 @@ const FormInventarisasi: React.FC = () => {
     }
   };
 
-  // Menghandle input file formulir
+  // Menghandle input file formulir dan menyimpannya sebagai Base64
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const formData = new FormData();
-    formData.append("file", file);
-
     try {
-      const response = await fetch("/api/invents/upload", {
-        method: "POST",
-        body: formData,
-      });
+      const reader = new FileReader();
+      reader.readAsDataURL(file); // Membaca file sebagai Base64
 
-      const result = await response.json();
-      if (result.url) {
-        setMainForm((prev) => ({ ...prev, formulir: result.url })); // Simpan URL
-      }
+      reader.onload = () => {
+        if (reader.result) {
+          const base64String = reader.result.toString().split(",")[1]; // Hanya mengambil isi Base64 tanpa prefix "data:..."
+          setMainForm((prev) => ({ ...prev, formulir: base64String })); // Simpan Base64 string di state
+        }
+      };
+
+      reader.onerror = (error) => {
+        console.error("❌ Error mengubah file menjadi Base64:", error);
+        showAlert("Gagal memproses file formulir", "error");
+      };
     } catch (error) {
-      console.error("❌ Error mengunggah formulir:", error);
+      console.error("❌ Error handleFileChange:", error);
+      showAlert("Terjadi kesalahan saat mengunggah formulir", "error");
     }
   };
 

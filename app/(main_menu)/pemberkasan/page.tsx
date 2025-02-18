@@ -5,15 +5,15 @@ import { FaRegTrashAlt, FaFileImage } from "react-icons/fa";
 
 const TabelPemberkasan = () => {
   return (
-    <div>
+    <div className="px-6 pt-32 pb-20">
       <main className="font-montserrat">
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <div className="flex justify-between items-center mb-6">
+        <div className="p-6 bg-white rounded-lg shadow-lg">
+          <div className="flex items-center justify-between mb-6">
             <h1 className="text-2xl font-bold text-gray-800">
               Tabel Pemberkasan
             </h1>
             <div className="flex space-x-4">
-              <button className="transition ease-in-out duration-200 bg-green-600 hover:-translate-1 hover:scale-110 hover:bg-green-700 text-white px-4 py-2 rounded-xl">
+              <button className="px-4 py-2 text-white transition duration-200 ease-in-out bg-green-600 hover:-translate-1 hover:scale-110 hover:bg-green-700 rounded-xl">
                 <div className="flex items-center ml-auto space-x-3 text-sm font-semibold uppercase">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -28,7 +28,7 @@ const TabelPemberkasan = () => {
                 </div>
               </button>
               <Link href="/pembayaran/form">
-                <div className="transition ease-in-out duration-200 bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3 text-white px-4 py-2 rounded-xl">
+                <div className="px-4 py-2 text-white transition duration-200 ease-in-out bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3 rounded-xl">
                   <div className="flex items-center ml-auto space-x-3 text-sm font-semibold uppercase">
                     <MdAddCircleOutline className="text-[22px]" />
                     <span>Add Data</span>
@@ -37,7 +37,7 @@ const TabelPemberkasan = () => {
               </Link>
             </div>
           </div>
-          <div className="bg-transparent rounded-md border-2 border-gray-400 overflow-x-auto">
+          <div className="overflow-x-auto bg-transparent border-2 border-gray-400 rounded-md">
             <div className="overflow-x-auto rounded [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
               <table className="min-w-full divide-y-2 divide-gray-400">
                 <thead className="bg-gray-50">
@@ -72,7 +72,7 @@ const TabelPemberkasan = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y-2 divide-gray-400">
-                  <tr className="text-sm divide-x-2 divide-gray-400 bg-gray-200 h-4">
+                  <tr className="h-4 text-sm bg-gray-200 divide-x-2 divide-gray-400">
                     <td className="px-6 py-3 text-center align-middle whitespace-nowrap">
                       1
                     </td>

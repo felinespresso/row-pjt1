@@ -18,13 +18,13 @@ const ExportButtonPengumuman: FC<ExportButtonPengumumanProps> = ({
 }) => {
   const exportToExcel = async () => {
     const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet("Pengumuman ROW");
+    const worksheet = workbook.addWorksheet("Tabel Data Pengumuman Hasil Inventarisasi");
 
     // Header dengan style
     worksheet.columns = [
       { header: "NO.", key: "no", width: 5 },
       { header: "NAMA DESA", key: "namaDesa", width: 30 },
-      { header: "SPAN TOWER", key: "spanTower", width: 20 },
+      { header: "SPAN TOWER", key: "spanTower", width: 25 },
       { header: "TANGGAL PELAKSANAAN", key: "tanggalPelaksanaan", width: 30 },
       {
         header: "KETERANGAN",
@@ -84,7 +84,7 @@ const ExportButtonPengumuman: FC<ExportButtonPengumumanProps> = ({
 
     // Generate dan simpan file Excel
     const buffer = await workbook.xlsx.writeBuffer();
-    saveAs(new Blob([buffer]), "Pengumuman ROW.xlsx");
+    saveAs(new Blob([buffer]), "Tabel Data Pengumuman Hasil Inventarisasi.xlsx");
   };
 
   return (

@@ -9,215 +9,333 @@ generator client {
 
 // prisma/schema.prisma
 model Account {
-  id                String  @id @default(cuid())  
+  id                String  @id @default(cuid())
   userId            String  @map("user_id")
-  type              String  
+  type              String
   provider          String
-  providerAccountId String  @map("provider_account_id")  
+  providerAccountId String  @map("provider_account_id")
   refresh_token     String?
-  access_token      String?  
+  access_token      String?
   expires_at        Int?
-  token_type        String?  
+  token_type        String?
   scope             String?
-  id_token          String?  
+  id_token          String?
   session_state     String?
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  @@unique([provider, providerAccountId])  
+
+  @@unique([provider, providerAccountId])
   @@map("accounts")
 }
 
 model Session {
-  id           String   @id @default(cuid())  
+  id           String   @id @default(cuid())
   sessionToken String   @unique @map("session_token")
-  userId       String   @map("user_id")  
+  userId       String   @map("user_id")
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@map("sessions")
 }
 
 model User {
-  id            String    @id @default(cuid())  
+  id            String    @id @default(cuid())
   username      String?
-  email         String?   @unique  
+  email         String?   @unique
   emailVerified DateTime? @map("email_verified")
-  image         String?  
+  image         String?
   password      String?
-  role          String    @default("user")  
+  role          String    @default("user")
   accounts      Account[]
   sessions      Session[]
+
   @@map("users")
 }
 
-model VerificationToken {  
+model VerificationToken {
   identifier String
-  token      String  
+  token      String
   expires    DateTime
+
   @@unique([identifier, token])
   @@map("verification_tokens")
 }
 
 model item {
-  id                   Int      @id @default(autoincrement())
-  namaproyek           String
-  nomorkontrak         String
-  kodeproyek           String
-  tanggalkontrak       DateTime
-  tanggalakhirkontrak  DateTime?
-  password             String
+  id                  Int       @id @default(autoincrement())
+  namaproyek          String
+  nomorkontrak        String
+  kodeproyek          String
+  tanggalkontrak      DateTime
+  tanggalakhirkontrak DateTime?
+  password            String
+
+  // Relasi ke model lain
+  identifikasi  Identifikasi[]
+  inventarisasi inventarisasi[]
+  sosialisasi   Sosialisasi[]
+  pengumuman    Pengumuman[]
+  musyawarah    Musyawarah[]
+  pemberkasan   Pemberkasan[]
+  pembayaran    Pembayaran[]
+  penebangan    Penebangan[]
 }
 
 model inventarisasi {
-  id             Int      @id @default(autoincrement())
-  span           String   @default("-")
-  bidanglahan    String   @default("-")
-  formulir       String?
-  pelaksanaan    DateTime @default(now())
-  namapemilik    String   @default("-")
-  nik            String   @default("-")
-  ttl            String   @default("-")
-  desakelurahan  String   @default("-")
-  kecamatan      String   @default("-")
-  kabupatenkota  String   @default("-")
-  pekerjaan      String   @default("-") // Properti baru
-  alashak        String   @default("-")
-  luastanah      String   @default("-")
-  jnsbangunan    inventbangunan[]
-  jnstanaman     inventtanaman[]
+  id            Int              @id @default(autoincrement())
+  itemId        Int
+  item          item             @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  span          String           @default("-")
+  bidanglahan   String           @default("-")
+  formulir      String?
+  pelaksanaan   DateTime         @default(now())
+  namapemilik   String           @default("-")
+  nik           String           @default("-")
+  ttl           String           @default("-")
+  desakelurahan String           @default("-")
+  kecamatan     String           @default("-")
+  kabupatenkota String           @default("-")
+  pekerjaan     String           @default("-") // Properti baru
+  alashak       String           @default("-")
+  luastanah     String           @default("-")
+  jnsbangunan   inventbangunan[]
+  jnstanaman    inventtanaman[]
 }
 
 model jenisbangunan {
-  id             Int      @id @default(autoincrement())
-  namabangunan   String   @default("-")
-  luasbangunan   String   @default("-")
-  invent         inventbangunan[]
+  id           Int              @id @default(autoincrement())
+  namabangunan String           @default("-")
+  luasbangunan String           @default("-")
+  invent       inventbangunan[]
 }
 
 model jenistanaman {
-  id             Int      @id @default(autoincrement())
-  namatanaman    String   @default("-")
-  produktif      String   @default("-")
-  besar          String   @default("-")
-  kecil          String   @default("-")
-  invent         inventtanaman[]
+  id          Int             @id @default(autoincrement())
+  namatanaman String          @default("-")
+  produktif   String          @default("-")
+  besar       String          @default("-")
+  kecil       String          @default("-")
+  invent      inventtanaman[]
 }
 
 model inventbangunan {
-  inventId      Int
-  bangunanId    Int
-  invent        inventarisasi @relation(fields: [inventId], references: [id])
-  jnsbangunan   jenisbangunan @relation(fields: [bangunanId], references: [id])
+  inventId    Int
+  bangunanId  Int
+  invent      inventarisasi @relation(fields: [inventId], references: [id])
+  jnsbangunan jenisbangunan @relation(fields: [bangunanId], references: [id])
 
   @@id([inventId, bangunanId]) // Composite primary key
-} 
+}
 
 model inventtanaman {
-  inventId      Int
-  tanamanId     Int
-  invent        inventarisasi @relation(fields: [inventId], references: [id])
-  jnstanaman    jenistanaman @relation(fields: [tanamanId], references: [id])
+  inventId   Int
+  tanamanId  Int
+  invent     inventarisasi @relation(fields: [inventId], references: [id])
+  jnstanaman jenistanaman  @relation(fields: [tanamanId], references: [id])
 
   @@id([inventId, tanamanId]) // Composite primary key
 }
 
-model Identifikasi {  
-  id            String      @id @default(cuid())
-  namadesa      String  
-  spantower     String
-  tanggal       String?  
-  fotoudara     String?
-  createdAt     DateTime    @default(now())  
-  updatedAt     DateTime    @updatedAt
-  evidence      Evidences[]
-  sosialisasi   Sosialisasi[]
-  pengumuman    Pengumuman[]
-  musyawarah    Musyawarah[]
+model Identifikasi {
+  id          String        @id @default(cuid())
+  itemId      Int
+  item        item          @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  namadesa    String
+  spantower   String
+  tanggal     String?
+  fotoudara   String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  evidence    Evidences[]
+  sosialisasi Sosialisasi[]
+  pengumuman  Pengumuman[]
+  musyawarah  Musyawarah[]
+  pemberkasan Pemberkasan[]
+  penebangan  Penebangan[]
+  pembayaran  Pembayaran[]
 }
 
 model Evidences {
-  id          String       @id @default(cuid())  
+  id          String        @id @default(cuid())
   file        String
   namaPemilik String
   bidangLahan String?
-  desaId      String  
-  desa        Identifikasi @relation(fields: [desaId], references: [id], onDelete: Cascade)
+  desaId      String
+  desa        Identifikasi  @relation(fields: [desaId], references: [id], onDelete: Cascade)
+  pemberkasan Pemberkasan[]
+  penebangan  Penebangan[]
+  pembayaran  Pembayaran[]
 }
 
 model Sosialisasi {
-  id                String              @id @default(cuid())
-  identifikasi     Identifikasi        @relation(fields: [identifikasiId], references: [id], onDelete: Cascade)
-  identifikasiId   String
-  namaDesa         String              
-  spanTower        String              
+  id                 String                @id @default(cuid())
+  itemId             Int
+  item               item                  @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  identifikasi       Identifikasi          @relation(fields: [identifikasiId], references: [id], onDelete: Cascade)
+  identifikasiId     String
+  namaDesa           String
+  spanTower          String
   tanggalPelaksanaan DateTime
-  beritaAcara      String?
-  daftarHadir      String?
-  keterangan       String              @default("-")
-  evidence         EvidenceSosialisasi[] 
-  createdAt        DateTime            @default(now())
-  updatedAt        DateTime            @updatedAt
+  beritaAcara        String?
+  daftarHadir        String?
+  keterangan         String                @default("-")
+  evidence           EvidenceSosialisasi[]
+  createdAt          DateTime              @default(now())
+  updatedAt          DateTime              @updatedAt
 
   @@index([identifikasiId])
 }
 
 model EvidenceSosialisasi {
-  id              String       @id @default(cuid())
-  file            String
-  fileName        String?
-  sosialisasiId   String
-  sosialisasi     Sosialisasi @relation(fields: [sosialisasiId], references: [id], onDelete: Cascade)
+  id            String      @id @default(cuid())
+  file          String
+  fileName      String?
+  sosialisasiId String
+  sosialisasi   Sosialisasi @relation(fields: [sosialisasiId], references: [id], onDelete: Cascade)
 
   @@index([sosialisasiId])
 }
 
 model Pengumuman {
-  id               String              @id @default(cuid())
-  identifikasi     Identifikasi        @relation(fields: [identifikasiId], references: [id], onDelete: Cascade)
-  identifikasiId   String
-  namaDesa         String              
-  spanTower        String              
+  id                 String               @id @default(cuid())
+  itemId             Int
+  item               item                 @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  identifikasi       Identifikasi         @relation(fields: [identifikasiId], references: [id], onDelete: Cascade)
+  identifikasiId     String
+  namaDesa           String
+  spanTower          String
   tanggalPelaksanaan DateTime
-  beritaAcara      String?
-  keterangan       String              @default("-")
-  evidence         EvidencePengumuman[] 
-  createdAt        DateTime            @default(now())
-  updatedAt        DateTime            @updatedAt
+  beritaAcara        String?
+  keterangan         String               @default("-")
+  evidence           EvidencePengumuman[]
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
 
   @@index([identifikasiId])
 }
 
 model EvidencePengumuman {
-  id              String       @id @default(cuid())
-  file            String
-  fileName        String?
-  pengumumanId    String
-  pengumuman      Pengumuman   @relation(fields: [pengumumanId], references: [id], onDelete: Cascade)
+  id           String     @id @default(cuid())
+  file         String
+  fileName     String?
+  pengumumanId String
+  pengumuman   Pengumuman @relation(fields: [pengumumanId], references: [id], onDelete: Cascade)
 
   @@index([pengumumanId])
 }
 
 model Musyawarah {
-  id               String              @id @default(cuid())
-  identifikasi     Identifikasi        @relation(fields: [identifikasiId], references: [id], onDelete: Cascade)
-  identifikasiId   String
-  namaDesa         String              
-  spanTower        String              
+  id                 String               @id @default(cuid())
+  itemId             Int
+  item               item                 @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  identifikasi       Identifikasi         @relation(fields: [identifikasiId], references: [id], onDelete: Cascade)
+  identifikasiId     String
+  namaDesa           String
+  spanTower          String
   tanggalPelaksanaan DateTime
-  beritaAcara      String?
-  daftarHadir      String?
-  keterangan       String              @default("-")
-  evidence         EvidenceMusyawarah[] 
-  createdAt        DateTime            @default(now())
-  updatedAt        DateTime            @updatedAt
+  beritaAcara        String?
+  daftarHadir        String?
+  keterangan         String               @default("-")
+  evidence           EvidenceMusyawarah[]
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
 
   @@index([identifikasiId])
 }
 
 model EvidenceMusyawarah {
-  id              String       @id @default(cuid())
-  file            String
-  fileName        String?
-  musyawarahId   String
-  musyawarah      Musyawarah @relation(fields: [musyawarahId], references: [id], onDelete: Cascade)
+  id           String     @id @default(cuid())
+  file         String
+  fileName     String?
+  musyawarahId String
+  musyawarah   Musyawarah @relation(fields: [musyawarahId], references: [id], onDelete: Cascade)
 
   @@index([musyawarahId])
+}
+
+model Pembayaran {
+  id                 String               @id @default(cuid())
+  itemId             Int
+  item               item                 @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  identifikasi       Identifikasi         @relation(fields: [identifikasiId], references: [id], onDelete: Cascade)
+  identifikasiId     String
+  namaDesa           String
+  spanTower          String
+  bidangLahan        String
+  namaPemilik        String
+  tanggalPelaksanaan DateTime
+  keterangan         String               @default("-")
+  evidence           EvidencePembayaran[]
+  evidences          Evidences?           @relation(fields: [evidenceId], references: [id], onDelete: Cascade)
+  evidenceId         String?
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+
+  @@index([identifikasiId])
+  @@index([evidenceId])
+}
+
+model EvidencePembayaran {
+  id           String     @id @default(cuid())
+  file         String
+  fileName     String?
+  pembayaranId String
+  pembayaran   Pembayaran @relation(fields: [pembayaranId], references: [id], onDelete: Cascade)
+
+  @@index([pembayaranId])
+}
+
+model Pemberkasan {
+  id                 String       @id @default(cuid())
+  itemId             Int
+  item               item         @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  identifikasi       Identifikasi @relation(fields: [identifikasiId], references: [id], onDelete: Cascade)
+  identifikasiId     String
+  namaDesa           String
+  spanTower          String
+  bidangLahan        String
+  namaPemilik        String
+  tanggalPelaksanaan DateTime
+  keterangan         String       @default("-")
+  ktp                String?
+  kartukeluarga      String?
+  alashak            String?
+  evidences          Evidences?   @relation(fields: [evidenceId], references: [id], onDelete: Cascade)
+  evidenceId         String?
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+
+  @@index([identifikasiId])
+  @@index([evidenceId])
+}
+
+model Penebangan {
+  id                 String               @id @default(cuid())
+  itemId             Int
+  item               item                 @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  identifikasi       Identifikasi         @relation(fields: [identifikasiId], references: [id], onDelete: Cascade)
+  identifikasiId     String
+  namaDesa           String
+  spanTower          String
+  bidangLahan        String
+  namaPemilik        String
+  tanggalPelaksanaan DateTime
+  keterangan         String               @default("-")
+  evidence           EvidencePenebangan[]
+  evidences          Evidences?           @relation(fields: [evidenceId], references: [id], onDelete: Cascade)
+  evidenceId         String?
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+
+  @@index([identifikasiId])
+  @@index([evidenceId])
+}
+
+model EvidencePenebangan {
+  id           String     @id @default(cuid())
+  file         String
+  fileName     String?
+  penebanganId String
+  penebangan   Penebangan @relation(fields: [penebanganId], references: [id], onDelete: Cascade)
+
+  @@index([penebanganId])
 }

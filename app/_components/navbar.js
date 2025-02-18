@@ -44,7 +44,7 @@ export default function Navbar({ session }) {
         href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
         rel="stylesheet"
       />
-      <nav className="sticky top-0 z-10 flex items-center p-2 bg-white shadow-lg font-montserrat">
+      <nav className="sticky top-0 z-10 flex items-center p-2 bg-white shadow-lg font-montserrat ">
         <div className="flex items-center justify-between w-full">
           <div className="flex items-center">
             <Link href="/dashboard" className="mx-3">

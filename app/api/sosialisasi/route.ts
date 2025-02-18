@@ -50,16 +50,26 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
-
     const identifikasiId = formData.get("identifikasiId") as string;
+
+    // Ambil identifikasi berdasarkan ID
     const identifikasi = await prisma.identifikasi.findUnique({
       where: { id: identifikasiId },
+      select: { id: true, itemId: true, namadesa: true, spantower: true },
     });
 
     if (!identifikasi) {
       return NextResponse.json(
         { error: "Data identifikasi tidak ditemukan" },
         { status: 404 }
+      );
+    }
+
+    const itemId = identifikasi.itemId;
+    if (!itemId) {
+      return NextResponse.json(
+        { error: "Identifikasi tidak terkait dengan proyek manapun" },
+        { status: 400 }
       );
     }
 
@@ -87,6 +97,7 @@ export async function POST(request: Request) {
 
     const sosialisasi = await prisma.sosialisasi.create({
       data: {
+        itemId, // Tambahkan itemId
         identifikasiId,
         namaDesa: identifikasi.namadesa,
         spanTower: identifikasi.spantower,

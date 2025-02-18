@@ -11,7 +11,8 @@ import * as XLSX from "xlsx";
 import { useRouter } from "next/navigation";
 // import ExportButton from "@/app/_components/export/ExportButton";
 import Pagination from "@/app/_components/pagination";
-import { format } from 'date-fns'; 
+import { format } from "date-fns";
+import ExportButtonMusyawarah from "@/app/_components/export/ExportButtonMusyawarah";
 
 interface MusyawarahData {
   id: string;
@@ -196,10 +197,10 @@ const TabelMusyawarah = ({ session }: { session: any }) => {
     );
   }
   const formatDate = (dateString: string) => {
-    return format(new Date(dateString), 'yyyy-MM-dd');
+    return format(new Date(dateString), "yyyy-MM-dd");
   };
-  
-    return (
+
+  return (
     <div className="px-6 pt-32 pb-20">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -211,7 +212,7 @@ const TabelMusyawarah = ({ session }: { session: any }) => {
           <h1 className="text-2xl font-bold text-gray-800">Tabel Musyawarah</h1>
           {session.user.role === "admin" ? (
             <div className="flex space-x-4">
-              {/* <ExportButton sosialisasiData={MusyawarahData} /> */}
+              <ExportButtonMusyawarah musyawarahData={MusyawarahData} />
               <Link
                 href="/musyawarah/form"
                 className="px-4 py-2 text-white transition duration-200 ease-in-out bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3 rounded-xl"

@@ -1,133 +1,122 @@
-// app/api/items/route.ts
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { Prisma } from '@prisma/client';
 
-// Handler untuk GET request
 export async function GET(request: Request) {
-  try {
-    const items = await prisma.item.findMany({
-      orderBy: {
-        id: "desc",
-      },
-      select: {
-        id: true,
-        namaproyek: true,
-        nomorkontrak: true,
-        kodeproyek: true,
-        tanggalkontrak: true,
-        tanggalakhirkontrak: true,
-      },
-    });
+  const { searchParams } = new URL(request.url);
+  const id = searchParams.get("id");
 
-    return new NextResponse(JSON.stringify(items), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+  try {
+    if (id) {
+      // Ambil proyek berdasarkan ID dan include identifikasi
+      const item = await prisma.item.findUnique({
+        where: { id: parseInt(id) },
+        include: {
+          identifikasi: true, // Pastikan data identifikasi ikut terhubung
+        },
+      });
+
+      if (!item) {
+        return NextResponse.json(
+          { error: "Proyek tidak ditemukan" },
+          { status: 404 }
+        );
+      }
+      return NextResponse.json(item);
+    } else {
+      // Ambil semua proyek jika tidak ada ID
+      const items = await prisma.item.findMany({
+        include: {
+          identifikasi: true, // Biar setiap proyek otomatis bawa data identifikasinya
+        },
+        orderBy: {
+          tanggalkontrak: "asc",
+        },
+      });
+      return NextResponse.json(items);
+    }
   } catch (error) {
     console.error("Error fetching items:", error);
-    return new NextResponse(
-      JSON.stringify({ error: "Failed to fetch items" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+    return NextResponse.json(
+      { error: "Gagal mengambil data proyek" },
+      { status: 500 }
     );
   }
 }
 
-// Handler untuk POST request
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    
+    console.log("Received body in /api/items:", body);
+
+    if (
+      !body.namaproyek ||
+      !body.nomorkontrak ||
+      !body.kodeproyek ||
+      !body.password
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Nama proyek, nomor kontrak, kode proyek, dan password wajib diisi",
+        },
+        { status: 400 }
+      );
+    }
+
     const item = await prisma.item.create({
       data: {
         namaproyek: body.namaproyek,
         nomorkontrak: body.nomorkontrak,
         kodeproyek: body.kodeproyek,
         tanggalkontrak: new Date(body.tanggalkontrak),
-        tanggalakhirkontrak: body.tanggalakhirkontrak 
-          ? new Date(body.tanggalakhirkontrak) 
+        tanggalakhirkontrak: body.tanggalakhirkontrak
+          ? new Date(body.tanggalakhirkontrak)
           : null,
         password: body.password,
       },
+      include: {
+        identifikasi: true, // Supaya langsung kelihatan ada identifikasinya atau belum
+      },
     });
 
-    const { password, ...itemWithoutPassword } = item;
-    return new NextResponse(JSON.stringify(itemWithoutPassword), {
-      status: 201,
-      headers: { "Content-Type": "application/json" },
-    });
+    return NextResponse.json(item, { status: 201 });
   } catch (error) {
     console.error("Error creating item:", error);
-    return new NextResponse(
-      JSON.stringify({ error: "Failed to create item" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+    return NextResponse.json(
+      { error: "Gagal membuat proyek baru" },
+      { status: 500 }
     );
   }
 }
 
-// Tambahkan handler untuk PUT request
-export async function PUT(request: Request) {
+// Verifikasi Password
+export async function VERIFY(request: Request) {
   try {
     const body = await request.json();
-    
-    const updateData = {
-      namaproyek: body.namaproyek,
-      nomorkontrak: body.nomorkontrak,
-      kodeproyek: body.kodeproyek,
-      tanggalkontrak: new Date(body.tanggalkontrak),
-      tanggalakhirkontrak: body.tanggalakhirkontrak 
-        ? new Date(body.tanggalakhirkontrak) 
-        : null,
-      password: body.password,
-    };
+    const { itemId, password } = body;
 
-    const item = await prisma.item.update({
-      where: { id: body.id },
-      data: updateData,
-    });
-
-    const { password, ...itemWithoutPassword } = item;
-    return new NextResponse(JSON.stringify(itemWithoutPassword), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
-  } catch (error) {
-    console.error("Error updating item:", error);
-    return new NextResponse(
-      JSON.stringify({ error: "Failed to update item" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
-    );
-  }
-}
-
-// Tambahkan handler untuk DELETE request
-export async function DELETE(request: Request) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
-    
-    if (!id) {
-      return new NextResponse(
-        JSON.stringify({ error: "ID is required" }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
+    if (!itemId || !password) {
+      return NextResponse.json(
+        { error: "ID dan password wajib" },
+        { status: 400 }
       );
     }
 
-    await prisma.item.delete({
-      where: { id: parseInt(id) },
+    const item = await prisma.item.findUnique({
+      where: { id: parseInt(itemId) },
+      select: { password: true },
     });
 
-    return new NextResponse(JSON.stringify({ success: true }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    if (!item || item.password !== password) {
+      return NextResponse.json({ isValid: false }, { status: 401 });
+    }
+
+    return NextResponse.json({ isValid: true });
   } catch (error) {
-    console.error("Error deleting item:", error);
-    return new NextResponse(
-      JSON.stringify({ error: "Failed to delete item" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+    console.error("Error verifying password:", error);
+    return NextResponse.json(
+      { error: "Gagal memverifikasi password" },
+      { status: 500 }
     );
   }
 }

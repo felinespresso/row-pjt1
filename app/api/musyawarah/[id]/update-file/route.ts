@@ -91,20 +91,20 @@ export async function DELETE(
 
     if (!musyawarah) {
       return NextResponse.json(
-        { error: "Data sosialisasi tidak ditemukan" },
+        { error: "Data musyawarah tidak ditemukan" },
         { status: 404 }
       );
     }
 
     if (fileType === "beritaAcara" && musyawarah.beritaAcara) {
       await del(musyawarah.beritaAcara);
-      await prisma.sosialisasi.update({
+      await prisma.musyawarah.update({
         where: { id: params.id },
         data: { beritaAcara: null },
       });
     } else if (fileType === "daftarHadir" && musyawarah.daftarHadir) {
       await del(musyawarah.daftarHadir);
-      await prisma.sosialisasi.update({
+      await prisma.musyawarah.update({
         where: { id: params.id },
         data: { daftarHadir: null },
       });

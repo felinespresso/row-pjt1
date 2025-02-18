@@ -18,13 +18,13 @@ interface ExportButtonProps {
 const ExportButton: FC<ExportButtonProps> = ({ sosialisasiData }) => {
   const exportToExcel = async () => {
     const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet("Data Sosialisasi");
+    const worksheet = workbook.addWorksheet("Tabel Data Sosialisasi");
 
     // Tambahkan header dengan style
     worksheet.columns = [
       { header: "NO.", key: "no", width: 5 },
       { header: "NAMA DESA", key: "namaDesa", width: 30 },
-      { header: "SPAN TOWER", key: "spanTower", width: 20 },
+      { header: "SPAN TOWER", key: "spanTower", width: 25 },
       { header: "TANGGAL PELAKSANAAN", key: "tanggalPelaksanaan", width: 30 },
       { header: "KETERANGAN", key: "keterangan", width: 25 },
     ];
@@ -75,7 +75,7 @@ const ExportButton: FC<ExportButtonProps> = ({ sosialisasiData }) => {
 
     // Generate dan simpan file Excel
     const buffer = await workbook.xlsx.writeBuffer();
-    saveAs(new Blob([buffer]), "Data Sosialisasi.xlsx");
+    saveAs(new Blob([buffer]), "Tabel Data Sosialisasi.xlsx");
   };
 
   return (

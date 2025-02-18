@@ -1,4 +1,6 @@
 "use client";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -21,12 +23,18 @@ import {
 // import { library } from "@fortawesome/fontawesome-svg-core";
 // import { faFileCircleCheck } from "@fortawesome/free-solid-svg-icons";
 // import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { usePathname } from "next/navigation";
-
 // library.add(faFileCircleCheck);
 
 export default function NavSidebar({ session }) {
   const pathname = usePathname();
+  const [projectId, setProjectId] = useState(null);
+
+  useEffect(() => {
+    const segments = pathname.split("/");
+    const idFromUrl = segments.length > 2 ? segments[2] : null;
+    setProjectId(idFromUrl);
+    console.log("Detected Project ID:", idFromUrl); // Debugging projectId
+  }, [pathname]);
 
   return (
     <>
@@ -94,7 +102,7 @@ export default function NavSidebar({ session }) {
                 width={60}
                 height={60}
                 className={`my-3 rounded-full justify-self-center photo ${
-                  pathname.startsWith('/profile')
+                  pathname.startsWith("/profile")
                     ? "border-2 rounded-full border-color8"
                     : ""
                 }`}
@@ -107,9 +115,9 @@ export default function NavSidebar({ session }) {
           <ul className="uppercase">
             <li>
               <Link
-                href="/home"
-                className={`flex items-center px-3 py-2 text-white transition duration-200 ease-in-out border-b border-color5 hover:bg-color8 ${
-                  pathname.startsWith('/home') ? "bg-color8" : ""
+                href={projectId ? `/home/${projectId}` : "#"}
+                className={`flex items-center px-3 py-2 text-white border-b transition duration-200 ease-in-out border-color5 hover:bg-color8 ${
+                  pathname.startsWith("/home") ? "bg-color8" : ""
                 }`}
               >
                 <MdHome className="mx-4 text-3xl align-middle" />
@@ -118,11 +126,9 @@ export default function NavSidebar({ session }) {
             </li>
             <li>
               <Link
-                href="/identifikasi-awal"
+                href={projectId ? `/identifikasi-awal/${projectId}` : "#"}
                 className={`flex items-center px-3 py-2 text-white border-b transition duration-200 ease-in-out border-color5 hover:bg-color8 ${
-                  pathname.startsWith('/identifikasi-awal')
-                    ? "bg-color8"
-                    : ""
+                  pathname.startsWith("/identifikasi-awal") ? "bg-color8" : ""
                 }`}
               >
                 <MdPlagiarism className="mx-4 text-3xl align-middle" />
@@ -133,9 +139,9 @@ export default function NavSidebar({ session }) {
             </li>
             <li>
               <Link
-                href="/sosialisasi"
+                href={projectId ? `/sosialisasi/${projectId}` : "#"}
                 className={`flex items-center px-3 py-2 text-white border-b transition duration-200 ease-in-out border-color5 hover:bg-color8 ${
-                  pathname.startsWith('/sosialisasi') ? "bg-color8" : ""
+                  pathname.startsWith("/sosialisasi") ? "bg-color8" : ""
                 }`}
               >
                 <MdGroups className="mx-4 text-3xl align-middle" />
@@ -146,11 +152,9 @@ export default function NavSidebar({ session }) {
             </li>
             <li>
               <Link
-                href="/inventarisasi"
+                href={projectId ? `/inventarisasi/${projectId}` : "#"}
                 className={`flex items-center px-3 py-2 text-white border-b transition duration-200 ease-in-out border-color5 hover:bg-color8 ${
-                  pathname.startsWith('/inventarisasi')
-                    ? "bg-color8"
-                    : ""
+                  pathname.startsWith("/inventarisasi") ? "bg-color8" : ""
                 }`}
               >
                 <Image
@@ -167,9 +171,13 @@ export default function NavSidebar({ session }) {
             </li>
             <li>
               <Link
-                href="/pengumuman-hasil-inventarisasi"
+                href={
+                  projectId
+                    ? `/pengumuman-hasil-inventarisasi/${projectId}`
+                    : "#"
+                }
                 className={`flex items-center px-3 py-2 text-white border-b transition duration-200 ease-in-out border-color5 hover:bg-color8 ${
-                  pathname.startsWith('/pengumuman-hasil-inventarisasi')
+                  pathname.startsWith("/pengumuman-hasil-inventarisasi")
                     ? "bg-color8"
                     : ""
                 }`}
@@ -198,9 +206,9 @@ export default function NavSidebar({ session }) {
             </li>
             <li>
               <Link
-                href="/musyawarah"
+                href={projectId ? `/musyawarah/${projectId}` : "#"}
                 className={`flex items-center px-3 py-2 text-white border-b transition duration-200 ease-in-out border-color5 hover:bg-color8 ${
-                  pathname.startsWith('/musyawarah') ? "bg-color8" : ""
+                  pathname.startsWith("/musyawarah") ? "bg-color8" : ""
                 }`}
               >
                 <Image
@@ -217,10 +225,9 @@ export default function NavSidebar({ session }) {
             </li>
             <li>
               <Link
-                href="/pemberkasan"
-                className={`flex items-center px-3 py-2 text-white border-b
-transition duration-200 ease-in-out border-color5 hover:bg-color8 ${
-                  pathname.startsWith('/pemberkasan') ? "bg-color8" : ""
+                href={projectId ? `/pemberkasan/${projectId}` : "#"}
+                className={`flex items-center px-3 py-2 text-white border-b transition duration-200 ease-in-out border-color5 hover:bg-color8 ${
+                  pathname.startsWith("/pemberkasan") ? "bg-color8" : ""
                 }`}
               >
                 <FaFolderOpen className="mx-4 text-3xl align-middle" />
@@ -231,9 +238,9 @@ transition duration-200 ease-in-out border-color5 hover:bg-color8 ${
             </li>
             <li>
               <Link
-                href="/pembayaran"
+                href={projectId ? `/pembayaran/${projectId}` : "#"}
                 className={`flex items-center px-3 py-2 text-white border-b transition duration-200 ease-in-out border-color5 hover:bg-color8 ${
-                  pathname.startsWith('/pembayaran') ? "bg-color8" : ""
+                  pathname.startsWith("/pembayaran") ? "bg-color8" : ""
                 }`}
               >
                 <FaFileInvoiceDollar className="mx-4 text-3xl align-middle" />
@@ -244,9 +251,9 @@ transition duration-200 ease-in-out border-color5 hover:bg-color8 ${
             </li>
             <li>
               <Link
-                href="/penebangan"
+                href={projectId ? `/penebangan/${projectId}` : "#"}
                 className={`flex items-center px-3 py-2 text-white border-b transition duration-200 ease-in-out border-color5 hover:bg-color8 ${
-                  pathname.startsWith('/penebangan') ? "bg-color8" : ""
+                  pathname.startsWith("/penebangan") ? "bg-color8" : ""
                 }`}
               >
                 <Image
@@ -265,7 +272,7 @@ transition duration-200 ease-in-out border-color5 hover:bg-color8 ${
               <Link
                 href="/logout"
                 className={`flex items-center px-3 py-2 text-white transition duration-200 ease-in-out hover:bg-color8 ${
-                  pathname.startsWith('/logout') ? "bg-color8" : ""
+                  pathname.startsWith("/logout") ? "bg-color8" : ""
                 }`}
               >
                 <MdLogout className="mx-4 text-3xl align-middle" />

@@ -6,6 +6,8 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    console.log("Fetching project with ID:", params.id); // 🔍 Debug ID proyek
+
     const item = await prisma.item.findUnique({
       where: {
         id: parseInt(params.id),
@@ -15,7 +17,6 @@ export async function GET(
     if (!item) {
       return new NextResponse(JSON.stringify({ error: "Item not found" }), {
         status: 404,
-        headers: { "Content-Type": "application/json" },
       });
     }
 
@@ -24,9 +25,10 @@ export async function GET(
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    return new NextResponse(JSON.stringify({ error: "Internal Server Error" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    console.error("Error fetching item:", error);
+    return new NextResponse(
+      JSON.stringify({ error: "Internal Server Error" }),
+      { status: 500 }
+    );
   }
-} 
+}
