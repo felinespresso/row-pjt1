@@ -38,10 +38,11 @@ export const getData = async (page: number, query: string, itemId: number) => {
     }
 };
 
-export const getDataPages = async (query: string) => {
+export const getDataPages = async (query: string, itemId: number) => {
     try {
         const identifikasiData = await prisma.identifikasi.count({
             where: {
+                itemId: itemId,
                 OR: [
                     { namadesa: { contains: query, mode: "insensitive" } },
                     { spantower: { contains: query, mode: "insensitive" } },

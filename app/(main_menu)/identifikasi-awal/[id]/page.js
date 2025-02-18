@@ -13,7 +13,7 @@ export default async function page({ params, searchParams }) {
     const { id } = params; // Pastikan mengambil ID dari URL
     const page = Number(searchParams.page) || 1;
     const query = searchParams.query || "";
-    const totalPages = await getDataPages(query);
+    const totalPages = await getDataPages(query, id);
 
     return (
         <div>
