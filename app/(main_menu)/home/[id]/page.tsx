@@ -39,6 +39,8 @@ export default function Home() {
       return;
     }
 
+    // console.log(id)
+
     const fetchStats = async () => {
       try {
         const response = await fetch(`/api/dashboard-stats?id=${id}`);
