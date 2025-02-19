@@ -36,8 +36,9 @@ const FormSosialisasi = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const { showAlert } = useAlert();
-  const params = useParams();
-  const id = params.id;
+  const { id } = useParams();
+
+  console.log(id);
 
   const [formData, setFormData] = useState<FormData>({
     itemId: "",
@@ -137,7 +138,7 @@ const FormSosialisasi = () => {
         console.log("Fetching identifikasi for itemId:", id); // ✅ Debugging
 
         const response = await fetch(`/api/identifikasi/${id}`);
-        console.log("Response status:", response.status); // ✅ Debugging
+        console.log("Response status:", response); // ✅ Debugging
 
         if (!response.ok) {
           const errorText = await response.text(); // ✅ Dapatkan error lebih detail
@@ -162,7 +163,7 @@ const FormSosialisasi = () => {
           setIsLoading(false);
         }, 500);
       }
-    };
+    }; 
     initializeForm();
   }, []);
 

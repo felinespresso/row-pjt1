@@ -1,4 +1,4 @@
-import { LoadingUI } from "../../../../components/loading-ui/load";
+// import { LoadingUI } from "../../../../components/loading-ui/load";
 
 export default function Loading() {
 

@@ -3,25 +3,13 @@ import prisma from "@/lib/prisma";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: number } }
 ) {
   try {
     console.log("Fetching identifikasi with ID:", params.id); // ✅ Debugging
 
-    const identifikasi = await prisma.identifikasi.findUnique({
-      where: { id: params.id },
-      select: {
-        id: true,
-        namadesa: true,
-        spantower: true,
-        itemId: true,
-        item: {
-          select: {
-            id: true,
-            namaproyek: true,
-          },
-        },
-      },
+    const identifikasi = await prisma.identifikasi.findMany({
+      where: { itemId: params.id },
     });
 
     if (!identifikasi) {
@@ -37,9 +25,8 @@ export async function GET(
   } catch (error) {
     console.error("Error fetching identifikasi:", error); // ✅ Log lengkap
     return NextResponse.json(
-      { error: "Gagal mengambil data identifikasi"},
+      { error: "Gagal mengambil data identifikasi" },
       { status: 500 }
     );
   }
 }
-

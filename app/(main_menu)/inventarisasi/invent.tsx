@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { FaEdit, FaRegTrashAlt, FaTrash } from "react-icons/fa";
 import * as XLSX from "xlsx";
 import { MdOutlineEdit } from "react-icons/md";
@@ -75,6 +75,8 @@ const TabelInventarisasi = ({ session }: { session: any }) => {
   const [loading, setLoading] = useState(true);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+  const params = useParams();
+  const id = params.id;
 
   useEffect(() => {
     fetchItems();
@@ -513,7 +515,7 @@ const TabelInventarisasi = ({ session }: { session: any }) => {
                   </div>
                 </button>
                 <Link
-                  href="/inventarisasi/form"
+                  href={`inventarisasi/${id}/form`}
                   className="px-4 py-2 text-white transition duration-200 ease-in-out bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3 rounded-xl"
                 >
                   <div className="flex items-center ml-auto space-x-3 text-sm font-semibold uppercase">
