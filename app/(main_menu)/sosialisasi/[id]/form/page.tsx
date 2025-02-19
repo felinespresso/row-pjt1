@@ -38,8 +38,6 @@ const FormSosialisasi = () => {
   const { showAlert } = useAlert();
   const { id } = useParams();
 
-  console.log(id);
-
   const [formData, setFormData] = useState<FormData>({
     itemId: "",
     identifikasiId: "",
@@ -112,20 +110,17 @@ const FormSosialisasi = () => {
   });
 
   // Update handler untuk mengubah lokasi
-  const handleLocationChange = async (value: string) => {
+  const handleLocationChange = (value: string) => {
     try {
-      const response = await fetch(`/api/identifikasi/${value}`);
-      if (!response.ok) throw new Error("Failed to fetch location data");
-
-      const locationData = await response.json();
-      setSelectedLocation(locationData);
-
       const newFormData = {
         ...formData,
         identifikasiId: value,
-        itemId: locationData.itemId, // Ambil itemId dari identifikasi
+        itemId: id,
       };
+
       setFormData(newFormData);
+
+      console.log(formData)
     } catch (error) {
       console.error("Error:", error);
       showAlert("Gagal mengambil data lokasi", "error");
@@ -163,7 +158,7 @@ const FormSosialisasi = () => {
           setIsLoading(false);
         }, 500);
       }
-    }; 
+    };
     initializeForm();
   }, []);
 
@@ -247,7 +242,7 @@ const FormSosialisasi = () => {
       localStorage.removeItem("sosialisasiFormData");
       setShowSuccessPopup(true);
       setTimeout(() => {
-        router.push("/sosialisasi");
+        router.push(`/sosialisasi/${id}`);
       }, 2000);
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -308,11 +303,10 @@ const FormSosialisasi = () => {
                 </label>
                 <div className="w-8/12 mr-3">
                   <select
-                    className={`w-full p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400 ${
-                      formErrors.identifikasiId
-                        ? "border-red-500"
-                        : "border-gray-400"
-                    }`}
+                    className={`w-full p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400 ${formErrors.identifikasiId
+                      ? "border-red-500"
+                      : "border-gray-400"
+                      }`}
                     value={formData.identifikasiId}
                     onChange={(e) => handleLocationChange(e.target.value)}
                   >
@@ -359,11 +353,10 @@ const FormSosialisasi = () => {
                         tanggalPelaksanaan: e.target.value,
                       })
                     }
-                    className={`w-full p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400 ${
-                      formErrors.tanggalPelaksanaan
-                        ? "border-red-500"
-                        : "border-gray-400"
-                    }`}
+                    className={`w-full p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400 ${formErrors.tanggalPelaksanaan
+                      ? "border-red-500"
+                      : "border-gray-400"
+                      }`}
                   />
                   {formErrors.tanggalPelaksanaan && (
                     <p className="mt-1 text-sm text-red-500">
@@ -388,11 +381,10 @@ const FormSosialisasi = () => {
                         keterangan: e.target.value,
                       })
                     }
-                    className={`w-full p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400 ${
-                      formErrors.keterangan
-                        ? "border-red-500"
-                        : "border-gray-400"
-                    }`}
+                    className={`w-full p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400 ${formErrors.keterangan
+                      ? "border-red-500"
+                      : "border-gray-400"
+                      }`}
                   />
                   {formErrors.keterangan && (
                     <p className="mt-1 text-sm text-red-500">
