@@ -32,7 +32,7 @@
     "app/(main_menu)/identifikasi-awal/[id]/page.js",
     "app/(main_menu)/identifikasi-awal/[id]/form/page.js",
     "app/(main_menu)/pengumuman-hasil-inventarisasi/[id]/pengumuman.tsx",
-    "app/(main_menu)/pengumuman-hasil-inventarisasi/[id]/form/page.tsx",
+    "app/(main_menu)/pengumuman-hasil-inventarisasi/[id]/form/form.tsx",
     "app/_components/skeleton.tsx"
   ],
   "exclude": ["node_modules"]

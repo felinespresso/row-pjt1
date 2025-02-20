@@ -5,7 +5,8 @@ import Link from "next/link";
 // import GroupAddRoundedIcon from '@mui/icons-material/GroupAddRounded';
 import { FaSearch, FaEllipsisV } from "react-icons/fa";
 import { MdLogout, MdAccountCircle, MdGroupAdd } from "react-icons/md";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
+import { useSession } from "next-auth/react"; // Pastikan NextAuth digunakan
 
 export default function Navbar({ session }) {
   // const pathname = usePathname();
@@ -33,7 +34,7 @@ export default function Navbar({ session }) {
   };
 
   return (
-    <div >
+    <div>
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link
         rel="preconnect"
@@ -44,8 +45,8 @@ export default function Navbar({ session }) {
         href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
         rel="stylesheet"
       />
-      <nav className="fixed top-0 z-10 flex items-center w-full p-2 bg-white shadow-lg font-montserrat">
-        <div className="flex items-center justify-between w-full ">
+      <nav className="fixed top-0 z-50 flex items-center w-full p-2 bg-white shadow-lg font-montserrat">
+        <div className="flex items-center justify-between w-full">
           <div className="flex items-center">
             <Link href="/dashboard" className="mx-3">
               <Image

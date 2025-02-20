@@ -18,18 +18,16 @@ interface Evidence {
   fileName?: string;
 }
 
-interface PembayaranData {
+interface MusyawarahData {
   id: string;
   namaDesa: string;
   spanTower: string;
-  bidangLahan: string;
-  namaPemilik: string;
   evidence: Evidence[];
 }
 
-export default function EvidencePage() {
-  const { id, pembayaranId } = useParams();
-  const [data, setData] = useState<PembayaranData | null>(null);
+export default function EvidencePage({ session }: { session: any }) {
+  const { id, musyawarahId } = useParams();
+  const [data, setData] = useState<MusyawarahData | null>(null);
   const [evidenceList, setEvidenceList] = useState<Evidence[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -49,7 +47,7 @@ export default function EvidencePage() {
   const fetchEvidenceData = async (pageNum: number) => {
     try {
       const response = await fetch(
-        `/api/pembayaran/${pembayaranId}/evidence?page=${pageNum}&limit=9`
+        `/api/musyawarah/${musyawarahId}/evidence?page=${pageNum}&limit=9`
       );
       if (!response.ok) throw new Error("Failed to fetch evidence");
 
@@ -68,28 +66,21 @@ export default function EvidencePage() {
   };
 
   useEffect(() => {
-    console.log("Fetching evidence for ID:", pembayaranId); // Debugging ID
-
     const fetchInitialData = async () => {
       try {
-        const [pembayaranResponse, evidenceResponse] = await Promise.all([
-          fetch(`/api/pembayaran/${pembayaranId}`),
-          fetch(`/api/pembayaran/${pembayaranId}/evidence?page=1&limit=9`),
+        const [musyawarahResponse, evidenceResponse] = await Promise.all([
+          fetch(`/api/musyawarah/${musyawarahId}`),
+          fetch(`/api/musyawarah/${musyawarahId}/evidence?page=1&limit=9`),
         ]);
 
-        console.log("Pembayaran Response Status:", pembayaranResponse.status);
-        console.log("Evidence Response Status:", evidenceResponse.status);
-
-        if (!pembayaranResponse.ok) {
-          throw new Error("Failed to fetch evidence pembayaran");
+        if (!musyawarahResponse.ok) {
+          throw new Error("Failed to fetch musyawarah data");
         }
 
-        const pembayaranData = await pembayaranResponse.json();
+        const musyawarahData = await musyawarahResponse.json();
         const evidenceData = await evidenceResponse.json();
 
-        console.log("Evidence Data:", evidenceData); // Debugging evidence response
-
-        setData(pembayaranData);
+        setData(musyawarahData);
         setEvidenceList(evidenceData.evidence || []);
         setHasMore(evidenceData.currentPage < evidenceData.totalPages);
       } catch (error) {
@@ -101,7 +92,7 @@ export default function EvidencePage() {
     };
 
     fetchInitialData();
-  }, [pembayaranId]);
+  }, [musyawarahId]);
 
   const loadMore = () => {
     if (!loading && hasMore) {
@@ -120,7 +111,7 @@ export default function EvidencePage() {
 
     try {
       const response = await fetch(
-        `/api/pembayaran/${pembayaranId}/evidence/${deleteTargetId}`,
+        `/api/musyawarah/${musyawarahId}/evidence/${deleteTargetId}`,
         {
           method: "DELETE",
         }
@@ -156,7 +147,7 @@ export default function EvidencePage() {
       formData.append("file", file);
 
       const response = await fetch(
-        `/api/pembayaran/${pembayaranId}/evidence/${isEditing}`,
+        `/api/musyawarah/${musyawarahId}/evidence/${isEditing}`,
         {
           method: "PUT",
           body: formData,
@@ -206,7 +197,7 @@ export default function EvidencePage() {
         formData.append("files", file);
       });
 
-      const response = await fetch(`/api/pembayaran/${pembayaranId}/evidence`, {
+      const response = await fetch(`/api/musyawarah/${musyawarahId}/evidence`, {
         method: "POST",
         body: formData,
       });
@@ -240,7 +231,7 @@ export default function EvidencePage() {
   if (error) {
     return (
       <div className="px-6 pt-32 pb-20">
-        <Link href={`/pembayaran/${id}`}>
+        <Link href={`/musyawarah/${id}`}>
           <button className="flex items-center gap-2 mb-4 text-blue-3 hover:text-blue-4">
             <FaArrowLeft /> Kembali
           </button>
@@ -255,7 +246,7 @@ export default function EvidencePage() {
   if (!data) {
     return (
       <div className="px-6 pt-32 pb-20">
-        <Link href={`/pembayaran/${id}`}>
+        <Link href={`/musyawarah/${id}`}>
           <button className="flex items-center gap-2 mb-4 text-blue-3 hover:text-blue-4">
             <FaArrowLeft /> Kembali
           </button>
@@ -275,35 +266,30 @@ export default function EvidencePage() {
       className="px-6 pt-32 pb-20"
     >
       <div className="flex items-center justify-between mb-6">
-        <Link href={`/pembayaran/${id}`}>
+        <Link href={`/musyawarah/${id}`}>
           <button className="flex items-center gap-2 text-blue-3 hover:text-blue-4">
             <FaArrowLeft /> Kembali
           </button>
         </Link>
-
-        <button
-          onClick={handleAddEvidence}
-          className="px-4 py-2 text-white transition duration-200 ease-in-out bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3 rounded-xl"
-        >
-          <div className="flex items-center space-x-3 text-sm font-semibold uppercase">
-            <MdAddCircleOutline className="text-xl" />
-            <span>TAMBAH EVIDENCE</span>
-          </div>
-        </button>
+        {session.user.role === "admin" ? (
+          <button
+            onClick={handleAddEvidence}
+            className="px-4 py-2 text-white transition duration-200 ease-in-out bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3 rounded-xl"
+          >
+            <div className="flex items-center space-x-3 text-sm font-semibold uppercase">
+              <MdAddCircleOutline className="text-xl" />
+              <span>TAMBAH EVIDENCE</span>
+            </div>
+          </button>
+        ) : null}
       </div>
 
       <div className="p-6 bg-white rounded-lg shadow-lg">
         <div className="mb-6">
           <h1 className="text-2xl font-bold">Evidence {data.namaDesa}</h1>
           <h2 className="text-sm font-semibold text-color3">
-            {data.spanTower}   
+            {data.spanTower}
           </h2>
-          <h3 className="text-sm font-semibold text-color3">
-          Nomor Bidang: {data.bidangLahan} 
-          </h3>
-          <h3 className="text-sm font-semibold text-color3">
-          Nama Pemilik: {data.namaPemilik} 
-          </h3>
         </div>
 
         {loading ? (
@@ -323,37 +309,38 @@ export default function EvidencePage() {
                 <div className="overflow-hidden bg-white rounded-lg shadow-md">
                   <div className="relative">
                     <img
-                      src={`/api/pembayaran/${pembayaranId}/evidence/${item.id}`}
+                      src={`/api/musyawarah/${musyawarahId}/evidence/${item.id}`}
                       alt={item.fileName || "Evidence"}
                       className="object-cover w-full h-64 transition-transform duration-300 cursor-pointer group-hover:scale-105"
                       onClick={() => {
                         setSelectedImage(
-                          `/api/pembayaran/${pembayaranId}/evidence/${item.id}`
+                          `/api/musyawarah/${musyawarahId}/evidence/${item.id}`
                         );
                         setSelectedTitle(item.fileName || null);
                       }}
                     />
-
-                    <div className="absolute z-10 flex gap-2 transition-opacity duration-300 opacity-0 bottom-2 right-2 group-hover:opacity-100">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEdit(item.id);
-                        }}
-                        className="p-2 transition-colors duration-200 rounded-md shadow-lg bg-color5 hover:bg-color8"
-                      >
-                        <MdOutlineEdit className="text-xl text-white" />
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteClick(item.id);
-                        }}
-                        className="p-2 transition-colors duration-200 bg-red-500 rounded-md shadow-lg hover:bg-red-600"
-                      >
-                        <FaRegTrashAlt className="text-lg text-white" />
-                      </button>
-                    </div>
+                    {session.user.role === "admin" ? (
+                      <div className="absolute z-10 flex gap-2 transition-opacity duration-300 opacity-0 bottom-2 right-2 group-hover:opacity-100">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEdit(item.id);
+                          }}
+                          className="p-2 transition-colors duration-200 rounded-md shadow-lg bg-color5 hover:bg-color8"
+                        >
+                          <MdOutlineEdit className="text-xl text-white" />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteClick(item.id);
+                          }}
+                          className="p-2 transition-colors duration-200 bg-red-500 rounded-md shadow-lg hover:bg-red-600"
+                        >
+                          <FaRegTrashAlt className="text-lg text-white" />
+                        </button>
+                      </div>
+                    ) : null}
                   </div>
 
                   <div className="p-3 border-t">

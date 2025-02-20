@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { FaArrowLeft, FaRegTrashAlt } from "react-icons/fa";
+import Link from "next/link";
 import "./globals.css";
 import { useAlert } from "@/app/_contexts/AlertContext";
 import { MdAddCircleOutline, MdRemoveCircleOutline } from "react-icons/md";
@@ -33,7 +35,7 @@ interface EvidenceInput {
   file: File | null;
 }
 
-const FormPenebangan = () => {
+const FormPembayaran = ({ session }: { session: any }) => {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isClient, setIsClient] = useState(false);
@@ -86,8 +88,8 @@ const FormPenebangan = () => {
 
   // Update handler untuk tombol cancel
   const handleCancel = () => {
-    localStorage.removeItem("penebanganFormData");
-    router.push(`/penebangan/${id}`);
+    localStorage.removeItem("pembayaranFormData");
+    router.push(`/pembayaran/${id}`);
   };
 
   const [identifikasiList, setIdentifikasiList] = useState<Identifikasi[]>([]);
@@ -138,7 +140,7 @@ const FormPenebangan = () => {
 
       setSelectedLocation(selected);
 
-      const response = await fetch(`/api/penebangan?identifikasiId=${value}`);
+      const response = await fetch(`/api/pembayaran?identifikasiId=${value}`);
       if (!response.ok) throw new Error("Gagal mengambil data bidang lahan");
 
       const data = await response.json();
@@ -248,7 +250,7 @@ const FormPenebangan = () => {
         }
       });
 
-      const response = await fetch("/api/penebangan", {
+      const response = await fetch("/api/pembayaran", {
         method: "POST",
         body: formDataToSend,
       });
@@ -259,7 +261,7 @@ const FormPenebangan = () => {
 
       setShowSuccessPopup(true);
       setTimeout(() => {
-        router.push(`/penebangan/${id}`);
+        router.push(`/pembayaran/${id}`);
       }, 2000);
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -291,10 +293,11 @@ const FormPenebangan = () => {
         }}
         className="p-6 mb-6 bg-white rounded-lg shadow-lg"
       >
+        {session.user.role === "admin" ? (
         <form onSubmit={handleSubmit}>
           <div className="pt-2 bg-transparent border-2 border-gray-400 rounded-md">
             <div className="flex items-center justify-between px-4 m-4">
-              <h2 className="text-xl font-bold">Form Penebangan</h2>
+              <h2 className="text-xl font-bold">Form Pembayaran</h2>
               <div className="flex justify-end space-x-4">
                 <button
                   type="button"
@@ -374,7 +377,7 @@ const FormPenebangan = () => {
                     onChange={(e) => handleBidangLahanChange(e.target.value)}
                   >
                     {!formData.bidangLahanId && (
-                      <option value="">Pilih lokasi...</option>
+                      <option value="">Pilih bidang...</option>
                     )}
                     {bidangLahanList.map((item) => (
                       <option key={item.id} value={item.id}>
@@ -510,6 +513,13 @@ const FormPenebangan = () => {
             </div>
           </div>
         </form>
+        ) : (
+          <Link href={`/pembayaran/${id}`}>
+            <button className="flex items-center gap-2 text-blue-3 hover:text-blue-4">
+              <FaArrowLeft /> Kembali
+            </button>
+          </Link>
+        )}
       </motion.div>
       <SuccessPopup
         message="Data berhasil disimpan"
@@ -520,4 +530,4 @@ const FormPenebangan = () => {
   );
 };
 
-export default FormPenebangan;
+export default FormPembayaran;

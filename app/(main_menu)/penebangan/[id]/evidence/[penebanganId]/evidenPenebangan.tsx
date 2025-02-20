@@ -18,16 +18,18 @@ interface Evidence {
   fileName?: string;
 }
 
-interface SosialisasiData {
+interface PenebanganData {
   id: string;
   namaDesa: string;
   spanTower: string;
+  bidangLahan: string;
+  namaPemilik: string;
   evidence: Evidence[];
 }
 
-export default function EvidencePage() {
-  const { id, sosialisasiId } = useParams();
-  const [data, setData] = useState<SosialisasiData | null>(null);
+export default function EvidencePage({ session }: { session: any }) {
+  const { id, penebanganId } = useParams();
+  const [data, setData] = useState<PenebanganData | null>(null);
   const [evidenceList, setEvidenceList] = useState<Evidence[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -47,7 +49,7 @@ export default function EvidencePage() {
   const fetchEvidenceData = async (pageNum: number) => {
     try {
       const response = await fetch(
-        `/api/sosialisasi/${sosialisasiId}/evidence?page=${pageNum}&limit=9`
+        `/api/penebangan/${penebanganId}/evidence?page=${pageNum}&limit=9`
       );
       if (!response.ok) throw new Error("Failed to fetch evidence");
 
@@ -66,21 +68,28 @@ export default function EvidencePage() {
   };
 
   useEffect(() => {
+    console.log("Fetching evidence for ID:", penebanganId); // Debugging ID
+
     const fetchInitialData = async () => {
       try {
-        const [sosialisasiResponse, evidenceResponse] = await Promise.all([
-          fetch(`/api/sosialisasi/${sosialisasiId}`),
-          fetch(`/api/sosialisasi/${sosialisasiId}/evidence?page=1&limit=9`),
+        const [penebanganResponse, evidenceResponse] = await Promise.all([
+          fetch(`/api/penebangan/${penebanganId}`),
+          fetch(`/api/penebangan/${penebanganId}/evidence?page=1&limit=9`),
         ]);
 
-        if (!sosialisasiResponse.ok) {
-          throw new Error("Failed to fetch sosialisasi data");
+        console.log("Penebangan Response Status:", penebanganResponse.status);
+        console.log("Evidence Response Status:", evidenceResponse.status);
+
+        if (!penebanganResponse.ok) {
+          throw new Error("Failed to fetch evidence penebangan");
         }
 
-        const sosialisasiData = await sosialisasiResponse.json();
+        const penebanganData = await penebanganResponse.json();
         const evidenceData = await evidenceResponse.json();
 
-        setData(sosialisasiData);
+        console.log("Evidence Data:", evidenceData); // Debugging evidence response
+
+        setData(penebanganData);
         setEvidenceList(evidenceData.evidence || []);
         setHasMore(evidenceData.currentPage < evidenceData.totalPages);
       } catch (error) {
@@ -92,7 +101,7 @@ export default function EvidencePage() {
     };
 
     fetchInitialData();
-  }, [id]);
+  }, [penebanganId]);
 
   const loadMore = () => {
     if (!loading && hasMore) {
@@ -111,7 +120,7 @@ export default function EvidencePage() {
 
     try {
       const response = await fetch(
-        `/api/sosialisasi/${sosialisasiId}/evidence/${deleteTargetId}`,
+        `/api/penebangan/${penebanganId}/evidence/${deleteTargetId}`,
         {
           method: "DELETE",
         }
@@ -147,7 +156,7 @@ export default function EvidencePage() {
       formData.append("file", file);
 
       const response = await fetch(
-        `/api/sosialisasi/${sosialisasiId}/evidence/${isEditing}`,
+        `/api/penebangan/${penebanganId}/evidence/${isEditing}`,
         {
           method: "PUT",
           body: formData,
@@ -197,13 +206,10 @@ export default function EvidencePage() {
         formData.append("files", file);
       });
 
-      const response = await fetch(
-        `/api/sosialisasi/${sosialisasiId}/evidence`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
+      const response = await fetch(`/api/penebangan/${penebanganId}/evidence`, {
+        method: "POST",
+        body: formData,
+      });
 
       if (!response.ok) {
         throw new Error("Gagal mengunggah evidence");
@@ -234,7 +240,7 @@ export default function EvidencePage() {
   if (error) {
     return (
       <div className="px-6 pt-32 pb-20">
-        <Link href={`/sosialisasi/${id}`}>
+        <Link href={`/penebangan/${id}`}>
           <button className="flex items-center gap-2 mb-4 text-blue-3 hover:text-blue-4">
             <FaArrowLeft /> Kembali
           </button>
@@ -249,7 +255,7 @@ export default function EvidencePage() {
   if (!data) {
     return (
       <div className="px-6 pt-32 pb-20">
-        <Link href={`/sosialisasi/${id}`}>
+        <Link href={`/penebangan/${id}`}>
           <button className="flex items-center gap-2 mb-4 text-blue-3 hover:text-blue-4">
             <FaArrowLeft /> Kembali
           </button>
@@ -269,21 +275,22 @@ export default function EvidencePage() {
       className="px-6 pt-32 pb-20"
     >
       <div className="flex items-center justify-between mb-6">
-        <Link href={`/sosialisasi/${id}`}>
+        <Link href={`/penebangan/${id}`}>
           <button className="flex items-center gap-2 text-blue-3 hover:text-blue-4">
             <FaArrowLeft /> Kembali
           </button>
         </Link>
-
-        <button
-          onClick={handleAddEvidence}
-          className="px-4 py-2 text-white transition duration-200 ease-in-out bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3 rounded-xl"
-        >
-          <div className="flex items-center space-x-3 text-sm font-semibold uppercase">
-            <MdAddCircleOutline className="text-xl" />
-            <span>TAMBAH EVIDENCE</span>
-          </div>
-        </button>
+        {session.user.role === "admin" ? (
+          <button
+            onClick={handleAddEvidence}
+            className="px-4 py-2 text-white transition duration-200 ease-in-out bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3 rounded-xl"
+          >
+            <div className="flex items-center space-x-3 text-sm font-semibold uppercase">
+              <MdAddCircleOutline className="text-xl" />
+              <span>TAMBAH EVIDENCE</span>
+            </div>
+          </button>
+        ) : null}
       </div>
 
       <div className="p-6 bg-white rounded-lg shadow-lg">
@@ -292,6 +299,12 @@ export default function EvidencePage() {
           <h2 className="text-sm font-semibold text-color3">
             {data.spanTower}
           </h2>
+          <h3 className="text-sm font-semibold text-color3">
+            Nomor Bidang: {data.bidangLahan}
+          </h3>
+          <h3 className="text-sm font-semibold text-color3">
+            Nama Pemilik: {data.namaPemilik}
+          </h3>
         </div>
 
         {loading ? (
@@ -311,37 +324,38 @@ export default function EvidencePage() {
                 <div className="overflow-hidden bg-white rounded-lg shadow-md">
                   <div className="relative">
                     <img
-                      src={`/api/sosialisasi/${sosialisasiId}/evidence/${item.id}`}
+                      src={`/api/penebangan/${penebanganId}/evidence/${item.id}`}
                       alt={item.fileName || "Evidence"}
                       className="object-cover w-full h-64 transition-transform duration-300 cursor-pointer group-hover:scale-105"
                       onClick={() => {
                         setSelectedImage(
-                          `/api/sosialisasi/${sosialisasiId}/evidence/${item.id}`
+                          `/api/penebangan/${penebanganId}/evidence/${item.id}`
                         );
                         setSelectedTitle(item.fileName || null);
                       }}
                     />
-
-                    <div className="absolute z-10 flex gap-2 transition-opacity duration-300 opacity-0 bottom-2 right-2 group-hover:opacity-100">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEdit(item.id);
-                        }}
-                        className="p-2 transition-colors duration-200 rounded-md shadow-lg bg-color5 hover:bg-color8"
-                      >
-                        <MdOutlineEdit className="text-xl text-white" />
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteClick(item.id);
-                        }}
-                        className="p-2 transition-colors duration-200 bg-red-500 rounded-md shadow-lg hover:bg-red-600"
-                      >
-                        <FaRegTrashAlt className="text-lg text-white" />
-                      </button>
-                    </div>
+                    {session.user.role === "admin" ? (
+                      <div className="absolute z-10 flex gap-2 transition-opacity duration-300 opacity-0 bottom-2 right-2 group-hover:opacity-100">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEdit(item.id);
+                          }}
+                          className="p-2 transition-colors duration-200 rounded-md shadow-lg bg-color5 hover:bg-color8"
+                        >
+                          <MdOutlineEdit className="text-xl text-white" />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteClick(item.id);
+                          }}
+                          className="p-2 transition-colors duration-200 bg-red-500 rounded-md shadow-lg hover:bg-red-600"
+                        >
+                          <FaRegTrashAlt className="text-lg text-white" />
+                        </button>
+                      </div>
+                    ) : null}
                   </div>
 
                   <div className="p-3 border-t">

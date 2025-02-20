@@ -5,6 +5,7 @@ import Link from "next/link";
 import { MdOutlineEdit } from "react-icons/md";
 import { FaFileImage, FaRegTrashAlt } from "react-icons/fa";
 import { useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 
 export const SubmitButton = ({ label }: { label: string }) => {
   const { pending } = useFormStatus();
@@ -31,9 +32,11 @@ export const SubmitButton = ({ label }: { label: string }) => {
 };
 
 export const EditButton = ({ id }: { id: string }) => {
+  const params = useParams(); 
+  const projectId = params.id;
   return (
     <Link
-      href={`/identifikasi-awal/edit/${id}`}
+      href={`/identifikasi-awal/${projectId}/edit/${id}`}
       title="Edit"
       className="flex px-[6px] py-1 transition duration-100 ease-in-out rounded-md bg-color5 hover:-translate-y-1 hover:shadow-lg"
     >

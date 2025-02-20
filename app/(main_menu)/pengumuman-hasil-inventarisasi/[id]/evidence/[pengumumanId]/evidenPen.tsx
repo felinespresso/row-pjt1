@@ -25,7 +25,7 @@ interface PengumumanData {
   evidence: Evidence[];
 }
 
-export default function EvidencePage() {
+export default function EvidencePage({ session }: { session: any }) {
   const { id, pengumumanId } = useParams();
   const router = useRouter();
   const { showAlert } = useAlert();
@@ -69,7 +69,9 @@ export default function EvidencePage() {
       try {
         setLoading(true);
 
-        const pengumumanResponse = await fetch(`/api/pengumuman/${pengumumanId}`);
+        const pengumumanResponse = await fetch(
+          `/api/pengumuman/${pengumumanId}`
+        );
         if (!pengumumanResponse.ok)
           throw new Error("Failed to fetch pengumuman data");
 
@@ -220,16 +222,17 @@ export default function EvidencePage() {
             <FaArrowLeft /> Kembali
           </button>
         </Link>
-
-        <button
-          onClick={handleAddEvidence}
-          className="px-4 py-2 text-white transition duration-200 ease-in-out bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3 rounded-xl"
-        >
-          <div className="flex items-center space-x-3 text-sm font-semibold uppercase">
-            <MdAddCircleOutline className="text-xl" />
-            <span>TAMBAH EVIDENCE</span>
-          </div>
-        </button>
+        {session.user.role === "admin" ? (
+          <button
+            onClick={handleAddEvidence}
+            className="px-4 py-2 text-white transition duration-200 ease-in-out bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3 rounded-xl"
+          >
+            <div className="flex items-center space-x-3 text-sm font-semibold uppercase">
+              <MdAddCircleOutline className="text-xl" />
+              <span>TAMBAH EVIDENCE</span>
+            </div>
+          </button>
+        ) : null}
       </div>
 
       <div className="p-6 bg-white rounded-lg shadow-lg">
@@ -261,27 +264,28 @@ export default function EvidencePage() {
                         setSelectedTitle(item.fileName || null);
                       }}
                     />
-
-                    <div className="absolute z-10 flex gap-2 transition-opacity duration-300 opacity-0 bottom-2 right-2 group-hover:opacity-100">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEdit(item.id);
-                        }}
-                        className="p-2 transition-colors duration-200 rounded-md shadow-lg bg-color5 hover:bg-color8"
-                      >
-                        <MdOutlineEdit className="text-xl text-white" />
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteClick(item.id);
-                        }}
-                        className="p-2 transition-colors duration-200 bg-red-500 rounded-md shadow-lg hover:bg-red-600"
-                      >
-                        <FaRegTrashAlt className="text-lg text-white" />
-                      </button>
-                    </div>
+                    {session.user.role === "admin" ? (
+                      <div className="absolute z-10 flex gap-2 transition-opacity duration-300 opacity-0 bottom-2 right-2 group-hover:opacity-100">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEdit(item.id);
+                          }}
+                          className="p-2 transition-colors duration-200 rounded-md shadow-lg bg-color5 hover:bg-color8"
+                        >
+                          <MdOutlineEdit className="text-xl text-white" />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteClick(item.id);
+                          }}
+                          className="p-2 transition-colors duration-200 bg-red-500 rounded-md shadow-lg hover:bg-red-600"
+                        >
+                          <FaRegTrashAlt className="text-lg text-white" />
+                        </button>
+                      </div>
+                    ) : null}
                   </div>
 
                   <div className="p-3 border-t">

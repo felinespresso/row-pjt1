@@ -30,7 +30,7 @@ interface EvidencePengumuman {
   fileName?: string;
 }
 
-const TabelPengumuman = () => {
+const TabelPengumuman = ({ session }: { session: any }) => {
   const [pengumumanData, setPengumumanData] = useState<PengumumanData[]>([]);
   const [loading, setLoading] = useState(true);
   const itemsPerPage = 10;
@@ -169,6 +169,7 @@ const TabelPengumuman = () => {
               Tabel Pengumuman Hasil Inventarisasi
             </h1>
           </div>
+          {session.user.role === "admin" ? (
           <div className="flex space-x-4">
             <ExportButtonPengumuman pengumumanData={pengumumanData} />
             <Link
@@ -181,6 +182,7 @@ const TabelPengumuman = () => {
               </div>
             </Link>
           </div>
+          ) : null}
         </div>
 
         <div className="overflow-x-auto bg-transparent border-2 border-gray-400 rounded-md">
@@ -208,9 +210,11 @@ const TabelPengumuman = () => {
                 <th className="px-6 py-3 font-semibold tracking-wider text-center text-gray-700 uppercase">
                   Evidence
                 </th>
+                {session.user.role === "admin" ? (
                 <th className="px-6 py-3 font-semibold tracking-wider text-center text-gray-700 uppercase">
                   Aksi
                 </th>
+                ) : null}
               </tr>
             </thead>
             <tbody className="divide-y-2 divide-gray-400">
@@ -269,6 +273,7 @@ const TabelPengumuman = () => {
                       </div>
                     </button>
                   </td>
+                  {session.user.role === "admin" ? (
                   <td className="px-6 py-4 text-center whitespace-nowrap">
                     <div className="flex justify-center space-x-3">
                       <button
@@ -289,6 +294,7 @@ const TabelPengumuman = () => {
                       </button>
                     </div>
                   </td>
+                  ) : null}
                 </tr>
               ))}
             </tbody>
