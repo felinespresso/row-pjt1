@@ -8,8 +8,10 @@ import type { Evidences, Identifikasi } from "@prisma/client";
 
 const EditIdentifikasiAwal = ({
   data,
+  itemId
 }: {
   data: Identifikasi & { evidence: Evidences[] };
+  itemId: string
 }) => {
   const router = useRouter();
   const EditIdentifikasiWithId = editIdentifikasi.bind(null, data.id);
@@ -39,7 +41,7 @@ const EditIdentifikasiAwal = ({
               <div className="flex justify-end text-base space-x-7">
                 <button
                   type="button"
-                  onClick={() => router.push("/identifikasi-awal")}
+                  onClick={() => router.push(`/identifikasi-awal/${itemId}`)}
                   className="px-6 py-2 font-semibold text-center text-gray-500 transition duration-200 ease-in-out bg-white border-2 border-gray-500 rounded-lg hover:duration-300 hover:-translate-x-1 hover:-translate-y-1 hover:scale-110 hover:bg-gray-200"
                 >
                   CANCEL
