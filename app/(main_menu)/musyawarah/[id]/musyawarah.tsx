@@ -63,7 +63,7 @@ const TabelMusyawarah = ({ session }: { session: any }) => {
     fetchData();
   }, [showAlert]);
 
-  const totalPages = Math.ceil(MusyawarahData.length / itemsPerPage);
+  const totalPages = Math.max(1, Math.ceil(MusyawarahData.length / itemsPerPage));
 
   const handleFileView = async (id: string, type: string) => {
     try {

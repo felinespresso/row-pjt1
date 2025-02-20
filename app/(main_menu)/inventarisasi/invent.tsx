@@ -163,7 +163,7 @@ const TabelInventarisasi = ({ session }: { session: any }) => {
   };
 
   // Hitung total halaman
-  const totalPages = Math.ceil(items.length / itemsPerPage);
+  const totalPages = Math.max(1, Math.ceil(items.length / itemsPerPage));
 
   // Get current items
   const indexOfLastItem = currentPage * itemsPerPage;

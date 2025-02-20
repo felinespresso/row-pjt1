@@ -231,6 +231,53 @@ export const saveIdentifikasi = async (prevState: any, formData: FormData) => {
   }
 };
 
+//Update data identifikasi
+export const editIdentifikasi = async (id:string, prevState: any, formData: FormData) => {
+  const validatedFields = UpdateSchema.safeParse(
+      Object.fromEntries(formData.entries()),
+  );
+  
+  if (!validatedFields.success) {
+      console.error("Validation failed:", validatedFields.error);
+      return {
+          Error: validatedFields.error.flatten().fieldErrors,
+      };
+  };
+  
+  const data = await getDataById(id);
+  if (!data) return {message: "No Data Found"};
+
+  const { fotoudara } = validatedFields.data;
+  let fotoudaraPath;
+  if (!fotoudara || fotoudara.size <= 0){
+      fotoudaraPath = data.fotoudara;
+  }else{
+      await del(data.fotoudara!);
+      const {url: fotoUdaraUrl} = await put(fotoudara.name, fotoudara, {
+          access: "public",
+          multipart: true
+      });
+      fotoudaraPath = fotoUdaraUrl;
+  }
+
+  try{
+      await prisma.identifikasi.update({
+          data: {
+              namadesa: validatedFields.data.namadesa,
+              spantower: validatedFields.data.spantower,
+              tanggal: validatedFields.data.tanggal,
+              fotoudara: fotoudaraPath,
+          }, where:{id}
+      });
+  } catch (error) {
+      console.error("Error when update data", error);
+      return {message: "Failed to update data"};
+  }
+
+  revalidatePath('/identifikasi-awal');
+  redirect("/identifikasi-awal");
+};
+
 //Delete data identifikasi
 export const deleteIdentifikasi = async (id: string) => {
   const data = await getDataById(id);

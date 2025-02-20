@@ -63,7 +63,7 @@ const TabelPenebangan = ({ session }: { session: any }) => {
     fetchData();
   }, [showAlert]);
 
-  const totalPages = Math.ceil(penebanganData.length / itemsPerPage);
+  const totalPages = Math.max(1, Math.ceil(penebanganData.length / itemsPerPage));
 
   const handleDelete = (id: string) => {
     setDeleteId(id);

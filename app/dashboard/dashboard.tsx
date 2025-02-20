@@ -6,9 +6,11 @@ import * as XLSX from "xlsx";
 import "./globals.css";
 import { item } from "@prisma/client";
 import { useRouter } from "next/navigation";
+import { useAlert } from "@/app/_contexts/AlertContext";
+import { MdAddCircleOutline, MdOutlineEdit } from "react-icons/md";
+import SuccessPopup from "@/app/_components/SuccessPopup";
 import Link from "next/link";
 import { FaRegTrashAlt } from "react-icons/fa";
-import { MdOutlineEdit } from "react-icons/md";
 import { format } from "date-fns";
 import Pagination from "@/app/_components/pagination";
 import ExportButtonDashboard from "@/app/_components/export/ExportButtonDashboard";
@@ -29,9 +31,13 @@ export const Dashboard = ({ session }: { session: any }) => {
   const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [password, setPassword] = useState("");
+  const { showAlert } = useAlert();
+  const [successMessage, setSuccessMessage] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<number | null>(null);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchItems();
@@ -224,7 +230,7 @@ export const Dashboard = ({ session }: { session: any }) => {
   };
 
   // Hitung total halaman
-  const totalPages = Math.ceil(items.length / itemsPerPage);
+  const totalPages = Math.max(1, Math.ceil(items.length / itemsPerPage));
 
   // Get current items
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -289,22 +295,29 @@ export const Dashboard = ({ session }: { session: any }) => {
         const response = await fetch(`/api/items?id=${itemToDelete}`, {
           method: "DELETE",
         });
+
         if (response.ok) {
           setItems(items.filter((item) => item.id !== itemToDelete));
           setShowConfirmDelete(false);
           setItemToDelete(null);
+          // setShowSuccessPopup(true);
+          showAlert("Data proyek telah berhasil dihapus!", "success");
+
+          setTimeout(() => {
+            setShowSuccessPopup(false);
+          }, 3000);
         } else {
-          alert("Gagal menghapus data");
+          showAlert("Gagal menghapus data proyek. Silakan coba lagi.", "error");
         }
       } catch (error) {
         console.error("Error:", error);
-        alert("Gagal menghapus data");
+        showAlert("Terjadi kesalahan saat menghapus data proyek.", "error");
       }
     }
   };
 
   return (
-    <div className="p-8">
+    <div className="px-6 pb-20 pt-28">
       <div className="p-6 bg-white rounded-lg shadow-lg">
         {/* Header */}
         <div className="flex items-center justify-between mb-6 ">
@@ -312,25 +325,17 @@ export const Dashboard = ({ session }: { session: any }) => {
             Daftar Proyek ROW
           </h1>
           {session.user.role === "admin" ? (
-            <div className="space-x-4">
+            <div className="flex space-x-4">
               <ExportButtonDashboard currentItems={currentItems} />
-              <button
-                onClick={() => router.push("/dashboard/form")}
+              <Link
+                href="dashboard/form"
                 className="px-4 py-2 text-white transition duration-200 ease-in-out bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3 rounded-xl"
               >
-                <div className="flex items-center ml-auto space-x-4 font-semibold">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    height="20px"
-                    viewBox="0 -960 960 960"
-                    width="20px"
-                    fill="white"
-                  >
-                    <path d="M444-288h72v-156h156v-72H516v-156h-72v156H288v72h156v156Zm36.28 192Q401-96 331-126t-122.5-82.5Q156-261 126-330.96t-30-149.5Q96-560 126-629.5q30-69.5 82.5-122T330.96-834q69.96-30 149.5-30t149.04 30q69.5 30 122 82.5T834-629.28q30 69.73 30 149Q864-401 834-331t-82.5 122.5Q699-156 629.28-126q-69.73 30-149 30Zm-.28-72q130 0 221-91t91-221q0-130-91-221t-221-91q-130 0-221 91t-91 221q0 130 91 221t221 91Zm0-312Z" />
-                  </svg>
-                  ADD PROJECT
+                <div className="flex items-center ml-auto space-x-3 text-sm font-semibold uppercase">
+                  <MdAddCircleOutline className="text-xl" />
+                  <span>TAMBAH DATA</span>
                 </div>
-              </button>
+              </Link>
             </div>
           ) : null}
         </div>
@@ -519,6 +524,11 @@ export const Dashboard = ({ session }: { session: any }) => {
           </motion.div>
         </motion.div>
       )}
+      <SuccessPopup
+        message={successMessage}
+        isVisible={showSuccessPopup}
+        onClose={() => setShowSuccessPopup(false)}
+      />
     </div>
   );
 };

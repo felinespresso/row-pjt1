@@ -63,7 +63,7 @@ const TabelPembayaran = ({ session }: { session: any }) => {
     fetchData();
   }, [showAlert]);
 
-  const totalPages = Math.ceil(pembayaranData.length / itemsPerPage);
+  const totalPages = Math.max(1, Math.ceil(pembayaranData.length / itemsPerPage));
 
   const handleDelete = (id: string) => {
     setDeleteId(id);

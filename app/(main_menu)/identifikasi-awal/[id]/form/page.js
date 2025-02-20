@@ -109,7 +109,7 @@ const FormIdentifikasiAwal = () => {
                   {" "}
                   BATAL
                 </button>
-                <SubmitButton label="save" />
+                <SubmitButton label="save"/>
               </div>
             </div>
             <hr className="border border-gray-400" />

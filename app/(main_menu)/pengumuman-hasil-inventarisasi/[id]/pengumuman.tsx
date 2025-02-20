@@ -63,7 +63,7 @@ const TabelPengumuman = () => {
     fetchData();
   }, [showAlert]);
 
-  const totalPages = Math.ceil(pengumumanData.length / itemsPerPage);
+  const totalPages = Math.max(1, Math.ceil(pengumumanData.length / itemsPerPage));
 
   const handleFileView = async (id: string, type: string) => {
     try {

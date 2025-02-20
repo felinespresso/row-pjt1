@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import SaveLoading from "@/app/_components/SaveLoading";
 import SuccessPopup from "@/app/_components/SuccessPopup";
 import { useAlert } from "@/app/_contexts/AlertContext";
-import "../globals.css";
+import "./globals.css";
 
 interface FormData {
   namaproyek: string;
@@ -161,7 +161,7 @@ export const FormPage: React.FC = () => {
   };
 
   return (
-    <div className="p-10">
+    <div className="px-6 pb-14 pt-28">
       {isLoading && <SaveLoading />}
       <SuccessPopup
         message="Data berhasil disimpan"

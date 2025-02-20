@@ -35,7 +35,7 @@ export async function GET(
       evidence,
       total,
       currentPage: page,
-      totalPages: Math.ceil(total / limit),
+      totalPages: Math.max(1, Math.ceil(total / limit)),
     });
   } catch (error) {
     console.error("Error fetching evidence:", error);

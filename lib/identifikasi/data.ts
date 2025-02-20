@@ -51,7 +51,7 @@ export const getDataPages = async (query: string, itemId: number) => {
                 ],
             },
         });
-        const totalPages = Math.ceil(Number(identifikasiData) / ITEMS_PER_PAGE);
+        const totalPages = Math.max(1, Math.ceil(Number(identifikasiData) / ITEMS_PER_PAGE));
         return totalPages;
     } catch (error: any) {
         // console.error("Error fetching data:", error); // Log error detail

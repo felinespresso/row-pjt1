@@ -120,3 +120,86 @@ export async function VERIFY(request: Request) {
     );
   }
 }
+
+export async function DELETE(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json(
+        { message: "ID tidak ditemukan" },
+        { status: 400 }
+      );
+    }
+
+    await prisma.item.delete({
+      where: { id: parseInt(id) },
+    });
+
+    return NextResponse.json({ message: "Data berhasil dihapus" });
+  } catch (error) {
+    return NextResponse.json(
+      { message: "Gagal menghapus data", error },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PUT(request: Request) {
+  try {
+    const body = await request.json();
+    const {
+      id,
+      namaproyek,
+      nomorkontrak,
+      kodeproyek,
+      tanggalkontrak,
+      tanggalakhirkontrak,
+      password,
+    } = body;
+
+    if (!id) {
+      return NextResponse.json(
+        { error: "ID proyek wajib diisi" },
+        { status: 400 }
+      );
+    }
+
+    // Periksa apakah proyek dengan ID ini ada
+    const existingItem = await prisma.item.findUnique({
+      where: { id: parseInt(id) },
+    });
+    if (!existingItem) {
+      return NextResponse.json(
+        { error: "Proyek tidak ditemukan" },
+        { status: 404 }
+      );
+    }
+
+    const updatedItem = await prisma.item.update({
+      where: { id: parseInt(id) },
+      data: {
+        namaproyek,
+        nomorkontrak,
+        kodeproyek,
+        tanggalkontrak: new Date(tanggalkontrak),
+        tanggalakhirkontrak: tanggalakhirkontrak
+          ? new Date(tanggalakhirkontrak)
+          : null,
+        password,
+      },
+      include: {
+        identifikasi: true,
+      },
+    });
+
+    return NextResponse.json(updatedItem);
+  } catch (error) {
+    console.error("Error updating project:", error);
+    return NextResponse.json(
+      { error: "Gagal memperbarui proyek" },
+      { status: 500 }
+    );
+  }
+}

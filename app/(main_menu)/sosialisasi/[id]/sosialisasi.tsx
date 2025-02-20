@@ -64,7 +64,7 @@ const TabelSosialisasi = ({ session }: { session: any }) => {
     fetchData();
   }, [showAlert]);
 
-  const totalPages = Math.ceil(sosialisasiData.length / itemsPerPage);
+  const totalPages = Math.max(1, Math.ceil(sosialisasiData.length / itemsPerPage));
 
   const handleFileView = async (id: string, type: string) => {
     try {
