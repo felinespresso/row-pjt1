@@ -1,17 +1,9 @@
-import { LoadingUI } from "@/app/_components/loading-ui/load";
+"use client";
 
-export default function Loading() {
-    return (
-        <div>
-            <link rel="preconnect" href="https://fonts.googleapis.com" />
-            <link rel="preconnect" href="https://fonts.gstatic.com" />
-            <link
-                href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
-                rel="stylesheet"
-            />
-            <main className="font-montserrat">
-                <LoadingUI />
-            </main>
-        </div>
-    );
-}
+export default function LoadingIndicator() {
+  return (
+    <div className="flex items-center justify-center">
+      <div className="w-12 h-12 border-t-2 border-b-2 border-blue-500 rounded-full animate-spin"></div>
+    </div>
+  );
+} 

@@ -10,24 +10,24 @@ import SaveLoading from "@/app/_components/SaveLoading";
 import SuccessPopup from "@/app/_components/SuccessPopup";
 import "./globals.css";
 
-interface MusyawarahData {
+interface PembayaranData {
   id: string;
   identifikasiId: string;
   namaDesa: string;
   spanTower: string;
+  bidangLahan: string;
+  namaPemilik: string;
   tanggalPelaksanaan: string;
   keterangan: string;
-  beritaAcara: string | null;
-  daftarHadir: string | null;
 }
 
-export default function EditMusyawarah() {
+export default function EditPembayaran({ session }: { session: any }) {
   const { id, editId } = useParams();
   const router = useRouter();
   const { showAlert } = useAlert();
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [data, setData] = useState<MusyawarahData | null>(null);
+  const [data, setData] = useState<PembayaranData | null>(null);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -38,14 +38,14 @@ export default function EditMusyawarah() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`/api/musyawarah/${editId}`);
+        const response = await fetch(`/api/pembayaran/${editId}`);
         if (!response.ok) throw new Error("Failed to fetch data");
 
-        const musyawarahData = await response.json();
-        setData(musyawarahData);
+        const pembayaranData = await response.json();
+        setData(pembayaranData);
         setFormData({
-          tanggalPelaksanaan: musyawarahData.tanggalPelaksanaan.split("T")[0],
-          keterangan: musyawarahData.keterangan,
+          tanggalPelaksanaan: pembayaranData.tanggalPelaksanaan.split("T")[0],
+          keterangan: pembayaranData.keterangan,
         });
       } catch (error) {
         console.error("Error:", error);
@@ -68,7 +68,7 @@ export default function EditMusyawarah() {
       formDataToSend.append("tanggalPelaksanaan", formData.tanggalPelaksanaan);
       formDataToSend.append("keterangan", formData.keterangan);
 
-      const response = await fetch(`/api/musyawarah/${editId}`, {
+      const response = await fetch(`/api/pembayaran/${editId}`, {
         method: "PUT",
         body: formDataToSend,
       });
@@ -78,42 +78,9 @@ export default function EditMusyawarah() {
         throw new Error(errorData.error || "Gagal mengupdate data");
       }
 
-      // Update file jika ada
-      const beritaAcaraInput = document.getElementById(
-        "beritaAcara"
-      ) as HTMLInputElement;
-      const daftarHadirInput = document.getElementById(
-        "daftarHadir"
-      ) as HTMLInputElement;
-
-      if (beritaAcaraInput?.files?.[0] || daftarHadirInput?.files?.[0]) {
-        const fileFormData = new FormData();
-
-        if (beritaAcaraInput?.files?.[0]) {
-          fileFormData.append("beritaAcara", beritaAcaraInput.files[0]);
-        }
-
-        if (daftarHadirInput?.files?.[0]) {
-          fileFormData.append("daftarHadir", daftarHadirInput.files[0]);
-        }
-
-        const fileResponse = await fetch(
-          `/api/musyawarah/${editId}/update-file`,
-          {
-            method: "PUT",
-            body: fileFormData,
-          }
-        );
-
-        if (!fileResponse.ok) {
-          const errorData = await fileResponse.json();
-          throw new Error(errorData.error || "Gagal mengupdate file");
-        }
-      }
-
       setShowSuccessPopup(true);
       setTimeout(() => {
-        router.push(`/musyawarah/${id}`);
+        router.push(`/pembayaran/${id}`);
       }, 2000);
     } catch (error) {
       console.error("Error:", error);
@@ -148,17 +115,18 @@ export default function EditMusyawarah() {
         }}
         className="p-6 bg-white rounded-lg shadow-lg"
       >
+                {session.user.role === "admin" ? (
         <form onSubmit={handleSubmit}>
           <div className="bg-transparent border-2 border-gray-400 rounded-md">
             <div className="flex items-center justify-between m-4">
               <h2 className="text-xl font-bold">
-                Edit Musyawarah <br />{" "}
+                Edit Pembayaran <br />{" "}
                 <span className="text-base text-blue-3">
-                  {data?.namaDesa} {data?.spanTower}
+                  {data?.namaDesa} {data?.spanTower} {data?.bidangLahan}
                 </span>
               </h2>
               <div className="flex justify-end space-x-4">
-                <Link href={`/musyawarah/${id}`}>
+                <Link href={`/pembayaran/${id}`}>
                   <button
                     type="button"
                     className="w-32 px-4 py-2 font-semibold text-gray-500 transition duration-200 ease-in-out bg-white border-2 border-gray-500 rounded-lg hover:-translate-1 hover:scale-110 hover:bg-gray-200"
@@ -207,6 +175,34 @@ export default function EditMusyawarah() {
 
               <div className="flex items-center justify-between mb-2 row">
                 <label className="block ml-3 text-sm font-semibold text-black">
+                  Nomor Bidang
+                </label>
+                <div className="w-8/12 mr-3">
+                  <input
+                    type="text"
+                    value={data?.bidangLahan || ""}
+                    disabled
+                    className="w-full p-2 transition duration-300 ease-in-out border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between mb-2 row">
+                <label className="block ml-3 text-sm font-semibold text-black">
+                  Nama Pemilik
+                </label>
+                <div className="w-8/12 mr-3">
+                  <input
+                    type="text"
+                    value={data?.namaPemilik || ""}
+                    disabled
+                    className="w-full p-2 transition duration-300 ease-in-out border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between mb-2 row">
+                <label className="block ml-3 text-sm font-semibold text-black">
                   Tanggal Pelaksanaan
                 </label>
                 <div className="w-8/12 mr-3">
@@ -239,37 +235,16 @@ export default function EditMusyawarah() {
                   />
                 </div>
               </div>
-
-              <div className="flex items-center justify-between mb-2 row">
-                <label className="block ml-3 text-sm font-semibold text-black">
-                  Berita Acara
-                </label>
-                <div className="w-8/12 mr-3">
-                  <input
-                    id="beritaAcara"
-                    type="file"
-                    accept=".pdf,.doc,.docx"
-                    className="w-full p-2 transition duration-300 ease-in-out border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between rounded-b row">
-                <label className="block ml-3 text-sm font-semibold text-black">
-                  Daftar Hadir
-                </label>
-                <div className="w-8/12 mr-3">
-                  <input
-                    id="daftarHadir"
-                    type="file"
-                    accept=".pdf,.doc,.docx"
-                    className="w-full p-2 transition duration-300 ease-in-out border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                  />
-                </div>
-              </div>
             </div>
           </div>
         </form>
+                ) : (
+                  <Link href={`/pembayaran/${id}`}>
+                    <button className="flex items-center gap-2 text-blue-3 hover:text-blue-4">
+                      <FaArrowLeft /> Kembali
+                    </button>
+                  </Link>
+                )}
       </motion.div>
       <SuccessPopup
         message="Data berhasil diedit"

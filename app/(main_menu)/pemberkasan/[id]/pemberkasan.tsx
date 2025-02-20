@@ -11,7 +11,7 @@ import * as XLSX from "xlsx";
 import { useParams, useRouter } from "next/navigation";
 import Pagination from "@/app/_components/pagination";
 import { format } from "date-fns";
-// import ExportButtonpemberkasan from "@/app/_components/export/ExportButtonpemberkasan";
+import ExportButtonPemberkasan from "@/app/_components/export/ExportButtonPemberkasan";
 
 interface PemberkasanData {
   id: string;
@@ -216,7 +216,7 @@ const TabelPemberkasan = ({ session }: { session: any }) => {
           <h1 className="text-2xl font-bold text-gray-800">Tabel Pemberkasan</h1>
           {session.user.role === "admin" ? (
             <div className="flex space-x-4">
-              {/* <ExportButtonpemberkasan pemberkasanData={pemberkasanData} /> */}
+              <ExportButtonPemberkasan pemberkasanData={pemberkasanData} />
               <Link
                 href={`/pemberkasan/${id}/form`}
                 className="px-4 py-2 text-white transition duration-200 ease-in-out bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3 rounded-xl"

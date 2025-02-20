@@ -154,6 +154,7 @@ export async function POST(request: Request) {
         ),
         keterangan: (formData.get("keterangan") as string) || "-",
         ktp: ktpUrl,
+        kartukeluarga: ktpUrl,
         alashak: alashakUrl,
       },
     });

@@ -23,7 +23,7 @@ export const SubmitButton = ({ label }: { label: string }) => {
         <span>{pending ? "MENYIMPAN..." : "SIMPAN"}</span>
       ) : (
         <span className="uppercase">
-          {pending ? "MEMPERBARUI..." : "PERBARUI"}
+          {pending ? "MEMPERBARUI..." : "SIMPAN"}
         </span>
       )}
     </button>
@@ -37,8 +37,8 @@ export const EditButton = ({ id }: { id: string }) => {
     <Link
       href={`/identifikasi-awal/${projectId}/edit/${id}`}
       title="Edit"
-      className="flex px-[6px] py-1 transition duration-100 ease-in-out rounded-md bg-color5 hover:-translate-y-1 hover:shadow-lg"
-    >
+      className="flex px-[6px] py-1 transition duration-100 ease-in-out rounded-md bg-color5 hover:-translate-1 hover:scale-110 hover:shadow-lg"
+                      >
       <MdOutlineEdit className="text-xl text-white" />
     </Link>
   );
@@ -49,8 +49,8 @@ export const Delete = ({ id }: { id: string }) => {
     <Link
       href={`/delete/${id}`}
       title="Delete"
-      className="flex px-2 py-[6px] transition duration-100 ease-in-out bg-red-500 rounded-md hover:-translate-y-1 hover:shadow-lg"
-    >
+      className="flex px-[6px] py-1 transition duration-100 ease-in-out bg-red-500 rounded-md hover:-translate-1 hover:scale-110 hover:shadow-lg"
+                      >
       <FaRegTrashAlt className="text-lg text-white" />
     </Link>
   );
