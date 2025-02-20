@@ -232,7 +232,7 @@ export const saveIdentifikasi = async (prevState: any, formData: FormData) => {
 };
 
 //Update data identifikasi
-export const editIdentifikasi = async (id:string, prevState: any, formData: FormData) => {
+export const editIdentifikasi = async (id:string, itemId:string, prevState: any, formData: FormData) => {
   const validatedFields = UpdateSchema.safeParse(
       Object.fromEntries(formData.entries()),
   );
@@ -274,8 +274,8 @@ export const editIdentifikasi = async (id:string, prevState: any, formData: Form
       return {message: "Failed to update data"};
   }
 
-  revalidatePath('/identifikasi-awal');
-  redirect("/identifikasi-awal");
+  revalidatePath(`/identifikasi-awal/${itemId}`);
+  redirect(`/identifikasi-awal/${itemId}`);
 };
 
 //Delete data identifikasi

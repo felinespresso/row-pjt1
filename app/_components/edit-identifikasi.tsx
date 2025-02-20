@@ -14,7 +14,7 @@ const EditIdentifikasiAwal = ({
   itemId: string
 }) => {
   const router = useRouter();
-  const EditIdentifikasiWithId = editIdentifikasi.bind(null, data.id);
+  const EditIdentifikasiWithId = editIdentifikasi.bind(null, data.id, itemId);
   const [state, formAction] = useActionState(EditIdentifikasiWithId, null);
 
   // const [evidenceInputs, setEvidenceInputs] = useState(data.evidence || []);
