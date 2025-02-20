@@ -8,29 +8,29 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAlert } from "@/app/_contexts/AlertContext";
 import SuccessPopup from "@/app/_components/SuccessPopup";
 import * as XLSX from "xlsx";
-import { useRouter, useParams } from "next/navigation";
-import ExportButton from "@/app/_components/export/ExportButton";
+import { useParams, useRouter } from "next/navigation";
 import Pagination from "@/app/_components/pagination";
 import { format } from "date-fns";
+import ExportButtonPembayaran from "@/app/_components/export/ExportButtonPembayaran";
 
-interface SosialisasiData {
+interface PembayaranData {
   id: string;
   namaDesa: string;
   spanTower: string;
+  bidangLahan: string;
+  namaPemilik: string;
   tanggalPelaksanaan: string;
   keterangan: string;
-  beritaAcara: string | null;
-  daftarHadir: string | null;
-  evidence: EvidenceSosialisasi[];
+  evidence: EvidencePembayaran[];
 }
 
-interface EvidenceSosialisasi {
+interface EvidencePembayaran {
   id: string;
   file: string;
 }
 
-const TabelSosialisasi = ({ session }: { session: any }) => {
-  const [sosialisasiData, setSosialisasiData] = useState<SosialisasiData[]>([]);
+const TabelPembayaran = ({ session }: { session: any }) => {
+  const [pembayaranData, setPembayaranData] = useState<PembayaranData[]>([]);
   const [loading, setLoading] = useState(true);
   const itemsPerPage = 10;
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
@@ -42,16 +42,15 @@ const TabelSosialisasi = ({ session }: { session: any }) => {
   const params = useParams();
   const id = params.id;
 
-  console.log(id);
-
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`/api/sosialisasi?itemId=${id}`, {
+        const response = await fetch(`/api/pembayaran?itemId=${id}`, {
           cache: "no-store",
         });
         const data = await response.json();
-        setSosialisasiData(data);
+        console.log("Data Pembayaran dari API:", data); // Debugging
+        setPembayaranData(data);
       } catch (error) {
         console.error("Error fetching data:", error);
         showAlert("Gagal mengambil data", "error");
@@ -64,25 +63,7 @@ const TabelSosialisasi = ({ session }: { session: any }) => {
     fetchData();
   }, [showAlert]);
 
-  const totalPages = Math.ceil(sosialisasiData.length / itemsPerPage);
-
-  const handleFileView = async (id: string, type: string) => {
-    try {
-      const response = await fetch(
-        `/api/sosialisasi/${id}/formulir?type=${type}`
-      );
-      if (!response.ok) {
-        alert("Gagal membuka file");
-        return;
-      }
-
-      const { url } = await response.json(); // Ambil URL dari response JSON
-      window.open(url, "_blank"); // Buka URL di tab baru
-    } catch (error) {
-      console.error("Error membuka file:", error);
-      alert("Terjadi kesalahan saat membuka file.");
-    }
-  };
+  const totalPages = Math.ceil(pembayaranData.length / itemsPerPage);
 
   const handleDelete = (id: string) => {
     setDeleteId(id);
@@ -97,12 +78,12 @@ const TabelSosialisasi = ({ session }: { session: any }) => {
   const confirmDelete = async () => {
     if (deleteId) {
       try {
-        const response = await fetch(`/api/sosialisasi/${deleteId}`, {
+        const response = await fetch(`/api/pembayaran/${deleteId}`, {
           method: "DELETE",
         });
 
         if (response.ok) {
-          setSosialisasiData((prevData) =>
+          setPembayaranData((prevData) =>
             prevData.filter((item) => item.id !== deleteId)
           );
           setShowConfirmDelete(false);
@@ -124,14 +105,18 @@ const TabelSosialisasi = ({ session }: { session: any }) => {
       "NO.": "NO.",
       "NAMA DESA": "NAMA DESA",
       "SPAN TOWER": "SPAN TOWER",
+      "NOMOR BIDANG": "NOMOR BIDANG",
+      "NAMA PEMILIK": "NAMA PEMILIK",
       "TANGGAL PELAKSANAAN": "TANGGAL PELAKSANAAN",
       KETERANGAN: "KETERANGAN",
     };
 
-    const processedData = sosialisasiData.map((item, index) => ({
+    const processedData = pembayaranData.map((item, index) => ({
       "NO.": index + 1,
       "NAMA DESA": item.namaDesa || "-",
       "SPAN TOWER": item.spanTower || "-",
+      "NOMOR BIDANG": item.bidangLahan || "-",
+      "NAMA PEMILIK": item.namaPemilik || "-",
       "TANGGAL PELAKSANAAN": item.tanggalPelaksanaan
         ? new Date(item.tanggalPelaksanaan).toLocaleDateString()
         : "-",
@@ -213,14 +198,12 @@ const TabelSosialisasi = ({ session }: { session: any }) => {
         className="p-6 bg-white rounded-lg shadow-lg"
       >
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">
-            Tabel Sosialisasi
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-800">Tabel Pembayaran</h1>
           {session.user.role === "admin" ? (
             <div className="flex space-x-4">
-              <ExportButton sosialisasiData={sosialisasiData} />
+              <ExportButtonPembayaran pembayaranData={pembayaranData} />
               <Link
-                href={`/sosialisasi/${id}/form`}
+                href={`/pembayaran/${id}/form`}
                 className="px-4 py-2 text-white transition duration-200 ease-in-out bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3 rounded-xl"
               >
                 <div className="flex items-center ml-auto space-x-3 text-sm font-semibold uppercase">
@@ -246,16 +229,16 @@ const TabelSosialisasi = ({ session }: { session: any }) => {
                   Span Tower
                 </th>
                 <th className="px-6 py-3 font-semibold tracking-wider text-center text-gray-700 uppercase">
+                  Nomor Bidang
+                </th>
+                <th className="px-6 py-3 font-semibold tracking-wider text-center text-gray-700 uppercase">
+                  Nama Pemilik
+                </th>
+                <th className="px-6 py-3 font-semibold tracking-wider text-center text-gray-700 uppercase">
                   Tanggal Pelaksanaan
                 </th>
                 <th className="px-6 py-3 font-semibold tracking-wider text-center text-gray-700 uppercase">
                   Keterangan
-                </th>
-                <th className="px-6 py-3 font-semibold tracking-wider text-center text-gray-700 uppercase">
-                  Berita Acara
-                </th>
-                <th className="px-6 py-3 font-semibold tracking-wider text-center text-gray-700 uppercase">
-                  Daftar Hadir
                 </th>
                 <th className="px-6 py-3 font-semibold tracking-wider text-center text-gray-700 uppercase">
                   Evidence
@@ -268,7 +251,7 @@ const TabelSosialisasi = ({ session }: { session: any }) => {
               </tr>
             </thead>
             <tbody className="divide-y-2 divide-gray-400">
-              {sosialisasiData.map((item, index) => (
+              {pembayaranData.map((item, index) => (
                 <tr
                   key={item.id}
                   className={`text-sm divide-x-2 divide-gray-400 ${
@@ -285,44 +268,19 @@ const TabelSosialisasi = ({ session }: { session: any }) => {
                     {item.spanTower}
                   </td>
                   <td className="px-6 py-4 text-center whitespace-nowrap">
+                    {item.bidangLahan}
+                  </td>
+                  <td className="px-6 py-4 text-center whitespace-nowrap">
+                    {item.namaPemilik}
+                  </td>
+                  <td className="px-6 py-4 text-center whitespace-nowrap">
                     {formatDate(item.tanggalPelaksanaan)}
                   </td>
                   <td className="px-6 py-4 text-center whitespace-nowrap">
                     {item.keterangan}
                   </td>
                   <td className="px-6 py-4 text-center whitespace-nowrap">
-                    {item.beritaAcara ? (
-                      <button
-                        onClick={() => handleFileView(item.id, "beritaAcara")}
-                        className="px-4 py-2 text-white transition duration-200 ease-in-out rounded-lg bg-color3 hover:bg-color8"
-                      >
-                        <div className="flex items-center space-x-3 text-sm font-semibold uppercase">
-                          <FaFileImage className="text-xl" />
-                          <span className="text-sm">Lihat File</span>
-                        </div>
-                      </button>
-                    ) : (
-                      "-"
-                    )}
-                  </td>
-                  <td className="px-6 py-4 text-center whitespace-nowrap">
-                    {item.daftarHadir ? (
-                      <button
-                        onClick={() => handleFileView(item.id, "daftarHadir")}
-                        className="px-4 py-2 text-white transition duration-200 ease-in-out rounded-lg bg-color3 hover:bg-color8"
-                      >
-                        <div className="flex items-center space-x-3 text-sm font-semibold uppercase">
-                          <FaFileImage className="text-xl" />
-                          <span className="text-sm">Lihat File</span>
-                        </div>
-                      </button>
-                    ) : (
-                      "-"
-                    )}
-                  </td>
-
-                  <td className="px-6 py-4 text-center whitespace-nowrap">
-                    <Link href={`/sosialisasi/${id}/evidence/${item.id}`}>
+                    <Link href={`/pembayaran/${id}/evidence/${item.id}`}>
                       <button
                         className="px-4 py-2 text-white transition duration-200 ease-in-out rounded-lg bg-color3 hover:bg-color8"
                         title={`${
@@ -349,7 +307,7 @@ const TabelSosialisasi = ({ session }: { session: any }) => {
                       <div className="flex justify-center space-x-3">
                         <button
                           onClick={() =>
-                            router.push(`/sosialisasi/${id}/edit/${item.id}`)
+                            router.push(`/pembayaran/${id}/edit/${item.id}`)
                           }
                           className="flex px-[6px] py-1 transition duration-100 ease-in-out rounded-md bg-color5 hover:-translate-1 hover:scale-110 hover:shadow-lg"
                         >
@@ -420,4 +378,4 @@ const TabelSosialisasi = ({ session }: { session: any }) => {
   );
 };
 
-export default TabelSosialisasi;
+export default TabelPembayaran;

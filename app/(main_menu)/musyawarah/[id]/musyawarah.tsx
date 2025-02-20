@@ -8,12 +8,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAlert } from "@/app/_contexts/AlertContext";
 import SuccessPopup from "@/app/_components/SuccessPopup";
 import * as XLSX from "xlsx";
-import { useRouter, useParams } from "next/navigation";
-import ExportButton from "@/app/_components/export/ExportButton";
+import { useParams, useRouter } from "next/navigation";
+// import ExportButton from "@/app/_components/export/ExportButton";
 import Pagination from "@/app/_components/pagination";
 import { format } from "date-fns";
+import ExportButtonMusyawarah from "@/app/_components/export/ExportButtonMusyawarah";
 
-interface SosialisasiData {
+interface MusyawarahData {
   id: string;
   namaDesa: string;
   spanTower: string;
@@ -21,16 +22,16 @@ interface SosialisasiData {
   keterangan: string;
   beritaAcara: string | null;
   daftarHadir: string | null;
-  evidence: EvidenceSosialisasi[];
+  evidence: EvidenceMusyawarah[];
 }
 
-interface EvidenceSosialisasi {
+interface EvidenceMusyawarah {
   id: string;
   file: string;
 }
 
-const TabelSosialisasi = ({ session }: { session: any }) => {
-  const [sosialisasiData, setSosialisasiData] = useState<SosialisasiData[]>([]);
+const TabelMusyawarah = ({ session }: { session: any }) => {
+  const [MusyawarahData, setMusyawarahData] = useState<MusyawarahData[]>([]);
   const [loading, setLoading] = useState(true);
   const itemsPerPage = 10;
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
@@ -42,16 +43,14 @@ const TabelSosialisasi = ({ session }: { session: any }) => {
   const params = useParams();
   const id = params.id;
 
-  console.log(id);
-
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`/api/sosialisasi?itemId=${id}`, {
+        const response = await fetch(`/api/musyawarah?itemId=${id}`, {
           cache: "no-store",
         });
         const data = await response.json();
-        setSosialisasiData(data);
+        setMusyawarahData(data);
       } catch (error) {
         console.error("Error fetching data:", error);
         showAlert("Gagal mengambil data", "error");
@@ -64,12 +63,12 @@ const TabelSosialisasi = ({ session }: { session: any }) => {
     fetchData();
   }, [showAlert]);
 
-  const totalPages = Math.ceil(sosialisasiData.length / itemsPerPage);
+  const totalPages = Math.ceil(MusyawarahData.length / itemsPerPage);
 
   const handleFileView = async (id: string, type: string) => {
     try {
       const response = await fetch(
-        `/api/sosialisasi/${id}/formulir?type=${type}`
+        `/api/musyawarah/${id}/formulir?type=${type}`
       );
       if (!response.ok) {
         alert("Gagal membuka file");
@@ -97,12 +96,12 @@ const TabelSosialisasi = ({ session }: { session: any }) => {
   const confirmDelete = async () => {
     if (deleteId) {
       try {
-        const response = await fetch(`/api/sosialisasi/${deleteId}`, {
+        const response = await fetch(`/api/musyawarah/${deleteId}`, {
           method: "DELETE",
         });
 
         if (response.ok) {
-          setSosialisasiData((prevData) =>
+          setMusyawarahData((prevData) =>
             prevData.filter((item) => item.id !== deleteId)
           );
           setShowConfirmDelete(false);
@@ -128,7 +127,7 @@ const TabelSosialisasi = ({ session }: { session: any }) => {
       KETERANGAN: "KETERANGAN",
     };
 
-    const processedData = sosialisasiData.map((item, index) => ({
+    const processedData = MusyawarahData.map((item, index) => ({
       "NO.": index + 1,
       "NAMA DESA": item.namaDesa || "-",
       "SPAN TOWER": item.spanTower || "-",
@@ -187,9 +186,9 @@ const TabelSosialisasi = ({ session }: { session: any }) => {
       }
     });
 
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Data Sosialisasi");
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Data Musyawarah");
 
-    XLSX.writeFile(workbook, "Data Sosialisasi.xlsx");
+    XLSX.writeFile(workbook, "Data Musyawarah.xlsx");
   };
 
   if (loading) {
@@ -199,7 +198,6 @@ const TabelSosialisasi = ({ session }: { session: any }) => {
       </div>
     );
   }
-
   const formatDate = (dateString: string) => {
     return format(new Date(dateString), "yyyy-MM-dd");
   };
@@ -213,14 +211,12 @@ const TabelSosialisasi = ({ session }: { session: any }) => {
         className="p-6 bg-white rounded-lg shadow-lg"
       >
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">
-            Tabel Sosialisasi
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-800">Tabel Musyawarah</h1>
           {session.user.role === "admin" ? (
             <div className="flex space-x-4">
-              <ExportButton sosialisasiData={sosialisasiData} />
+              <ExportButtonMusyawarah musyawarahData={MusyawarahData} />
               <Link
-                href={`/sosialisasi/${id}/form`}
+                href={`/musyawarah/${id}/form`}
                 className="px-4 py-2 text-white transition duration-200 ease-in-out bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3 rounded-xl"
               >
                 <div className="flex items-center ml-auto space-x-3 text-sm font-semibold uppercase">
@@ -268,7 +264,7 @@ const TabelSosialisasi = ({ session }: { session: any }) => {
               </tr>
             </thead>
             <tbody className="divide-y-2 divide-gray-400">
-              {sosialisasiData.map((item, index) => (
+              {MusyawarahData.map((item, index) => (
                 <tr
                   key={item.id}
                   className={`text-sm divide-x-2 divide-gray-400 ${
@@ -322,7 +318,7 @@ const TabelSosialisasi = ({ session }: { session: any }) => {
                   </td>
 
                   <td className="px-6 py-4 text-center whitespace-nowrap">
-                    <Link href={`/sosialisasi/${id}/evidence/${item.id}`}>
+                    <Link href={`/musyawarah/${id}/evidence/${item.id}`}>
                       <button
                         className="px-4 py-2 text-white transition duration-200 ease-in-out rounded-lg bg-color3 hover:bg-color8"
                         title={`${
@@ -349,7 +345,7 @@ const TabelSosialisasi = ({ session }: { session: any }) => {
                       <div className="flex justify-center space-x-3">
                         <button
                           onClick={() =>
-                            router.push(`/sosialisasi/${id}/edit/${item.id}`)
+                            router.push(`/musyawarah/${id}/edit/${item.id}`)
                           }
                           className="flex px-[6px] py-1 transition duration-100 ease-in-out rounded-md bg-color5 hover:-translate-1 hover:scale-110 hover:shadow-lg"
                         >
@@ -420,4 +416,4 @@ const TabelSosialisasi = ({ session }: { session: any }) => {
   );
 };
 
-export default TabelSosialisasi;
+export default TabelMusyawarah;

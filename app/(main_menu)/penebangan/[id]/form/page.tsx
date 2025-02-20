@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import "./globals.css";
 import { useAlert } from "@/app/_contexts/AlertContext";
@@ -15,13 +15,17 @@ interface Identifikasi {
   spantower: string;
 }
 
+interface Evidence {
+  id: string;
+  bidangLahan: string;
+  namaPemilik: string;
+}
+
 interface FormData {
-  // itemId: string;
   identifikasiId: string;
+  bidangLahanId: string;
   tanggalPelaksanaan: string;
   keterangan: string;
-  beritaAcara: File | null;
-  daftarHadir: File | null;
   evidence: File[];
 }
 
@@ -29,7 +33,7 @@ interface EvidenceInput {
   file: File | null;
 }
 
-const FormSosialisasi = () => {
+const FormPenebangan = () => {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isClient, setIsClient] = useState(false);
@@ -39,18 +43,17 @@ const FormSosialisasi = () => {
   const { id } = useParams();
 
   const [formData, setFormData] = useState<FormData>({
-    // itemId: "",
     identifikasiId: "",
+    bidangLahanId: "",
     tanggalPelaksanaan: "",
     keterangan: "",
-    beritaAcara: null,
-    daftarHadir: null,
     evidence: [],
   });
 
   // Tambahkan state untuk error
   const [formErrors, setFormErrors] = useState({
     identifikasiId: "",
+    bidangLahanId: "",
     tanggalPelaksanaan: "",
     keterangan: "",
   });
@@ -65,7 +68,7 @@ const FormSosialisasi = () => {
   // Tambahkan useEffect untuk memulihkan data dari localStorage
   useEffect(() => {
     setIsClient(true);
-    const savedData = localStorage.getItem("sosialisasiFormData");
+    const savedData = localStorage.getItem("pembayaranFormData");
     if (savedData) {
       const parsedData = JSON.parse(savedData);
       setFormData((prev) => ({
@@ -83,14 +86,17 @@ const FormSosialisasi = () => {
 
   // Update handler untuk tombol cancel
   const handleCancel = () => {
-    localStorage.removeItem("sosialisasiFormData");
-    router.push(`/sosialisasi/${id}`); // ✅ Arahkan ke halaman yang benar sesuai dengan ID
+    localStorage.removeItem("penebanganFormData");
+    router.push(`/penebangan/${id}`);
   };
 
   const [identifikasiList, setIdentifikasiList] = useState<Identifikasi[]>([]);
   const [evidenceList, setEvidenceList] = useState<EvidenceInput[]>([
     { file: null },
   ]);
+
+  const [bidangLahanList, setBidangLahanList] = useState<Evidence[]>([]);
+  const [selectedNamaPemilik, setSelectedNamaPemilik] = useState("");
 
   // Tambahkan ref untuk combobox
   const comboboxRef = useRef<HTMLInputElement>(null);
@@ -110,14 +116,14 @@ const FormSosialisasi = () => {
   });
 
   // Update handler untuk mengubah lokasi
-  const handleLocationChange = (value: string) => {
+  const handleLocationChange = async (value: string) => {
     try {
       const newFormData = {
         ...formData,
         identifikasiId: value,
-        itemId: id,
+        bidangLahanId: "",
+        itemd: id,
       };
-
       setFormData(newFormData);
 
       const selected = identifikasiList.find((item) => item.id === value);
@@ -131,32 +137,36 @@ const FormSosialisasi = () => {
       }));
 
       setSelectedLocation(selected);
+
+      const response = await fetch(`/api/penebangan?identifikasiId=${value}`);
+      if (!response.ok) throw new Error("Gagal mengambil data bidang lahan");
+
+      const data = await response.json();
+      setBidangLahanList(data);
     } catch (error) {
-      console.error("Error:", error);
-      showAlert("Gagal mengambil data lokasi", "error");
+      console.error("Error fetching bidang lahan:", error);
+      showAlert("Gagal mengambil data bidang lahan", "error");
     }
+  };
+
+  const handleBidangLahanChange = (value: string) => {
+    setFormData({ ...formData, bidangLahanId: value });
+
+    const selectedEvidence = bidangLahanList.find((item) => item.id === value);
+    setSelectedNamaPemilik(selectedEvidence?.namaPemilik || "");
   };
 
   useEffect(() => {
     const fetchIdentifikasi = async () => {
       try {
-        console.log("Fetching identifikasi for itemId:", id); // ✅ Debugging
-
         const response = await fetch(`/api/identifikasi/${id}`);
-        console.log("Response status:", response); // ✅ Debugging
-
         if (!response.ok) {
-          const errorText = await response.text(); // ✅ Dapatkan error lebih detail
-          throw new Error(
-            `HTTP error! Status: ${response.status}, Message: ${errorText}`
-          );
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
-
         const data = await response.json();
-        console.log("Identifikasi data:", data); // ✅ Debugging
         setIdentifikasiList(data);
       } catch (error) {
-        console.error("Error fetching identifikasi:", error); // ✅ Debugging
+        console.error("Error fetching identifikasi:", error);
       }
     };
 
@@ -181,23 +191,28 @@ const FormSosialisasi = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Reset error messages
     setFormErrors({
       identifikasiId: "",
+      bidangLahanId: "",
       tanggalPelaksanaan: "",
       keterangan: "",
     });
 
-    // Validasi form
     let hasError = false;
     const newErrors = {
       identifikasiId: "",
+      bidangLahanId: "",
       tanggalPelaksanaan: "",
       keterangan: "",
     };
 
     if (!formData.identifikasiId) {
       newErrors.identifikasiId = "Lokasi wajib diisi!";
+      hasError = true;
+    }
+
+    if (!formData.bidangLahanId) {
+      newErrors.bidangLahanId = "Bidang lahan wajib diisi!";
       hasError = true;
     }
 
@@ -222,37 +237,29 @@ const FormSosialisasi = () => {
     try {
       const formDataToSend = new FormData();
       formDataToSend.append("identifikasiId", formData.identifikasiId);
-      // formDataToSend.append("itemId", formData.itemId); // Tambahkan itemId
+      formDataToSend.append("bidangLahanId", formData.bidangLahanId);
       formDataToSend.append("tanggalPelaksanaan", formData.tanggalPelaksanaan);
       formDataToSend.append("keterangan", formData.keterangan);
 
-      if (formData.beritaAcara) {
-        formDataToSend.append("beritaAcara", formData.beritaAcara);
-      }
-
-      if (formData.daftarHadir) {
-        formDataToSend.append("daftarHadir", formData.daftarHadir);
-      }
-
+      // ✅ Menambahkan evidence ke dalam FormData
       evidenceList.forEach((evidence, index) => {
         if (evidence.file) {
-          formDataToSend.append(`evidence`, evidence.file);
+          formDataToSend.append(`evidenceFiles`, evidence.file);
         }
       });
 
-      const response = await fetch("/api/sosialisasi", {
+      const response = await fetch("/api/penebangan", {
         method: "POST",
         body: formDataToSend,
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error("Gagal menyimpan data");
       }
 
-      localStorage.removeItem("sosialisasiFormData");
       setShowSuccessPopup(true);
       setTimeout(() => {
-        router.push(`/sosialisasi/${id}`);
+        router.push(`/penebangan/${id}`);
       }, 2000);
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -287,7 +294,7 @@ const FormSosialisasi = () => {
         <form onSubmit={handleSubmit}>
           <div className="pt-2 bg-transparent border-2 border-gray-400 rounded-md">
             <div className="flex items-center justify-between px-4 m-4">
-              <h2 className="text-xl font-bold">Form Sosialisasi</h2>
+              <h2 className="text-xl font-bold">Form Penebangan</h2>
               <div className="flex justify-end space-x-4">
                 <button
                   type="button"
@@ -354,6 +361,51 @@ const FormSosialisasi = () => {
 
               <div className="flex items-center justify-between mb-2 row">
                 <label className="block ml-3 text-sm font-semibold text-black">
+                  Nomor Bidang
+                </label>
+                <div className="w-8/12 mr-3">
+                  <select
+                    className={`w-full p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400 ${
+                      formErrors.bidangLahanId
+                        ? "border-red-500"
+                        : "border-gray-400"
+                    }`}
+                    value={formData.bidangLahanId}
+                    onChange={(e) => handleBidangLahanChange(e.target.value)}
+                  >
+                    {!formData.bidangLahanId && (
+                      <option value="">Pilih lokasi...</option>
+                    )}
+                    {bidangLahanList.map((item) => (
+                      <option key={item.id} value={item.id}>
+                        {item.bidangLahan}
+                      </option>
+                    ))}
+                  </select>
+                  {formErrors.bidangLahanId && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {formErrors.bidangLahanId}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between mb-2 row">
+                <label className="block ml-3 text-sm font-semibold text-black">
+                  Nama Pemilik
+                </label>
+                <div className="w-8/12 mr-3">
+                  <input
+                    type="text"
+                    value={selectedNamaPemilik}
+                    readOnly
+                    className="w-full p-2 transition duration-300 ease-in-out border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between mb-2 row">
+                <label className="block ml-3 text-sm font-semibold text-black">
                   Tanggal Pelaksanaan
                 </label>
                 <div className="w-8/12 mr-3">
@@ -406,44 +458,6 @@ const FormSosialisasi = () => {
                       {formErrors.keterangan}
                     </p>
                   )}
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between row">
-                <label className="block ml-3 text-sm font-semibold text-black">
-                  Berita Acara
-                </label>
-                <div className="flex items-center w-8/12 mr-3">
-                  <input
-                    type="file"
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        beritaAcara: e.target.files?.[0] || null,
-                      })
-                    }
-                    className="w-full p-2 transition duration-300 ease-in-out border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                    accept=".pdf"
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between row">
-                <label className="block ml-3 text-sm font-semibold text-black">
-                  Daftar Hadir
-                </label>
-                <div className="flex items-center w-8/12 mr-3">
-                  <input
-                    type="file"
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        daftarHadir: e.target.files?.[0] || null,
-                      })
-                    }
-                    className="w-full p-2 transition duration-300 ease-in-out border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                    accept=".pdf"
-                  />
                 </div>
               </div>
 
@@ -506,4 +520,4 @@ const FormSosialisasi = () => {
   );
 };
 
-export default FormSosialisasi;
+export default FormPenebangan;

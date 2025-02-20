@@ -4,13 +4,16 @@ import prisma from "@/lib/prisma";
 // GET: Ambil semua data penebangan
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
+    const searchParams = request.nextUrl.searchParams;
+    const itemId = searchParams.get("itemId") ?? "0";
     const identifikasiId = searchParams.get("identifikasiId");
 
     // Jika ada `identifikasiId`, ambil bidang lahan & nama pemilik dari `Evidences`
     if (identifikasiId) {
       const evidences = await prisma.evidences.findMany({
-        where: { desaId: identifikasiId },
+        where: {
+          desaId: identifikasiId,
+        },
         select: {
           id: true,
           bidangLahan: true,
@@ -21,8 +24,11 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(evidences);
     }
 
-    // Jika tidak ada `identifikasiId`, ambil semua data penebangan
+    // Jika tidak ada `identifikasiId`, ambil semua data pembayaran
     const penebangan = await prisma.penebangan.findMany({
+      where: {
+        itemId: parseInt(itemId),
+      },
       include: {
         identifikasi: true,
         evidence: true,
@@ -92,8 +98,17 @@ export async function POST(request: Request) {
       );
     }
 
+    const itemId = identifikasi.itemId;
+    if (!itemId) {
+      return NextResponse.json(
+        { error: "Identifikasi tidak terkait dengan proyek manapun" },
+        { status: 400 }
+      );
+    }
+
     const penebangan = await prisma.penebangan.create({
       data: {
+        itemId,
         identifikasiId,
         namaDesa: identifikasi.namadesa,
         spanTower: identifikasi.spantower,

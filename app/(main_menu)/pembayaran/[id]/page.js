@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import TabelPembayaran from "../pembayaran";
+import TabelPembayaran from "./pembayaran";
 import { AlertProvider } from "@/app/_contexts/AlertContext";
 
 export default async function page() {

@@ -54,10 +54,16 @@ export const Delete = ({ id }: { id: string }) => {
   );
 };
 
-export const EvidenceButton = ({ id }: { id: string }) => {
+export const EvidenceButton = ({
+  id,
+  itemId,
+}: {
+  id: string;
+  itemId: string;
+}) => {
   return (
     <Link
-      href={`/identifikasi-awal/evidence/${id}`}
+      href={`/identifikasi-awal/${itemId}/evidence/${id}`}
       target="_self"
       rel="noopener noreferrer"
     >

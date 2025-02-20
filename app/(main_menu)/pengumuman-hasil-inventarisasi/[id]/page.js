@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { AlertProvider } from "@/app/_contexts/AlertContext";
-import TabelPengumuman from "../pengumuman";
+import TabelPengumuman from "./pengumuman";
 
 export default async function page() {
   const session = await auth();

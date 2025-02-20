@@ -5,9 +5,14 @@ import { del, put } from "@vercel/blob";
 const baseUrl = "http://localhost:3000/uploads/";
 
 // GET: Ambil semua data sosialisasi
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const searchParams = request.nextUrl.searchParams;
+    const itemId = searchParams.get("itemId") ?? "0";
     const musyawarah = await prisma.musyawarah.findMany({
+      where: {
+        itemId: parseInt(itemId),
+      },
       include: {
         identifikasi: true,
         evidence: true,
@@ -63,6 +68,14 @@ export async function POST(request: Request) {
       );
     }
 
+    const itemId = identifikasi.itemId;
+    if (!itemId) {
+      return NextResponse.json(
+        { error: "Identifikasi tidak terkait dengan proyek manapun" },
+        { status: 400 }
+      );
+    }
+
     const beritaAcara = formData.get("beritaAcara") as File | null;
     const daftarHadir = formData.get("daftarHadir") as File | null;
 
@@ -87,6 +100,7 @@ export async function POST(request: Request) {
 
     const musyawarah = await prisma.musyawarah.create({
       data: {
+        itemId,
         identifikasiId,
         namaDesa: identifikasi.namadesa,
         spanTower: identifikasi.spantower,

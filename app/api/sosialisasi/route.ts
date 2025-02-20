@@ -5,9 +5,14 @@ import { del, put } from "@vercel/blob";
 const baseUrl = "http://localhost:3000/uploads/";
 
 // GET: Ambil semua data sosialisasi
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const searchParams = request.nextUrl.searchParams;
+    const itemId = searchParams.get("itemId") ?? "0";
     const sosialisasi = await prisma.sosialisasi.findMany({
+      where: {
+        itemId: parseInt(itemId),
+      },
       include: {
         identifikasi: true,
         evidence: true,

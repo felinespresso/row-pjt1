@@ -16,7 +16,6 @@ interface Identifikasi {
 }
 
 interface FormData {
-  // itemId: string;
   identifikasiId: string;
   tanggalPelaksanaan: string;
   keterangan: string;
@@ -29,7 +28,7 @@ interface EvidenceInput {
   file: File | null;
 }
 
-const FormSosialisasi = () => {
+const FormMusyawarah = () => {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isClient, setIsClient] = useState(false);
@@ -39,7 +38,6 @@ const FormSosialisasi = () => {
   const { id } = useParams();
 
   const [formData, setFormData] = useState<FormData>({
-    // itemId: "",
     identifikasiId: "",
     tanggalPelaksanaan: "",
     keterangan: "",
@@ -65,7 +63,7 @@ const FormSosialisasi = () => {
   // Tambahkan useEffect untuk memulihkan data dari localStorage
   useEffect(() => {
     setIsClient(true);
-    const savedData = localStorage.getItem("sosialisasiFormData");
+    const savedData = localStorage.getItem("musyawarahFormData");
     if (savedData) {
       const parsedData = JSON.parse(savedData);
       setFormData((prev) => ({
@@ -83,8 +81,8 @@ const FormSosialisasi = () => {
 
   // Update handler untuk tombol cancel
   const handleCancel = () => {
-    localStorage.removeItem("sosialisasiFormData");
-    router.push(`/sosialisasi/${id}`); // ✅ Arahkan ke halaman yang benar sesuai dengan ID
+    localStorage.removeItem("musyawarahFormData");
+    router.push(`/musyawarah/${id}`);
   };
 
   const [identifikasiList, setIdentifikasiList] = useState<Identifikasi[]>([]);
@@ -131,6 +129,8 @@ const FormSosialisasi = () => {
       }));
 
       setSelectedLocation(selected);
+
+      console.log(formData);
     } catch (error) {
       console.error("Error:", error);
       showAlert("Gagal mengambil data lokasi", "error");
@@ -140,23 +140,14 @@ const FormSosialisasi = () => {
   useEffect(() => {
     const fetchIdentifikasi = async () => {
       try {
-        console.log("Fetching identifikasi for itemId:", id); // ✅ Debugging
-
         const response = await fetch(`/api/identifikasi/${id}`);
-        console.log("Response status:", response); // ✅ Debugging
-
         if (!response.ok) {
-          const errorText = await response.text(); // ✅ Dapatkan error lebih detail
-          throw new Error(
-            `HTTP error! Status: ${response.status}, Message: ${errorText}`
-          );
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
-
         const data = await response.json();
-        console.log("Identifikasi data:", data); // ✅ Debugging
         setIdentifikasiList(data);
       } catch (error) {
-        console.error("Error fetching identifikasi:", error); // ✅ Debugging
+        console.error("Error fetching identifikasi:", error);
       }
     };
 
@@ -222,7 +213,6 @@ const FormSosialisasi = () => {
     try {
       const formDataToSend = new FormData();
       formDataToSend.append("identifikasiId", formData.identifikasiId);
-      // formDataToSend.append("itemId", formData.itemId); // Tambahkan itemId
       formDataToSend.append("tanggalPelaksanaan", formData.tanggalPelaksanaan);
       formDataToSend.append("keterangan", formData.keterangan);
 
@@ -240,7 +230,7 @@ const FormSosialisasi = () => {
         }
       });
 
-      const response = await fetch("/api/sosialisasi", {
+      const response = await fetch("/api/musyawarah", {
         method: "POST",
         body: formDataToSend,
       });
@@ -249,10 +239,10 @@ const FormSosialisasi = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      localStorage.removeItem("sosialisasiFormData");
+      localStorage.removeItem("musyawarahFormData");
       setShowSuccessPopup(true);
       setTimeout(() => {
-        router.push(`/sosialisasi/${id}`);
+        router.push(`/musyawarah/${id}`);
       }, 2000);
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -506,4 +496,4 @@ const FormSosialisasi = () => {
   );
 };
 
-export default FormSosialisasi;
+export default FormMusyawarah;

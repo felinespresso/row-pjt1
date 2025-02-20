@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import TabelMusyawarah from "../musyawarah";
+import TabelMusyawarah from "./musyawarah";
 import { AlertProvider } from "@/app/_contexts/AlertContext";
 
 export default async function page() {
