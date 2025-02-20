@@ -13,11 +13,10 @@ export const SubmitButton = ({ label }: { label: string }) => {
     <button
       type="submit"
       disabled={pending}
-      className={`transition ease-in-out duration-200 ${
-        pending
-          ? "bg-gray-400"
-          : "bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3"
-      }
+      className={`transition ease-in-out duration-200 ${pending
+        ? "bg-gray-400"
+        : "bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3"
+        }
         px-9 py-2 text-white rounded-lg font-semibold`}
     >
       {label === "save" ? (
@@ -32,7 +31,7 @@ export const SubmitButton = ({ label }: { label: string }) => {
 };
 
 export const EditButton = ({ id }: { id: string }) => {
-  const params = useParams(); 
+  const params = useParams();
   const projectId = params.id;
   return (
     <Link
@@ -80,10 +79,10 @@ export const EvidenceButton = ({
   );
 };
 
-export const EditEvidence = ({ id }: { id: string }) => {
+export const EditEvidence = ({ id, itemId, identifikasiId }: { id: string; itemId: string; identifikasiId: string }) => {
   return (
     <Link
-      href={`/identifikasi-awal/evidence/edit/${id}`}
+      href={`/identifikasi-awal/${itemId}/evidence/${identifikasiId}/edit/${id}`}
       title="Edit"
       className="w-full py-3 text-sm text-center bg-gray-100 border-t border-r border-gray-200 cursor-pointer rounded-bl-md hover:bg-gray-200 focus:bg-gray-200"
     >

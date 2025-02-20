@@ -246,20 +246,25 @@ export const saveIdentifikasi = async (prevState: any, formData: FormData) => {
 };
 
 //Update data identifikasi
-export const editIdentifikasi = async (id:string, itemId:string, prevState: any, formData: FormData) => {
-  const validatedFields = UpdateSchema.safeParse(
-      Object.fromEntries(formData.entries()),
-  );
-  
-  if (!validatedFields.success) {
-      console.error("Validation failed:", validatedFields.error);
-      return {
-          Error: validatedFields.error.flatten().fieldErrors,
-      };
-  };
-  
-  const data = await getDataById(id);
-  if (!data) return {message: "No Data Found"};
+export const editIdentifikasi = async (
+    id: string,
+    itemId: string,
+    prevState: any,
+    formData: FormData
+) => {
+    const validatedFields = UpdateSchema.safeParse(
+        Object.fromEntries(formData.entries())
+    );
+
+    if (!validatedFields.success) {
+        console.error("Validation failed:", validatedFields.error);
+        return {
+            Error: validatedFields.error.flatten().fieldErrors,
+        };
+    }
+
+    const data = await getDataById(id);
+    if (!data) return { message: "No Data Found" };
 
     const { fotoudara } = validatedFields.data;
     let fotoudaraPath;
@@ -289,8 +294,8 @@ export const editIdentifikasi = async (id:string, itemId:string, prevState: any,
         return { message: "Failed to update data" };
     }
 
-  revalidatePath(`/identifikasi-awal/${itemId}`);
-  redirect(`/identifikasi-awal/${itemId}`);
+    revalidatePath(`/identifikasi-awal/${itemId}`);
+    redirect(`/identifikasi-awal/${itemId}`);
 };
 
 //Delete data identifikasi
@@ -336,6 +341,7 @@ export const deleteEvidences = async (id: string) => {
 export const editEvidence = async (
     id: string,
     desaId: string,
+    identifikasiId: string,
     prevState: any,
     formData: FormData
 ) => {
@@ -380,8 +386,8 @@ export const editEvidence = async (
         return { message: "Failed to update data" };
     }
 
-    revalidatePath(`/identifikasi-awal/evidence/${desaId}`);
-    redirect(`/identifikasi-awal/evidence/${desaId}`);
+    revalidatePath(`/identifikasi-awal/${desaId}/evidence/${identifikasiId}`);
+    redirect(`/identifikasi-awal/${desaId}/evidence/${identifikasiId}`);
 };
 
 //Save data evidence

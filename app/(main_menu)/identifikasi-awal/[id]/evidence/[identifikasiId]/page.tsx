@@ -8,9 +8,9 @@ import Card from "@/app/_components/card";
 export default async function EvidencePage({
   params,
 }: {
-  params: { id: string; identifikasiId: string, formId: string };
+  params: { id: string; identifikasiId: string };
 }) {
-  const { id: itemId, identifikasiId: id} = params;
+  const { id: itemId, identifikasiId: id } = params;
   const data = await getDesaById(id);
   const images = await getEvidence(id);
   // if (!data) {
@@ -49,7 +49,7 @@ export default async function EvidencePage({
         </div>
         <div className="grid gap-5 mt-12 md:grid-cols-3">
           {images.length > 0 ? (
-            images.map((item) => <Card key={item.id} data={item} />)
+            images.map((item) => <Card key={item.id} data={item} itemId={itemId} identifikasiId={id} />)
           ) : (
             <p className="flex items-center justify-center w-full col-span-3 text-xl text-center text-gray-500 py-9">
               Tidak ada evidence
