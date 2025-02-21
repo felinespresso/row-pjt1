@@ -94,6 +94,7 @@ const FormInventarisasi: React.FC = () => {
     setIsSaving(true);
     setIsSubmitting(true);
 
+
     try {
       const formData = new FormData();
       Object.entries(mainForm).forEach(([key, value]) => {
@@ -104,6 +105,8 @@ const FormInventarisasi: React.FC = () => {
       if (mainForm.formulir) {
         formData.append("formulir", mainForm.formulir);
       }
+
+      formData.append("itemId", id as string);
 
       const response = await fetch("/api/invents", {
         method: "POST",
@@ -213,9 +216,8 @@ const FormInventarisasi: React.FC = () => {
               type="text"
               value={mainForm.span}
               onChange={(e) => handleMainFormChange("span", e.target.value)}
-              className={`w-full mr-3 p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400 ${
-                mainFormErrors.span ? "border-red-500" : ""
-              }`}
+              className={`w-full mr-3 p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400 ${mainFormErrors.span ? "border-red-500" : ""
+                }`}
               placeholder="Masukkan span tower"
             />
             {mainFormErrors.span && (
@@ -266,9 +268,8 @@ const FormInventarisasi: React.FC = () => {
               onChange={(e) =>
                 handleMainFormChange("pelaksanaan", e.target.value)
               }
-              className={`w-full mr-3 p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400 ${
-                mainFormErrors.pelaksanaan ? "border-red-500" : ""
-              }`}
+              className={`w-full mr-3 p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400 ${mainFormErrors.pelaksanaan ? "border-red-500" : ""
+                }`}
             />
             {mainFormErrors.pelaksanaan && (
               <p className="mt-1 text-sm text-red-500">
@@ -455,11 +456,10 @@ const FormInventarisasi: React.FC = () => {
               </div>
             </div>
             <div
-              className={`row flex justify-between items-center ${
-                index === bangunanList.length - 1
-                  ? "rounded-b-lg overflow-hidden"
-                  : ""
-              }`}
+              className={`row flex justify-between items-center ${index === bangunanList.length - 1
+                ? "rounded-b-lg overflow-hidden"
+                : ""
+                }`}
             >
               <label className="block ml-3 text-sm font-semibold text-black">
                 Luas Bangunan
@@ -488,11 +488,10 @@ const FormInventarisasi: React.FC = () => {
         {tanamanList.map((tanaman, index) => (
           <div
             key={index}
-            className={`${
-              index === tanamanList.length - 1
-                ? "rounded-b overflow-hidden"
-                : ""
-            }`}
+            className={`${index === tanamanList.length - 1
+              ? "rounded-b overflow-hidden"
+              : ""
+              }`}
           >
             <div className="flex items-center justify-between row">
               <label className="block ml-3 text-sm font-semibold text-black">
@@ -645,9 +644,8 @@ const FormInventarisasi: React.FC = () => {
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className={`transition ease-in-out duration-200 bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3 px-4 py-2 text-white rounded-lg font-semibold w-32 ${
-                        isSubmitting ? "bg-gray-400 cursor-not-allowed" : ""
-                      }`}
+                      className={`transition ease-in-out duration-200 bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3 px-4 py-2 text-white rounded-lg font-semibold w-32 ${isSubmitting ? "bg-gray-400 cursor-not-allowed" : ""
+                        }`}
                     >
                       {isSubmitting ? "MENYIMPAN..." : "SIMPAN"}
                     </button>
