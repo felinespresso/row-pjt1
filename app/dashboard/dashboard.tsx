@@ -382,9 +382,13 @@ export const Dashboard = ({ session }: { session: any }) => {
                     <td className="px-6 py-4 text-center align-middle whitespace-nowrap">
                       {indexOfFirstItem + index + 1}
                     </td>
+
                     <td className="px-6 py-4 text-center whitespace-normal">
                       <button
-                        onClick={() => router.push(`/home/${item.id}`)}
+                        onClick={() => {
+                          handleProjectClick(item.id); // Panggil fungsi handleProjectClick
+                          router.push(`/home/${item.id}`); // Navigasi ke halaman proyek
+                        }}
                         className="text-blue-2 hover:text-blue-3 active:text-blue-4"
                       >
                         {item.namaproyek
