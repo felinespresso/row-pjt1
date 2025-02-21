@@ -10,6 +10,7 @@ import { motion } from "framer-motion";
 import { useAlert } from "@/app/_contexts/AlertContext";
 import SaveLoading from "@/app/_components/SaveLoading";
 import SuccessPopup from "@/app/_components/SuccessPopup";
+import { any } from "zod";
 
 const FormInventarisasi: React.FC = () => {
   const router = useRouter();
@@ -24,10 +25,24 @@ const FormInventarisasi: React.FC = () => {
   const { showAlert } = useAlert();
 
   // State untuk form utama dengan nilai default kosong
-  const [mainForm, setMainForm] = useState({
+  const [mainForm, setMainForm] = useState<{
+    span: string;
+    bidanglahan: string;
+    formulir: File | null; // Perubahan dari string ke File | null
+    namapemilik: string;
+    nik: string;
+    ttl: string;
+    desakelurahan: string;
+    kecamatan: string;
+    kabupatenkota: string;
+    pekerjaan: string;
+    alashak: string;
+    luastanah: string;
+    pelaksanaan: string;
+  }>({
     span: "",
     bidanglahan: "",
-    formulir: "",
+    formulir: null, // Awalnya null, karena bisa berupa File
     namapemilik: "",
     nik: "",
     ttl: "",
@@ -94,16 +109,19 @@ const FormInventarisasi: React.FC = () => {
     setIsSaving(true);
     setIsSubmitting(true);
 
-
     try {
       const formData = new FormData();
       Object.entries(mainForm).forEach(([key, value]) => {
-        if (value) formData.append(key, value.toString());
+        if (value && key !== "formulir") formData.append(key, value.toString());
       });
 
-      // Tambahkan Base64 string formulir ke formData
-      if (mainForm.formulir) {
-        formData.append("formulir", mainForm.formulir);
+      // Pastikan file dikirim sebagai File, bukan Base64
+      if (
+        mainForm.formulir &&
+        typeof mainForm.formulir === "object" &&
+        "name" in mainForm.formulir
+      ) {
+        formData.append("formulir", mainForm.formulir as File);
       }
 
       formData.append("itemId", id as string);
@@ -119,7 +137,7 @@ const FormInventarisasi: React.FC = () => {
 
       setSuccessMessage("Data berhasil disimpan!");
       setShowSuccessPopup(true);
-      setTimeout(() => router.push(`/inventarisasi/{id}`), 2000);
+      setTimeout(() => router.push(`/inventarisasi/${id}`), 2000);
     } catch (error) {
       console.error("❌ Error handleSubmit:", error);
       showAlert("Gagal menyimpan data", "error");
@@ -134,25 +152,7 @@ const FormInventarisasi: React.FC = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    try {
-      const reader = new FileReader();
-      reader.readAsDataURL(file); // Membaca file sebagai Base64
-
-      reader.onload = () => {
-        if (reader.result) {
-          const base64String = reader.result.toString().split(",")[1]; // Hanya mengambil isi Base64 tanpa prefix "data:..."
-          setMainForm((prev) => ({ ...prev, formulir: base64String })); // Simpan Base64 string di state
-        }
-      };
-
-      reader.onerror = (error) => {
-        console.error("❌ Error mengubah file menjadi Base64:", error);
-        showAlert("Gagal memproses file formulir", "error");
-      };
-    } catch (error) {
-      console.error("❌ Error handleFileChange:", error);
-      showAlert("Terjadi kesalahan saat mengunggah formulir", "error");
-    }
+    setMainForm((prev) => ({ ...prev, formulir: file })); // Simpan File langsung, bukan Base64
   };
 
   // Handler untuk form utama
@@ -216,8 +216,9 @@ const FormInventarisasi: React.FC = () => {
               type="text"
               value={mainForm.span}
               onChange={(e) => handleMainFormChange("span", e.target.value)}
-              className={`w-full mr-3 p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400 ${mainFormErrors.span ? "border-red-500" : ""
-                }`}
+              className={`w-full mr-3 p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400 ${
+                mainFormErrors.span ? "border-red-500" : ""
+              }`}
               placeholder="Masukkan span tower"
             />
             {mainFormErrors.span && (
@@ -268,8 +269,9 @@ const FormInventarisasi: React.FC = () => {
               onChange={(e) =>
                 handleMainFormChange("pelaksanaan", e.target.value)
               }
-              className={`w-full mr-3 p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400 ${mainFormErrors.pelaksanaan ? "border-red-500" : ""
-                }`}
+              className={`w-full mr-3 p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400 ${
+                mainFormErrors.pelaksanaan ? "border-red-500" : ""
+              }`}
             />
             {mainFormErrors.pelaksanaan && (
               <p className="mt-1 text-sm text-red-500">
@@ -456,10 +458,11 @@ const FormInventarisasi: React.FC = () => {
               </div>
             </div>
             <div
-              className={`row flex justify-between items-center ${index === bangunanList.length - 1
-                ? "rounded-b-lg overflow-hidden"
-                : ""
-                }`}
+              className={`row flex justify-between items-center ${
+                index === bangunanList.length - 1
+                  ? "rounded-b-lg overflow-hidden"
+                  : ""
+              }`}
             >
               <label className="block ml-3 text-sm font-semibold text-black">
                 Luas Bangunan
@@ -488,10 +491,11 @@ const FormInventarisasi: React.FC = () => {
         {tanamanList.map((tanaman, index) => (
           <div
             key={index}
-            className={`${index === tanamanList.length - 1
-              ? "rounded-b overflow-hidden"
-              : ""
-              }`}
+            className={`${
+              index === tanamanList.length - 1
+                ? "rounded-b overflow-hidden"
+                : ""
+            }`}
           >
             <div className="flex items-center justify-between row">
               <label className="block ml-3 text-sm font-semibold text-black">
@@ -644,8 +648,9 @@ const FormInventarisasi: React.FC = () => {
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className={`transition ease-in-out duration-200 bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3 px-4 py-2 text-white rounded-lg font-semibold w-32 ${isSubmitting ? "bg-gray-400 cursor-not-allowed" : ""
-                        }`}
+                      className={`transition ease-in-out duration-200 bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3 px-4 py-2 text-white rounded-lg font-semibold w-32 ${
+                        isSubmitting ? "bg-gray-400 cursor-not-allowed" : ""
+                      }`}
                     >
                       {isSubmitting ? "MENYIMPAN..." : "SIMPAN"}
                     </button>
