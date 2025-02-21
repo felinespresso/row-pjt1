@@ -1,10 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { del, put } from "@vercel/blob";
+
+const baseUrl = "http://localhost:3000/uploads/";
 
 // GET: Ambil semua data inventarisasi
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const searchParams = request.nextUrl.searchParams;
+    const itemId = searchParams.get("itemId") ?? "0";
     const invents = await prisma.inventarisasi.findMany({
+      where: {
+        itemId: parseInt(itemId),
+      },
       include: {
         jnsbangunan: {
           include: {
@@ -41,10 +49,62 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
-    const formulir = formData.get("formulir")?.toString() || null;
+    if (!formData) {
+      return NextResponse.json(
+        { error: "Data form tidak ditemukan" },
+        { status: 400 }
+      );
+    }
+    const formulir = formData.get("formulir") as File | null;
+    const identifikasiId = formData.get("identifikasiId") as string | null;
+    if (!identifikasiId) {
+      return NextResponse.json(
+        { error: "identifikasiId diperlukan" },
+        { status: 400 }
+      );
+    }
+
+    // Ambil identifikasi berdasarkan ID
+    const identifikasi = await prisma.identifikasi.findUnique({
+      where: { id: identifikasiId },
+      select: { id: true, itemId: true, namadesa: true, spantower: true },
+    });
+
+    if (!identifikasi) {
+      return NextResponse.json(
+        { error: "Data identifikasi tidak ditemukan" },
+        { status: 404 }
+      );
+    }
+
+    const itemId = identifikasi.itemId;
+    if (!itemId) {
+      return NextResponse.json(
+        { error: "Identifikasi tidak terkait dengan proyek manapun" },
+        { status: 400 }
+      );
+    }
+
+    let formulirUrl = null;
+    if (formulir) {
+      try {
+        const { url } = await put(formulir.name, formulir, {
+          access: "public",
+          contentType: formulir.type,
+        });
+        formulirUrl = url;
+      } catch (uploadError) {
+        console.error("❌ Error mengunggah formulir:", uploadError);
+        return NextResponse.json(
+          { error: "Gagal mengunggah file formulir" },
+          { status: 500 }
+        );
+      }
+    }
 
     const inventarisasi = await prisma.inventarisasi.create({
       data: {
+        itemId,
         span: formData.get("span")?.toString() || "-",
         bidanglahan: formData.get("bidanglahan")?.toString() || "-",
         namapemilik: formData.get("namapemilik")?.toString() || "-",
@@ -59,7 +119,7 @@ export async function POST(request: NextRequest) {
         pelaksanaan: new Date(
           formData.get("pelaksanaan")?.toString() || Date.now()
         ),
-        formulir: formulir, // Simpan file formulir sebagai Base64
+        formulir: formulirUrl, // Simpan file formulir sebagai Base64
       },
     });
 

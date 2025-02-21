@@ -104,7 +104,7 @@ export default function EditPage() {
   };
 
   return (
-    <div className="px-6 pb-14 pt-28">
+    <div className="px-4 pt-6">
     <div className="max-h-full min-h-screen p-6 bg-gray-200">
       <div className="p-4 bg-white rounded-lg shadow-lg">
         <form onSubmit={handleSubmit}>

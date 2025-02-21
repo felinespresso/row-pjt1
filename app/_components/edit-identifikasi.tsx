@@ -37,14 +37,14 @@ const EditIdentifikasiAwal = ({
         <form action={formAction}>
           <div className="pt-2 bg-transparent border-2 border-gray-400 rounded-md">
             <div className="flex items-center justify-between px-4 m-4">
-              <h2 className="text-xl font-bold">Form Identifikasi Awal</h2>
+              <h2 className="text-xl font-bold">Form Edit Identifikasi Awal</h2>
               <div className="flex justify-end text-base space-x-7">
                 <button
                   type="button"
                   onClick={() => router.push(`/identifikasi-awal/${itemId}`)}
-                  className="px-6 py-2 font-semibold text-center text-gray-500 transition duration-200 ease-in-out bg-white border-2 border-gray-500 rounded-lg hover:duration-300 hover:-translate-x-1 hover:-translate-y-1 hover:scale-110 hover:bg-gray-200"
-                >
-                  CANCEL
+                  className="w-32 px-4 py-2 font-semibold text-gray-500 transition duration-200 ease-in-out bg-white border-2 border-gray-500 rounded-lg hover:-translate-1 hover:scale-110 hover:bg-gray-200"
+                    >
+                  BATAL
                 </button>
                 <SubmitButton label="update" />
               </div>

@@ -11,11 +11,11 @@ export default async function DashBoard() {
     redirect("/");
   }
 
-  return (  
+  return (
     <AlertProvider>
       <div className="max-h-full min-h-screen bg-gray-200">
-        <Navbar session={session} />
-        <Dashboard session={session}/>
+        <Navbar session={session}/>
+        <Dashboard session={session} />
       </div>
     </AlertProvider>
   );

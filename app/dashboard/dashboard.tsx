@@ -317,7 +317,7 @@ export const Dashboard = ({ session }: { session: any }) => {
   };
 
   return (
-    <div className="px-6 pb-20 pt-28">
+    <div className="p-8">
       <div className="p-6 bg-white rounded-lg shadow-lg">
         {/* Header */}
         <div className="flex items-center justify-between mb-6 ">

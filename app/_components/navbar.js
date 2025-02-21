@@ -1,5 +1,5 @@
 "use client";
-// import { usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 // import GroupAddRoundedIcon from '@mui/icons-material/GroupAddRounded';
@@ -9,7 +9,8 @@ import React, { useRef, useState, useEffect } from "react";
 import { useSession } from "next-auth/react"; // Pastikan NextAuth digunakan
 
 export default function Navbar({ session }) {
-  // const pathname = usePathname();
+  const pathname = usePathname();
+  const [navClass, setNavClass] = useState("");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const buttonRef = useRef(null);
 
@@ -33,6 +34,12 @@ export default function Navbar({ session }) {
     });
   };
 
+  useEffect(() => {
+    setNavClass(
+      "top-0 z-[999] flex items-center w-full p-2 bg-white shadow-lg font-montserrat"
+    );
+  }, [pathname]); // Update class setiap navigasi
+
   return (
     <div>
       <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -45,7 +52,7 @@ export default function Navbar({ session }) {
         href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
         rel="stylesheet"
       />
-      <nav className="fixed top-0 z-50 flex items-center w-full p-2 bg-white shadow-lg font-montserrat">
+      <nav className={navClass}>
         <div className="flex items-center justify-between w-full">
           <div className="flex items-center">
             <Link href="/dashboard" className="mx-3">

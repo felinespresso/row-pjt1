@@ -6,6 +6,7 @@ import { MdOutlineEdit } from "react-icons/md";
 import { FaFileImage, FaRegTrashAlt } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
+import { del } from "@vercel/blob";
 
 export const SubmitButton = ({ label }: { label: string }) => {
   const { pending } = useFormStatus();
@@ -13,10 +14,11 @@ export const SubmitButton = ({ label }: { label: string }) => {
     <button
       type="submit"
       disabled={pending}
-      className={`transition ease-in-out duration-200 ${pending
-        ? "bg-gray-400"
-        : "bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3"
-        }
+      className={`transition ease-in-out duration-200 ${
+        pending
+          ? "bg-gray-400"
+          : "bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3"
+      }
         px-9 py-2 text-white rounded-lg font-semibold`}
     >
       {label === "save" ? (
@@ -38,19 +40,22 @@ export const EditButton = ({ id }: { id: string }) => {
       href={`/identifikasi-awal/${projectId}/edit/${id}`}
       title="Edit"
       className="flex px-[6px] py-1 transition duration-100 ease-in-out rounded-md bg-color5 hover:-translate-1 hover:scale-110 hover:shadow-lg"
-                      >
+    >
       <MdOutlineEdit className="text-xl text-white" />
     </Link>
   );
 };
 
 export const Delete = ({ id }: { id: string }) => {
+  const params = useParams();
+  const projectId = params.id;
+  const { deleteId } = params;
   return (
     <Link
-      href={`/delete/${id}`}
+      href={`/${projectId}/delete/${deleteId}`}
       title="Delete"
       className="flex px-[6px] py-1 transition duration-100 ease-in-out bg-red-500 rounded-md hover:-translate-1 hover:scale-110 hover:shadow-lg"
-                      >
+    >
       <FaRegTrashAlt className="text-lg text-white" />
     </Link>
   );
@@ -79,7 +84,15 @@ export const EvidenceButton = ({
   );
 };
 
-export const EditEvidence = ({ id, itemId, identifikasiId }: { id: string; itemId: string; identifikasiId: string }) => {
+export const EditEvidence = ({
+  id,
+  itemId,
+  identifikasiId,
+}: {
+  id: string;
+  itemId: string;
+  identifikasiId: string;
+}) => {
   return (
     <Link
       href={`/identifikasi-awal/${itemId}/evidence/${identifikasiId}/edit/${id}`}

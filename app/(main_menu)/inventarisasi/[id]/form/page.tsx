@@ -3,7 +3,7 @@
 
 import { put } from "@vercel/blob";
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import "./globals.css";
 import { MdAddCircleOutline, MdRemoveCircleOutline } from "react-icons/md";
 import { motion } from "framer-motion";
@@ -19,6 +19,8 @@ const FormInventarisasi: React.FC = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+  const params = useParams();
+  const id = params.id;
   const { showAlert } = useAlert();
 
   // State untuk form utama dengan nilai default kosong
@@ -114,7 +116,7 @@ const FormInventarisasi: React.FC = () => {
 
       setSuccessMessage("Data berhasil disimpan!");
       setShowSuccessPopup(true);
-      setTimeout(() => router.push("/inventarisasi"), 2000);
+      setTimeout(() => router.push(`/inventarisasi/{id}`), 2000);
     } catch (error) {
       console.error("❌ Error handleSubmit:", error);
       showAlert("Gagal menyimpan data", "error");
@@ -616,7 +618,7 @@ const FormInventarisasi: React.FC = () => {
                 <div className="flex justify-end space-x-4">
                   <button
                     type="button"
-                    onClick={() => router.push("/inventarisasi")}
+                    onClick={() => router.push(`/inventarisasi/${id}`)}
                     className="w-32 px-4 py-2 font-semibold text-gray-500 transition duration-200 ease-in-out bg-white border-2 border-gray-500 rounded-lg hover:-translate-1 hover:scale-110 hover:bg-gray-200"
                   >
                     BATAL

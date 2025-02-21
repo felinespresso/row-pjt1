@@ -161,7 +161,7 @@ export const FormPage: React.FC = () => {
   };
 
   return (
-    <div className="px-6 pb-14 pt-28">
+    <div className="p-8">
       {isLoading && <SaveLoading />}
       <SuccessPopup
         message="Data berhasil disimpan"
