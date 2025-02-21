@@ -33,6 +33,9 @@ export async function GET(request: NextRequest) {
     const serializedData = invents.map((item) => ({
       ...item,
       pelaksanaan: item.pelaksanaan.toISOString(),
+      formulir: item.formulir
+      ? `${baseUrl}${item.formulir}?t=${Date.now()}`
+      : null,
     }));
 
     return NextResponse.json(serializedData, { status: 200 });

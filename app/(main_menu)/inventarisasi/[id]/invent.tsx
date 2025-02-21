@@ -84,7 +84,7 @@ const TabelInventarisasi = ({ session }: { session: any }) => {
 
   const fetchItems = async () => {
     try {
-      const response = await fetch("/api/invents");
+      const response = await fetch(`/api/invents?itemId=${id}`);
       const data = await response.json();
 
       // Urutkan berdasarkan ID secara descending
