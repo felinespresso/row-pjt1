@@ -127,3 +127,15 @@ export const getEvidenceById = async (id: string) => {
         throw new Error("Failed to fetch data");
     }
 };
+
+export const getDataExcel = async () => {
+    return await prisma.identifikasi.findMany({
+        select: {
+            namadesa: true,
+            spantower: true,
+            tanggal: true,
+            fotoudara: true,
+            evidence: true
+        }
+    })
+}
