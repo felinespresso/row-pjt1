@@ -111,8 +111,12 @@ const FormInventarisasi: React.FC = () => {
 
     try {
       const formData = new FormData();
+
+      // Tambahkan data dari mainForm kecuali formulir
       Object.entries(mainForm).forEach(([key, value]) => {
-        if (value && key !== "formulir") formData.append(key, value.toString());
+        if (value && key !== "formulir") {
+          formData.append(key, value.toString());
+        }
       });
 
       // Pastikan file dikirim sebagai File, bukan Base64
@@ -125,6 +129,17 @@ const FormInventarisasi: React.FC = () => {
       }
 
       formData.append("itemId", id as string);
+
+      // 🔹 **Alternatif: Konversi JSON ke Blob agar lebih aman**
+      const bangunanBlob = new Blob([JSON.stringify(bangunanList)], {
+        type: "application/json",
+      });
+      const tanamanBlob = new Blob([JSON.stringify(tanamanList)], {
+        type: "application/json",
+      });
+
+      formData.append("bangunanList", bangunanBlob);
+      formData.append("tanamanList", tanamanBlob);
 
       const response = await fetch("/api/invents", {
         method: "POST",
