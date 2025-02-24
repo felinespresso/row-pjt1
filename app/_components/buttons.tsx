@@ -14,11 +14,10 @@ export const SubmitButton = ({ label }: { label: string }) => {
     <button
       type="submit"
       disabled={pending}
-      className={`transition ease-in-out duration-200 ${
-        pending
-          ? "bg-gray-400"
-          : "bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3"
-      }
+      className={`transition ease-in-out duration-200 ${pending
+        ? "bg-gray-400"
+        : "bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3"
+        }
         px-9 py-2 text-white rounded-lg font-semibold`}
     >
       {label === "save" ? (
@@ -49,10 +48,9 @@ export const EditButton = ({ id }: { id: string }) => {
 export const Delete = ({ id }: { id: string }) => {
   const params = useParams();
   const projectId = params.id;
-  const { deleteId } = params;
   return (
     <Link
-      href={`/${projectId}/delete/${deleteId}`}
+      href={`/${projectId}/delete/${id}`}
       title="Delete"
       className="flex px-[6px] py-1 transition duration-100 ease-in-out bg-red-500 rounded-md hover:-translate-1 hover:scale-110 hover:shadow-lg"
     >
