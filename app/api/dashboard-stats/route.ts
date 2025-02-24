@@ -23,6 +23,7 @@ export async function GET(request: Request) {
       inventarisasiCount,
       pengumumanCount,
       musyawarahCount,
+      pemberkasanCount,
       pembayaranCount,
       penebanganCount,
     ] = await Promise.all([
@@ -31,6 +32,7 @@ export async function GET(request: Request) {
       prisma.inventarisasi.count({ where: { itemId: id } }),
       prisma.pengumuman.count({ where: { itemId: id } }),
       prisma.musyawarah.count({ where: { itemId: id } }),
+      prisma.pemberkasan.count({ where: { itemId: id } }),
       prisma.pembayaran.count({ where: { itemId: id } }),
       prisma.penebangan.count({ where: { itemId: id } }),
     ]);
@@ -42,6 +44,7 @@ export async function GET(request: Request) {
       inventarisasi: inventarisasiCount,
       pengumuman: pengumumanCount,
       musyawarah: musyawarahCount,
+      pemberkasan: pemberkasanCount,
       pembayaran: pembayaranCount,
       penebangan: penebanganCount,
     });
