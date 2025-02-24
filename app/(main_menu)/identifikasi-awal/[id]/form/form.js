@@ -1,6 +1,8 @@
 "use client";
 import { useRouter, useParams } from "next/navigation";
 import { useState, startTransition } from "react";
+import { FaArrowLeft, FaRegTrashAlt } from "react-icons/fa";
+import Link from "next/link";
 import { saveIdentifikasi } from "@/lib/identifikasi/action";
 import React, { useActionState } from "react";
 import { MdAddCircleOutline, MdRemoveCircleOutline } from "react-icons/md";
@@ -324,7 +326,7 @@ const FormIdentifikasiAwal = ({ session }) => {
           </div>
         </form>
       ) : (
-          <Link href={`/identifikasi/${id}`}>
+          <Link href={`/identifikasi-awal/${id}`}>
             <button className="flex items-center gap-2 text-blue-3 hover:text-blue-4">
               <FaArrowLeft /> Kembali
             </button>

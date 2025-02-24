@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import Card from "@/app/_components/card";
 
 export default async function EvidencePage({
-  params,
+  params, 
 }: {
   params: { id: string; identifikasiId: string };
 }) {
@@ -41,7 +41,7 @@ export default async function EvidencePage({
       <div className="p-6 bg-white rounded-lg shadow-lg">
         <div className="mb-6">
           <h1 className="text-2xl font-bold">
-            Evidence <span>{data!.namadesa}</span>
+            Evidence <span>{data?.namadesa}</span>
           </h1>
           <h2 className="text-sm font-semibold text-color3">
             {data!.spantower}
@@ -49,7 +49,7 @@ export default async function EvidencePage({
         </div>
         <div className="grid gap-5 mt-12 md:grid-cols-3">
           {images.length > 0 ? (
-            images.map((item) => <Card key={item.id} data={item} itemId={itemId} identifikasiId={id} />)
+            images.map((item:any) => <Card key={item.id} data={item} itemId={itemId} identifikasiId={id} />)
           ) : (
             <p className="flex items-center justify-center w-full col-span-3 text-xl text-center text-gray-500 py-9">
               Tidak ada evidence
