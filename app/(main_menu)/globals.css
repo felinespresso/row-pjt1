@@ -91,10 +91,16 @@ nav:not(.sidebar) {
   flex-shrink: 0;
 }
 
-.main_container{ 
-  margin-left: 80px; 
-  /* padding-top: 110px;  */
-  /* padding-bottom: 82px;  */
-  width: calc(100% - 80px); 
+.main_container {
+  width: 100%;
+  padding-left: 320px;
+  padding-right: 18px;
+  transition: padding-left 0.2s ease-in-out, padding-right 0.2s ease-in-out;
 }
 
+.hover_collapse .main_container {
+  padding-left: 130px;
+  padding-right: 50px;
+  /* padding-top: 110px;  */
+  /* padding-bottom: 82px;  */
+}
