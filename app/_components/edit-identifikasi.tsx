@@ -52,7 +52,7 @@ const EditIdentifikasiAwal = ({
             <hr className="border border-gray-400" />
             <div>
               <div className="h-full pb-2 bg-color9">
-                <div className="flex items-center justify-between h-16 px-4 row-container">
+                <div className="flex items-center justify-between h-16 px-4 ">
                   <label className="block ml-4 text-base font-semibold text-black">
                     Nama Desa <span className="text-red-500">*</span>
                   </label>
@@ -75,7 +75,7 @@ const EditIdentifikasiAwal = ({
                 </div>
               </div>
               <div className="h-full pb-2 bg-white">
-                <div className="flex items-center justify-between h-16 px-4 row-container">
+                <div className="flex items-center justify-between h-16 px-4 ">
                   <label className="block ml-4 text-base font-semibold text-black">
                     Nomor Span Tower <span className="text-red-500">*</span>
                   </label>
@@ -98,7 +98,7 @@ const EditIdentifikasiAwal = ({
                 </div>
               </div>
               <div className="h-full pb-1 bg-color9">
-                <div className="flex items-center justify-between h-16 px-4 row-container">
+                <div className="flex items-center justify-between h-16 px-4 ">
                   <label className="block ml-4 text-base font-semibold text-black">
                     Tanggal Pelaksanaan <span className="text-red-500">*</span>
                   </label>
@@ -121,7 +121,7 @@ const EditIdentifikasiAwal = ({
                 </div>
               </div>
               <div className="h-full pb-2 bg-white">
-                <div className="flex items-center justify-between h-16 px-4 row-container">
+                <div className="flex items-center justify-between h-16 px-4 ">
                   <label className="block ml-4 text-base font-semibold text-black">
                     Hasil Foto Udara <span className="text-red-500">*</span>
                   </label>

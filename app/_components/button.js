@@ -2,7 +2,7 @@
  
 import { useFormStatus } from "react-dom";
 import { useState } from "react";
-import { useRouter } from "next/router";
+import { useRouter, useParams } from "next/navigation";
 import { deleteIdentifikasi, deleteEvidences } from "@/lib/identifikasi/action";
  
 export const LoginButton = () => { 
@@ -107,7 +107,7 @@ export const DeleteButton = ({id}) => {
   const DeleteDataWithId = deleteIdentifikasi.bind(null, id);
   return (
       <form action={DeleteDataWithId}>
-          <button onClick={() => router.push(`/identifikasi-awal/${id}`)} className="px-8 py-2 text-white transition-transform duration-300 rounded-lg bg-color3 hover:bg-blue-800 hover:scale-105">Yes</button>
+          <button onClick={() => router.back()} className="px-8 py-2 text-white transition-transform duration-300 rounded-lg bg-color3 hover:bg-blue-800 hover:scale-105">Yes</button>
       </form>
   )
 }

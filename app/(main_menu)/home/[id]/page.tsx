@@ -73,7 +73,7 @@ export default function Home() {
           color: "#3ABEF9",
         },
         {
-          name: "Pengumuman Hasil Inventarisasi",
+          name: "Pengumuman Hasil\nInventarisasi",
           jumlah: stats.pengumuman,
           color: "#65A6DC",
         },
@@ -114,24 +114,37 @@ export default function Home() {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis
                 dataKey="name"
-                tick={(props) => {
-                  const { x, y, payload } = props;
+                tick={({
+                  x,
+                  y,
+                  payload,
+                }: {
+                  x: number;
+                  y: number;
+                  payload: { value: string; index: number };
+                }) => {
+                  const lines: string[] = payload.value.split("\n"); // Pisahkan berdasarkan "\n"
+
                   return (
                     <g transform={`translate(${x},${y})`}>
                       <text
                         x={0}
-                        y={0}
-                        dy={16}
+                        y={10}
+                        dy={12}
                         textAnchor="middle"
                         fill="#666"
                         fontSize={12}
                       >
-                        {payload.value}
+                        {lines.map((line: string, index: number) => (
+                          <tspan key={index} x={0} dy={index * 14}>
+                            {line}
+                          </tspan>
+                        ))}
                       </text>
                       <text
                         x={0}
                         y={0}
-                        dy={35}
+                        dy={42}
                         textAnchor="middle"
                         fill="#2D40E8"
                         fontSize={14}

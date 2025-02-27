@@ -7,7 +7,7 @@ export const getData = async (page: number, query: string, itemId: number) => {
     try {
         const identifikasiData = await prisma.identifikasi.findMany({
             where: {
-                itemId: itemId, // Tambahkan filter berdasarkan proyek (itemId)
+                itemId: itemId || undefined, // Tambahkan filter berdasarkan proyek (itemId)
                 OR: [
                     { namadesa: { contains: query, mode: "insensitive" } },
                     { spantower: { contains: query, mode: "insensitive" } },
@@ -42,7 +42,7 @@ export const getDataPages = async (query: string, itemId: number) => {
     try {
         const identifikasiData = await prisma.identifikasi.count({
             where: {
-                itemId: Number(itemId),
+                itemId: Number(itemId) || undefined,
                 OR: [
                     { namadesa: { contains: query, mode: "insensitive" } },
                     { spantower: { contains: query, mode: "insensitive" } },

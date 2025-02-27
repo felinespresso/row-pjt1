@@ -314,7 +314,7 @@ export const deleteIdentifikasi = async (id: string) => {
         await prisma.identifikasi.delete({
             where: { id },
         });
-        revalidatePath("/identifikasi-awal");
+        revalidatePath("/identifikasi-awal/");
         return { success: true };
     } catch (error) {
         return { success: false, message: "Failed to delete data" };

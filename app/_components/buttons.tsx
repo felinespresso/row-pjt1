@@ -4,7 +4,6 @@ import { useFormStatus } from "react-dom";
 import Link from "next/link";
 import { MdOutlineEdit } from "react-icons/md";
 import { FaFileImage, FaRegTrashAlt } from "react-icons/fa";
-import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
 import { del } from "@vercel/blob";
 
@@ -46,11 +45,11 @@ export const EditButton = ({ id }: { id: string }) => {
 };
 
 export const Delete = ({ id }: { id: string }) => {
-  const params = useParams();
-  const projectId = params.id;
+  // const params = useParams();
+  // const projectId = params.id;
   return (
     <Link
-      href={`/${projectId}/delete/${id}`}
+      href={`/delete/${id}`}
       title="Delete"
       className="flex px-[6px] py-1 transition duration-100 ease-in-out bg-red-500 rounded-md hover:-translate-1 hover:scale-110 hover:shadow-lg"
     >

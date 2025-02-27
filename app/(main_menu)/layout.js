@@ -5,7 +5,7 @@ import ClientLayout from "./_components/ClientLayout";
 import "./globals.css";
 import { redirect } from "next/navigation";
 
-export default async function MenuLayout({ children }) {
+export default async function MenuLayout({ children, modal }) {
   const session = await auth();
   console.log("Session:", session);
   if (!session) {
@@ -20,6 +20,7 @@ export default async function MenuLayout({ children }) {
             <div className="max-h-full min-h-screen px-10 bg-gray-200 main_container"> 
                 { children } 
             </div> 
+            { modal } 
         </div> 
       </ClientLayout>
   );

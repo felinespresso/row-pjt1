@@ -1,10 +1,7 @@
 import "@/app/globals.css";
-// import Navbar from "@/app/_components/navbar";
 import { Montserrat } from "next/font/google";
 import { AlertProvider } from "@/app/_context/AlertContext";
 import LoadingIndicator from "@/app/_components/LoadingIndicator";
-import SuccessPopup from "@/app/_components/SuccessPopup";
-import DeleteConfirmationModal from "@/app/_components/DeleteConfirmationModal";
 import { Suspense } from "react";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
@@ -16,7 +13,7 @@ export const metadata = {
   },
 };
 
-export default function RootLayout({ children, modal }) {
+export default function RootLayout({ children, modal }: { children: React.ReactNode; modal: React.ReactNode }) {
   return (
     <html lang="en" className={montserrat.className}>
       <head>
@@ -30,7 +27,8 @@ export default function RootLayout({ children, modal }) {
             </main>
           </Suspense>
         </AlertProvider>
-        {modal}
+        
+        <Suspense fallback={<LoadingIndicator />}>{modal}</Suspense>
       </body>
     </html>
   );

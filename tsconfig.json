@@ -28,7 +28,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "app/dashboard/dashboard.tsx",
-    "app/layout.js",
+    "app/layout.tsx",
     "app/(main_menu)/identifikasi-awal/[id]/page.js",
     "app/(main_menu)/identifikasi-awal/[id]/form/page.js",
     "app/(main_menu)/pengumuman-hasil-inventarisasi/[id]/pengumuman.tsx",

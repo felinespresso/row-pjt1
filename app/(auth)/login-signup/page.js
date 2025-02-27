@@ -9,15 +9,25 @@ import {
   FaUser,
   FaArrowLeft,
   FaInfoCircle,
+  FaCheckCircle,
+  FaTimes,
 } from "react-icons/fa";
 import { MdVisibility, MdVisibilityOff, MdVpnKey } from "react-icons/md";
-import React, { useEffect, useActionState } from "react";
+import React, { useEffect, useActionState, useState } from "react";
 import { signUpCredentials, signInCredentials } from "@/lib/actions";
 import { SignupButton, LoginButton } from "@/app/_components/button";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Login_SignUp() {
   const [signUpState, signUpAction] = useActionState(signUpCredentials, null);
   const [signInState, signInAction] = useActionState(signInCredentials, null);
+  const [showPopup, setShowPopup] = useState(false);
+
+  useEffect(() => {
+    if (signUpState?.success) {
+      setShowPopup(true);
+    }
+  }, [signUpState]);
 
   useEffect(() => {
     const container = document.getElementById("container");
@@ -314,6 +324,47 @@ export default function Login_SignUp() {
           </div>
         </div>
       </main>
+
+      {showPopup && (
+        <motion.div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm"
+          onClick={() => setShowPopup(false)}
+        >
+          {/* Card yang dianimasikan secara terpisah */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.7 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.7 }}
+            transition={{ type: "spring", stiffness: 200, damping: 20 }}
+            className="relative p-10 text-center bg-white rounded-lg shadow-2xl"
+            onClick={(e) => e.stopPropagation()} // Mencegah klik luar menutup pop-up
+          >
+            {/* Tombol close "X" */}
+            <button
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+              onClick={() => setShowPopup(false)}
+            >
+              <FaTimes className="text-2xl" />
+            </button>
+
+            {/* Ikon centang */}
+            <div className="flex items-center justify-center">
+              <FaCheckCircle className="text-blue-500 text-7xl" />
+            </div>
+
+            {/* Pesan pop-up */}
+            <h2 className="mt-4 text-xl font-bold text-gray-700">
+              Sign up berhasil!
+            </h2>
+            <p className="mt-6 mb-2 text-gray-700">
+              Akun Anda telah berhasil dibuat.
+              <br />
+              Email verifikasi telah terkirim, <br />
+              silakan periksa email Anda!
+            </p>
+          </motion.div>
+        </motion.div>
+      )}
     </div>
   );
 }
