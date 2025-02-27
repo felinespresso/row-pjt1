@@ -34,6 +34,6 @@
     "app/(main_menu)/pengumuman-hasil-inventarisasi/[id]/pengumuman.tsx",
     "app/(main_menu)/pengumuman-hasil-inventarisasi/[id]/form/form.tsx",
     "app/_components/skeleton.tsx"
-, "app/(main_menu)/identifikasi-awal/[id]/form/form.js", "app/(main_menu)/identifikasi-awal/[id]/evidence/[identifikasiId]/page.tsx"  ],
+, "app/(main_menu)/identifikasi-awal/[id]/form/form.js", "app/(main_menu)/identifikasi-awal/[id]/evidence/[identifikasiId]/page.tsx", "app/(main_menu)/profile/page.js"  ],
   "exclude": ["node_modules"]
 }

@@ -89,6 +89,7 @@ export async function POST(request: NextRequest) {
     }
 
     console.log(formulirUrl);
+    
 
     const inventarisasi = await prisma.inventarisasi.create({
       data: {

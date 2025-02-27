@@ -24,17 +24,18 @@ import {
 // import { faFileCircleCheck } from "@fortawesome/free-solid-svg-icons";
 // import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 // library.add(faFileCircleCheck);
+import {useProject} from "../_context/ProjectContext";
 
 export default function NavSidebar({ session }) {
   const pathname = usePathname();
-  const [projectId, setProjectId] = useState(null);
+  const { projectId } = useProject();
 
-  useEffect(() => {
-    const segments = pathname.split("/");
-    const idFromUrl = segments.length > 2 ? segments[2] : null;
-    setProjectId(idFromUrl);
-    console.log("Detected Project ID:", idFromUrl); // Debugging projectId
-  }, [pathname]);
+  // useEffect(() => {
+  //   const segments = pathname.split("/");
+  //   const idFromUrl = segments.length > 2 ? segments[2] : null;
+  //   setProjectId(idFromUrl);
+  //   console.log("Detected Project ID:", idFromUrl); // Debugging projectId
+  // }, [pathname]);
 
   return (
     <>

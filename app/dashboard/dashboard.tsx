@@ -318,20 +318,20 @@ export const Dashboard = ({ session }: { session: any }) => {
 
   return (
     <div className="p-8">
-      <div className="p-6 bg-white rounded-lg shadow-lg">
+      <div className="p-6 bg-white rounded-lg shadow-lg ">
         {/* Header */}
         <div className="flex items-center justify-between mb-6 ">
           <h1 className="text-2xl font-bold text-gray-800">
             Daftar Proyek ROW
           </h1>
           {session.user.role === "admin" ? (
-            <div className="flex space-x-4">
+            <div className="flex space-x-4 ">
               <ExportButtonDashboard currentItems={currentItems} />
               <Link
                 href="dashboard/form"
                 className="px-4 py-2 text-white transition duration-200 ease-in-out bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3 rounded-xl"
               >
-                <div className="flex items-center ml-auto space-x-3 text-sm font-semibold uppercase">
+                <div className="flex items-center ml-auto space-x-3 text-sm font-semibold uppercase ">
                   <MdAddCircleOutline className="text-xl" />
                   <span>TAMBAH DATA</span>
                 </div>

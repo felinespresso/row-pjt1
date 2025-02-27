@@ -3,7 +3,7 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { FaEdit, FaRegTrashAlt, FaTrash } from "react-icons/fa";
+import { FaEdit, FaFileImage, FaRegTrashAlt, FaTrash } from "react-icons/fa";
 import * as XLSX from "xlsx";
 import { MdOutlineEdit } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
@@ -218,9 +218,12 @@ const TabelInventarisasi = ({ session }: { session: any }) => {
               {item.formulir ? (
                 <button
                   onClick={() => handleViewFormulir(item.id)}
-                  className="px-3 py-1 text-white transition-colors duration-200 rounded-md bg-blue-2 hover:bg-blue-3"
+                  className="px-4 py-2 text-white transition duration-200 ease-in-out rounded-lg bg-color3 hover:bg-color8"
                 >
-                  Lihat Formulir
+                  <div className="flex items-center space-x-3 text-sm font-semibold uppercase">
+                    <FaFileImage className="text-xl" />
+                    <span className="text-sm">Lihat File</span>
+                  </div>
                 </button>
               ) : (
                 "-"

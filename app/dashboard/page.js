@@ -13,7 +13,7 @@ export default async function DashBoard() {
 
   return (
     <AlertProvider>
-      <div className="max-h-full min-h-screen bg-gray-200">
+      <div className="max-h-full min-h-screen bg-gray-200 z-0">
         <Navbar session={session}/>
         <Dashboard session={session} />
       </div>

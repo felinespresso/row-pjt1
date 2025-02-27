@@ -99,7 +99,7 @@ export default function Navbar({ session }) {
               {isMenuOpen && (
                 <div className="absolute right-0 w-48 bg-white rounded-md shadow-xl mt-[14px] ring-1 ring-black ring-opacity-5">
                   <ul className="py-1">
-                    <Link href="">
+                    <Link href="/profile">
                       <li
                         className="flex items-center px-4 py-2 text-gray-500 hover:text-white hover:bg-color3 hover:opacity-80 focus:bg-color3 focus:text-white focus:opacity-80"
                         tabIndex=""

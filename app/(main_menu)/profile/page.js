@@ -74,7 +74,6 @@ export default function Profile() {
                   !isEditing ? styles.disabled : ""
                 }`}
               />
-                        
             </div>
 
             {/* Email */}

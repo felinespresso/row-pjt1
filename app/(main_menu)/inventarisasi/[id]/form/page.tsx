@@ -131,15 +131,16 @@ const FormInventarisasi: React.FC = () => {
       formData.append("itemId", id as string);
 
       // 🔹 **Alternatif: Konversi JSON ke Blob agar lebih aman**
-      const bangunanBlob = new Blob([JSON.stringify(bangunanList)], {
-        type: "application/json",
-      });
-      const tanamanBlob = new Blob([JSON.stringify(tanamanList)], {
-        type: "application/json",
-      });
+      // const bangunanBlob = new Blob([JSON.stringify(bangunanList)], {
+      //   type: "application/json",
+      // });
+      // const tanamanBlob = new Blob([JSON.stringify(tanamanList)], {
+      //   type: "application/json",
+      // });
+      
 
-      formData.append("bangunanList", bangunanBlob);
-      formData.append("tanamanList", tanamanBlob);
+      formData.append("bangunanList", JSON.stringify(bangunanList));
+      formData.append("tanamanList", JSON.stringify(tanamanList));
 
       const response = await fetch("/api/invents", {
         method: "POST",
