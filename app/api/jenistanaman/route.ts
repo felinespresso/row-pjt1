@@ -11,7 +11,6 @@ export async function POST(request: Request) {
     const produktif = data.produktif || "-";
     const besar = data.besar || "-";
     const kecil = data.kecil || "-";
-    const bibit = data.bibit || "-";
 
     // Validasi input
     if (!namatanaman || typeof namatanaman !== "string") {

@@ -16,7 +16,7 @@ const IdentifikasiAwal = async ({ searchParams, itemId }) => {
   // const totalPages = await getDataPages(query);
 
   return (
-    <div className="bg-transparent border-2 border-gray-400 rounded-md mx-7">
+    <div className="overflow-x-auto bg-transparent border-2 border-gray-400 rounded-md">
       <div className="overflow-x-auto rounded [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
         <table className="min-w-full divide-y-2 divide-gray-400">
           <thead className="bg-gray-50">

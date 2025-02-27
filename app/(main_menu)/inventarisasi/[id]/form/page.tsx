@@ -130,17 +130,32 @@ const FormInventarisasi: React.FC = () => {
 
       formData.append("itemId", id as string);
 
-      // 🔹 **Alternatif: Konversi JSON ke Blob agar lebih aman**
-      // const bangunanBlob = new Blob([JSON.stringify(bangunanList)], {
-      //   type: "application/json",
-      // });
-      // const tanamanBlob = new Blob([JSON.stringify(tanamanList)], {
-      //   type: "application/json",
-      // });
-      
+      // Proses bangunanList
+      const processedBangunanList = bangunanList
+        .filter((bangunan) => bangunan.namabangunan || bangunan.luasbangunan)
+        .map((bangunan) => ({
+          namabangunan: bangunan.namabangunan || "-",
+          luasbangunan: bangunan.luasbangunan || "-",
+        }));
 
-      formData.append("bangunanList", JSON.stringify(bangunanList));
-      formData.append("tanamanList", JSON.stringify(tanamanList));
+      // Proses tanamanList
+      const processedTanamanList = tanamanList
+        .filter(
+          (tanaman) =>
+            tanaman.namatanaman ||
+            tanaman.produktif ||
+            tanaman.besar ||
+            tanaman.kecil
+        )
+        .map((tanaman) => ({
+          namatanaman: tanaman.namatanaman || "-",
+          produktif: tanaman.produktif || "-",
+          besar: tanaman.besar || "-",
+          kecil: tanaman.kecil || "-",
+        }));
+
+      formData.append("bangunanList", JSON.stringify(processedBangunanList));
+      formData.append("tanamanList", JSON.stringify(processedTanamanList));
 
       const response = await fetch("/api/invents", {
         method: "POST",

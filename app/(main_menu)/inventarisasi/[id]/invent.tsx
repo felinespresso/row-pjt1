@@ -3,7 +3,13 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { FaEdit, FaFileImage, FaRegTrashAlt, FaTrash } from "react-icons/fa";
+import {
+  FaEdit,
+  FaFileAlt,
+  FaFileImage,
+  FaRegTrashAlt,
+  FaTrash,
+} from "react-icons/fa";
 import * as XLSX from "xlsx";
 import { MdOutlineEdit } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
@@ -13,6 +19,7 @@ import SuccessPopup from "@/app/_components/SuccessPopup";
 import Link from "next/link";
 import { MdAddCircleOutline } from "react-icons/md";
 import Pagination from "@/app/_components/pagination";
+import { format } from "date-fns";
 
 // Definisikan tipe data sesuai schema.prisma
 type jenisbangunan = {
@@ -77,6 +84,9 @@ const TabelInventarisasi = ({ session }: { session: any }) => {
   const [successMessage, setSuccessMessage] = useState("");
   const params = useParams();
   const id = params.id;
+  const formatDate = (dateString: string) => {
+    return format(new Date(dateString), "yyyy-MM-dd");
+  };
 
   useEffect(() => {
     fetchItems();
@@ -221,7 +231,7 @@ const TabelInventarisasi = ({ session }: { session: any }) => {
                   className="px-4 py-2 text-white transition duration-200 ease-in-out rounded-lg bg-color3 hover:bg-color8"
                 >
                   <div className="flex items-center space-x-3 text-sm font-semibold uppercase">
-                    <FaFileImage className="text-xl" />
+                    <FaFileAlt className="text-xl" />
                     <span className="text-sm">Lihat File</span>
                   </div>
                 </button>
@@ -233,9 +243,7 @@ const TabelInventarisasi = ({ session }: { session: any }) => {
               className="px-6 py-4 text-center whitespace-nowrap"
               rowSpan={maxRows}
             >
-              {item.pelaksanaan
-                ? new Date(item.pelaksanaan).toLocaleDateString()
-                : "-"}
+              {formatDate(item.pelaksanaan)}
             </td>
             <td
               className="px-6 py-4 text-center whitespace-nowrap"
@@ -675,7 +683,7 @@ const TabelInventarisasi = ({ session }: { session: any }) => {
             className="p-6 bg-white rounded-md shadow-lg"
           >
             <h2 className="mb-4 text-lg font-semibold text-red-500">
-              KONFIRMASI HAPUS
+              HAPUS DATA?
             </h2>
             <p>Apakah Anda yakin ingin menghapus data ini?</p>
             <div className="flex justify-end mt-4">

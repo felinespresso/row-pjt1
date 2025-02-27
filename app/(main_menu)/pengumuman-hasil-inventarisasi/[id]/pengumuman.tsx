@@ -3,7 +3,7 @@
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { MdAddCircleOutline, MdOutlineEdit } from "react-icons/md";
-import { FaRegTrashAlt, FaFileImage } from "react-icons/fa";
+import { FaRegTrashAlt, FaFileImage, FaFileAlt } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAlert } from "@/app/_context/AlertContext";
 import SuccessPopup from "@/app/_components/SuccessPopup";
@@ -63,7 +63,10 @@ const TabelPengumuman = ({ session }: { session: any }) => {
     fetchData();
   }, [showAlert]);
 
-  const totalPages = Math.max(1, Math.ceil(pengumumanData.length / itemsPerPage));
+  const totalPages = Math.max(
+    1,
+    Math.ceil(pengumumanData.length / itemsPerPage)
+  );
 
   const handleFileView = async (id: string, type: string) => {
     try {
@@ -170,18 +173,18 @@ const TabelPengumuman = ({ session }: { session: any }) => {
             </h1>
           </div>
           {session.user.role === "admin" ? (
-          <div className="flex space-x-4">
-            <ExportButtonPengumuman pengumumanData={pengumumanData} />
-            <Link
-              href={`/pengumuman-hasil-inventarisasi/${id}/form`}
-              className="px-4 py-2 text-white transition duration-200 ease-in-out bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3 rounded-xl"
-            >
-              <div className="flex items-center ml-auto space-x-3 text-sm font-semibold uppercase">
-                <MdAddCircleOutline className="text-xl" />
-                <span>TAMBAH DATA</span>
-              </div>
-            </Link>
-          </div>
+            <div className="flex space-x-4">
+              <ExportButtonPengumuman pengumumanData={pengumumanData} />
+              <Link
+                href={`/pengumuman-hasil-inventarisasi/${id}/form`}
+                className="px-4 py-2 text-white transition duration-200 ease-in-out bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3 rounded-xl"
+              >
+                <div className="flex items-center ml-auto space-x-3 text-sm font-semibold uppercase">
+                  <MdAddCircleOutline className="text-xl" />
+                  <span>TAMBAH DATA</span>
+                </div>
+              </Link>
+            </div>
           ) : null}
         </div>
 
@@ -211,9 +214,9 @@ const TabelPengumuman = ({ session }: { session: any }) => {
                   Evidence
                 </th>
                 {session.user.role === "admin" ? (
-                <th className="px-6 py-3 font-semibold tracking-wider text-center text-gray-700 uppercase">
-                  Aksi
-                </th>
+                  <th className="px-6 py-3 font-semibold tracking-wider text-center text-gray-700 uppercase">
+                    Aksi
+                  </th>
                 ) : null}
               </tr>
             </thead>
@@ -247,7 +250,7 @@ const TabelPengumuman = ({ session }: { session: any }) => {
                         className="px-4 py-2 text-white transition duration-200 ease-in-out rounded-lg bg-color3 hover:bg-color8"
                       >
                         <div className="flex items-center space-x-3 text-sm font-semibold uppercase">
-                          <FaFileImage className="text-xl" />
+                          <FaFileAlt className="text-xl" />
                           <span className="text-sm">Lihat File</span>
                         </div>
                       </button>
@@ -274,26 +277,26 @@ const TabelPengumuman = ({ session }: { session: any }) => {
                     </button>
                   </td>
                   {session.user.role === "admin" ? (
-                  <td className="px-6 py-4 text-center whitespace-nowrap">
-                    <div className="flex justify-center space-x-3">
-                      <button
-                        onClick={() =>
-                          router.push(
-                            `/pengumuman-hasil-inventarisasi/${id}/edit/${item.id}`
-                          )
-                        }
-                        className="flex px-[6px] py-1 transition duration-100 ease-in-out rounded-md bg-color5 hover:-translate-1 hover:scale-110 hover:shadow-lg"
-                      >
-                        <MdOutlineEdit className="text-xl text-white" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(item.id)}
-                        className="flex px-[6px] py-1 transition duration-100 ease-in-out bg-red-500 rounded-md hover:-translate-1 hover:scale-110 hover:shadow-lg"
-                      >
-                        <FaRegTrashAlt className="text-lg text-white" />
-                      </button>
-                    </div>
-                  </td>
+                    <td className="px-6 py-4 text-center whitespace-nowrap">
+                      <div className="flex justify-center space-x-3">
+                        <button
+                          onClick={() =>
+                            router.push(
+                              `/pengumuman-hasil-inventarisasi/${id}/edit/${item.id}`
+                            )
+                          }
+                          className="flex px-[6px] py-1 transition duration-100 ease-in-out rounded-md bg-color5 hover:-translate-1 hover:scale-110 hover:shadow-lg"
+                        >
+                          <MdOutlineEdit className="text-xl text-white" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(item.id)}
+                          className="flex px-[6px] py-1 transition duration-100 ease-in-out bg-red-500 rounded-md hover:-translate-1 hover:scale-110 hover:shadow-lg"
+                        >
+                          <FaRegTrashAlt className="text-lg text-white" />
+                        </button>
+                      </div>
+                    </td>
                   ) : null}
                 </tr>
               ))}
@@ -323,7 +326,7 @@ const TabelPengumuman = ({ session }: { session: any }) => {
               className="p-6 bg-white rounded-md shadow-lg"
             >
               <h2 className="mb-4 text-lg font-semibold text-red-500">
-                KONFIRMASI HAPUS
+                HAPUS DATA?
               </h2>
               <p>Apakah Anda yakin ingin menghapus data ini?</p>
               <div className="flex justify-end mt-4">

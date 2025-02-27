@@ -34,8 +34,8 @@ export async function GET(request: NextRequest) {
       ...item,
       pelaksanaan: item.pelaksanaan.toISOString(),
       formulir: item.formulir
-      ? `${baseUrl}${item.formulir}?t=${Date.now()}`
-      : null,
+        ? `${baseUrl}${item.formulir}?t=${Date.now()}`
+        : null,
     }));
 
     return NextResponse.json(serializedData, { status: 200 });
@@ -61,18 +61,19 @@ export async function POST(request: NextRequest) {
 
     console.log("oke");
 
-    const formulir = formData.get("formulir") as File | null;
-    const itemId = formData.get("itemId") as string;
+    const formulir = formData.get("formulir");
+    const itemId = formData.get("itemId")?.toString();
 
     if (!itemId) {
       return NextResponse.json(
-        { error: "identifikasiId diperlukan" },
+        { error: "itemId diperlukan" }, // 🔹 Perbaikan pesan error
         { status: 400 }
       );
     }
 
-    let formulirUrl = null;
-    if (formulir) {
+    let formulirUrl: string | null = null;
+    if (formulir instanceof File) {
+      // 🔹 Perbaikan validasi file
       try {
         const { url } = await put(`/uploads/${formulir.name}`, formulir, {
           access: "public",
@@ -88,29 +89,87 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    console.log(formulirUrl);
-    
+    console.log("Formulir URL:", formulirUrl);
 
-    const inventarisasi = await prisma.inventarisasi.create({
-      data: {
-        itemId: parseInt(itemId),
-        span: formData.get("span")?.toString() || "-",
-        bidanglahan: formData.get("bidanglahan")?.toString() || "-",
-        namapemilik: formData.get("namapemilik")?.toString() || "-",
-        nik: formData.get("nik")?.toString() || "-",
-        ttl: formData.get("ttl")?.toString() || "-",
-        desakelurahan: formData.get("desakelurahan")?.toString() || "-",
-        kecamatan: formData.get("kecamatan")?.toString() || "-",
-        kabupatenkota: formData.get("kabupatenkota")?.toString() || "-",
-        pekerjaan: formData.get("pekerjaan")?.toString() || "-",
-        alashak: formData.get("alashak")?.toString() || "-",
-        luastanah: formData.get("luastanah")?.toString() || "-",
-        pelaksanaan: new Date(
-          formData.get("pelaksanaan")?.toString() || Date.now()
-        ),
-        formulir: formulirUrl, // Simpan file formulir sebagai Base64
-      },
-    });
+    // 🔹 Parsing dan validasi bangunanList & tanamanList
+    let bangunanList = [];
+    let tanamanList = [];
+
+    try {
+      bangunanList = JSON.parse(
+        (formData.get("bangunanList") as string) || "[]"
+      );
+      tanamanList = JSON.parse((formData.get("tanamanList") as string) || "[]");
+
+      if (!Array.isArray(bangunanList) || !Array.isArray(tanamanList)) {
+        throw new Error(
+          "Format data bangunanList atau tanamanList tidak valid"
+        );
+      }
+    } catch (error) {
+      console.error("❌ Error parsing bangunanList/tanamanList:", error);
+      return NextResponse.json(
+        { error: "Format bangunanList/tanamanList tidak valid" },
+        { status: 400 }
+      );
+    }
+
+    const pelaksanaanRaw = formData.get("pelaksanaan")?.toString();
+    const pelaksanaanDate = pelaksanaanRaw
+      ? new Date(pelaksanaanRaw)
+      : new Date(); // 🔹 Perbaikan parsing tanggal
+
+      const inventarisasi = await prisma.inventarisasi.create({
+        data: {
+          itemId: parseInt(itemId),
+          span: formData.get("span")?.toString() || "-",
+          bidanglahan: formData.get("bidanglahan")?.toString() || "-",
+          namapemilik: formData.get("namapemilik")?.toString() || "-",
+          nik: formData.get("nik")?.toString() || "-",
+          ttl: formData.get("ttl")?.toString() || "-",
+          desakelurahan: formData.get("desakelurahan")?.toString() || "-",
+          kecamatan: formData.get("kecamatan")?.toString() || "-",
+          kabupatenkota: formData.get("kabupatenkota")?.toString() || "-",
+          pekerjaan: formData.get("pekerjaan")?.toString() || "-",
+          alashak: formData.get("alashak")?.toString() || "-",
+          luastanah: formData.get("luastanah")?.toString() || "-",
+          pelaksanaan: pelaksanaanDate,
+          formulir: formulirUrl,
+        },
+      });
+      
+       // 🔹 2. Simpan `bangunanList` ke `jenisbangunan`
+    for (const b of bangunanList) {
+      await prisma.jenisbangunan.create({
+        data: {
+          namabangunan: b.namabangunan || "-",
+          luasbangunan: b.luasbangunan || "-",
+          invent: {
+            create: {
+              inventId: inventarisasi.id,
+            },
+          },
+        },
+      });
+    }
+
+    // 🔹 3. Simpan `tanamanList` ke `jenistanaman`
+    for (const t of tanamanList) {
+      await prisma.jenistanaman.create({
+        data: {
+          namatanaman: t.namatanaman || "-",
+          produktif: t.produktif || "-",
+          besar: t.besar || "-",
+          kecil: t.kecil || "-",
+          invent: {
+            create: {
+              inventId: inventarisasi.id,
+            },
+          },
+        },
+      });
+    }
+      
 
     return NextResponse.json(
       { success: true, data: inventarisasi },

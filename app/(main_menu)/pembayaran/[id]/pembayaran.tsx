@@ -348,7 +348,7 @@ const TabelPembayaran = ({ session }: { session: any }) => {
             className="p-6 bg-white rounded-md shadow-lg"
           >
             <h2 className="mb-4 text-lg font-semibold text-red-500">
-              KONFIRMASI HAPUS
+            HAPUS DATA?
             </h2>
             <p>Apakah Anda yakin ingin menghapus data ini?</p>
             <div className="flex justify-end mt-4">

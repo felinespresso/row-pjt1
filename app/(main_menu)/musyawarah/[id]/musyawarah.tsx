@@ -3,7 +3,7 @@
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { MdAddCircleOutline, MdOutlineEdit } from "react-icons/md";
-import { FaRegTrashAlt, FaFileImage } from "react-icons/fa";
+import { FaRegTrashAlt, FaFileImage, FaFileAlt } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAlert } from "@/app/_contexts/AlertContext";
 import SuccessPopup from "@/app/_components/SuccessPopup";
@@ -293,7 +293,7 @@ const TabelMusyawarah = ({ session }: { session: any }) => {
                         className="px-4 py-2 text-white transition duration-200 ease-in-out rounded-lg bg-color3 hover:bg-color8"
                       >
                         <div className="flex items-center space-x-3 text-sm font-semibold uppercase">
-                          <FaFileImage className="text-xl" />
+                          <FaFileAlt className="text-xl" />
                           <span className="text-sm">Lihat File</span>
                         </div>
                       </button>
@@ -308,7 +308,7 @@ const TabelMusyawarah = ({ session }: { session: any }) => {
                         className="px-4 py-2 text-white transition duration-200 ease-in-out rounded-lg bg-color3 hover:bg-color8"
                       >
                         <div className="flex items-center space-x-3 text-sm font-semibold uppercase">
-                          <FaFileImage className="text-xl" />
+                          <FaFileAlt className="text-xl" />
                           <span className="text-sm">Lihat File</span>
                         </div>
                       </button>
@@ -386,7 +386,7 @@ const TabelMusyawarah = ({ session }: { session: any }) => {
             className="p-6 bg-white rounded-md shadow-lg"
           >
             <h2 className="mb-4 text-lg font-semibold text-red-500">
-              KONFIRMASI HAPUS
+            HAPUS DATA?
             </h2>
             <p>Apakah Anda yakin ingin menghapus data ini?</p>
             <div className="flex justify-end mt-4">

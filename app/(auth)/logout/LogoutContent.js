@@ -19,7 +19,7 @@ export default function LogoutContent() {
       router.push("/login-signup");
     } catch (error) {
       console.error("Logout error:", error.message || error);
-      alert('Sign Out failed, please try again"');
+      alert('Sign Out gagal, mohon coba lagi"');
     } finally {
       setIsLoading(false);
     }
@@ -33,8 +33,7 @@ export default function LogoutContent() {
           <MdExitToApp className="text-red-500 text-8xl" />
         </div>
         <p className="mt-4 text-lg font-bold text-center text-black">
-          Are you sure you want <br />
-          to sign out?
+          Sign Out?
         </p>
         <div className="flex justify-center gap-4 mt-6">
           <button
@@ -42,13 +41,13 @@ export default function LogoutContent() {
             disabled={isLoading}
             className="px-8 py-1 text-white transition-transform duration-300 rounded-lg bg-color3 hover:bg-blue-800 hover:scale-105"
           >
-            {isLoading ? "Sign Out..." : "Yes"}
+            {isLoading ? "Signing Out..." : "Ya"}
           </button>
           <button
             className="px-5 py-1 text-red-500 border-red-500 rounded-lg border-[3px] hover:bg-red-500 hover:text-white hover:scale-105 transition-transform duration-300"
             onClick={() => router.back()}
           >
-            Cancel
+            Batal
           </button>
         </div>
       </div>
