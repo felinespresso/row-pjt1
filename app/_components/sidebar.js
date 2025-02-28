@@ -1,6 +1,10 @@
 "use client";
 import { usePathname, useRouter } from "next/navigation";
+<<<<<<< HEAD
 import { useEffect, useState, useRef } from "react";
+=======
+import { useEffect, useState } from "react";
+>>>>>>> 186443b (oiia)
 import Link from "next/link";
 import Image from "next/image";
 import {
