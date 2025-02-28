@@ -71,7 +71,7 @@ model item {
 
   // Relasi ke model lain
   identifikasi  Identifikasi[]
-  inventarisasi inventarisasi[]
+  inventarisasi  inventarisasi[]
   sosialisasi   Sosialisasi[]
   pengumuman    Pengumuman[]
   musyawarah    Musyawarah[]
@@ -120,19 +120,19 @@ model jenistanaman {
 model inventbangunan {
   inventId    Int
   bangunanId  Int
-  invent      inventarisasi @relation(fields: [inventId], references: [id])
-  jnsbangunan jenisbangunan @relation(fields: [bangunanId], references: [id])
+  invent      inventarisasi @relation(fields: [inventId], references: [id], onDelete: Cascade) // ✅ Cascade Delete
+  jnsbangunan jenisbangunan @relation(fields: [bangunanId], references: [id], onDelete: Cascade) // ✅ Cascade Delete
 
-  @@id([inventId, bangunanId]) // Composite primary key
+  @@id([inventId, bangunanId])
 }
 
 model inventtanaman {
   inventId   Int
   tanamanId  Int
-  invent     inventarisasi @relation(fields: [inventId], references: [id])
-  jnstanaman jenistanaman  @relation(fields: [tanamanId], references: [id])
+  invent     inventarisasi @relation(fields: [inventId], references: [id], onDelete: Cascade) // ✅ Cascade Delete
+  jnstanaman jenistanaman  @relation(fields: [tanamanId], references: [id], onDelete: Cascade) // ✅ Cascade Delete
 
-  @@id([inventId, tanamanId]) // Composite primary key
+  @@id([inventId, tanamanId])
 }
 
 model Identifikasi {

@@ -119,26 +119,26 @@ export async function POST(request: NextRequest) {
       ? new Date(pelaksanaanRaw)
       : new Date(); // 🔹 Perbaikan parsing tanggal
 
-      const inventarisasi = await prisma.inventarisasi.create({
-        data: {
-          itemId: parseInt(itemId),
-          span: formData.get("span")?.toString() || "-",
-          bidanglahan: formData.get("bidanglahan")?.toString() || "-",
-          namapemilik: formData.get("namapemilik")?.toString() || "-",
-          nik: formData.get("nik")?.toString() || "-",
-          ttl: formData.get("ttl")?.toString() || "-",
-          desakelurahan: formData.get("desakelurahan")?.toString() || "-",
-          kecamatan: formData.get("kecamatan")?.toString() || "-",
-          kabupatenkota: formData.get("kabupatenkota")?.toString() || "-",
-          pekerjaan: formData.get("pekerjaan")?.toString() || "-",
-          alashak: formData.get("alashak")?.toString() || "-",
-          luastanah: formData.get("luastanah")?.toString() || "-",
-          pelaksanaan: pelaksanaanDate,
-          formulir: formulirUrl,
-        },
-      });
-      
-       // 🔹 2. Simpan `bangunanList` ke `jenisbangunan`
+    const inventarisasi = await prisma.inventarisasi.create({
+      data: {
+        itemId: parseInt(itemId),
+        span: formData.get("span")?.toString() || "-",
+        bidanglahan: formData.get("bidanglahan")?.toString() || "-",
+        namapemilik: formData.get("namapemilik")?.toString() || "-",
+        nik: formData.get("nik")?.toString() || "-",
+        ttl: formData.get("ttl")?.toString() || "-",
+        desakelurahan: formData.get("desakelurahan")?.toString() || "-",
+        kecamatan: formData.get("kecamatan")?.toString() || "-",
+        kabupatenkota: formData.get("kabupatenkota")?.toString() || "-",
+        pekerjaan: formData.get("pekerjaan")?.toString() || "-",
+        alashak: formData.get("alashak")?.toString() || "-",
+        luastanah: formData.get("luastanah")?.toString() || "-",
+        pelaksanaan: pelaksanaanDate,
+        formulir: formulirUrl,
+      },
+    });
+
+    // 🔹 2. Simpan `bangunanList` ke `jenisbangunan`
     for (const b of bangunanList) {
       await prisma.jenisbangunan.create({
         data: {
@@ -169,7 +169,6 @@ export async function POST(request: NextRequest) {
         },
       });
     }
-      
 
     return NextResponse.json(
       { success: true, data: inventarisasi },
@@ -184,12 +183,14 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// DELETE: Hapus data inventarisasi (file formulir tidak perlu dihapus dari storage eksternal)
 export async function DELETE(request: NextRequest) {
   try {
     const { id } = await request.json();
+    const inventId = Number(id);
+
+    // 🔹 Periksa apakah data inventarisasi ada
     const existingInvent = await prisma.inventarisasi.findUnique({
-      where: { id: Number(id) },
+      where: { id: inventId },
     });
 
     if (!existingInvent) {
@@ -199,9 +200,22 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    await prisma.inventarisasi.delete({ where: { id: Number(id) } });
+    // 🔹 Hapus data bangunan terkait dari tabel `inventbangunan`
+    await prisma.inventbangunan.deleteMany({
+      where: { inventId: inventId },
+    });
 
-    return NextResponse.json({ success: true }, { status: 200 });
+    // 🔹 Hapus data tanaman terkait dari tabel `inventtanaman`
+    await prisma.inventtanaman.deleteMany({
+      where: { inventId: inventId },
+    });
+
+    // 🔹 Hapus data inventarisasi
+    await prisma.inventarisasi.delete({
+      where: { id: inventId },
+    });
+
+    return NextResponse.json({ success: true, message: "Data berhasil dihapus" }, { status: 200 });
   } catch (error) {
     console.error("❌ Error deleting inventarisasi:", error);
     return NextResponse.json(
@@ -210,3 +224,4 @@ export async function DELETE(request: NextRequest) {
     );
   }
 }
+

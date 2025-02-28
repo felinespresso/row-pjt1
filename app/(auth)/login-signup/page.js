@@ -357,10 +357,7 @@ export default function Login_SignUp() {
               Sign up berhasil!
             </h2>
             <p className="mt-6 mb-2 text-gray-700">
-              Akun Anda telah berhasil dibuat.
-              <br />
-              Email verifikasi telah terkirim, <br />
-              silakan periksa email Anda!
+              Akun Anda telah berhasil dibuat!
             </p>
           </motion.div>
         </motion.div>

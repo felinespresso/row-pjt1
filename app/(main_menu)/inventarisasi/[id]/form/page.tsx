@@ -446,7 +446,7 @@ const FormInventarisasi: React.FC = () => {
           <div key={index}>
             <div className="flex items-center justify-between row">
               <label className="block ml-3 text-sm font-semibold text-black">
-                Jenis Bangunan
+                Jenis Bangunan <span className="text-red-500">*</span>
               </label>
               <div className="flex items-center w-8/12 mr-3">
                 <input
@@ -530,7 +530,7 @@ const FormInventarisasi: React.FC = () => {
           >
             <div className="flex items-center justify-between row">
               <label className="block ml-3 text-sm font-semibold text-black">
-                Jenis Tanaman
+                Jenis Tanaman <span className="text-red-500">*</span>
               </label>
               <div className="flex items-center w-8/12 mr-3">
                 <input
@@ -577,7 +577,7 @@ const FormInventarisasi: React.FC = () => {
             </div>
             <div className="flex items-center justify-between row">
               <label className="block ml-3 text-sm font-semibold text-black">
-                Tanaman Produktif
+                Jumlah Tanaman Produktif
               </label>
               <div className="flex items-center w-8/12 mr-3 pr-11">
                 <input
@@ -593,7 +593,7 @@ const FormInventarisasi: React.FC = () => {
             </div>
             <div className="flex items-center justify-between row">
               <label className="block ml-3 text-sm font-semibold text-black">
-                Tanaman Besar
+                Jumlah Tanaman Besar
               </label>
               <div className="flex items-center w-8/12 mr-3 pr-11">
                 <input
@@ -609,7 +609,7 @@ const FormInventarisasi: React.FC = () => {
             </div>
             <div className="flex items-center justify-between row">
               <label className="block ml-3 text-sm font-semibold text-black">
-                Tanaman Kecil
+                Jumlah Tanaman Kecil
               </label>
               <div className="flex items-center w-8/12 mr-3 pr-11">
                 <input

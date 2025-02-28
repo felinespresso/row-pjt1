@@ -245,7 +245,7 @@ const FormMusyawarah = ({ session }: { session: any }) => {
       setShowSuccessPopup(true);
       setTimeout(() => {
         router.push(`/musyawarah/${id}`);
-      }, 2000);
+      }, 1000);
     } catch (error) {
       console.error("Error submitting form:", error);
       showAlert("Gagal menyimpan data", "error");
