@@ -93,7 +93,7 @@ export default function AddAdminsModal({ onClose, buttonRef }:any) {
                                         )}
                                     </div>
                                 </label>
-                                <Image src={user.image || "/avatar.jpg"} alt={user.username} width={40} height={40} className="w-10 h-10 ml-2 rounded-full" />
+                                <Image src={user.image || "/avatar.png"} alt={user.username} width={40} height={40} className="w-10 h-10 ml-2 rounded-full" />
                                 <div className="flex-col">
                                     <p className="ml-3 text-base font-bold">{user.username}</p>
                                     <p className="ml-3 text-sm text-gray-600">({user.email})</p>

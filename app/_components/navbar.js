@@ -7,11 +7,13 @@ import { FaSearch, FaEllipsisV } from "react-icons/fa";
 import { MdLogout, MdAccountCircle, MdGroupAdd } from "react-icons/md";
 import React, { useRef, useState, useEffect } from "react";
 import { useSession } from "next-auth/react"; // Pastikan NextAuth digunakan
+import AddAdminsModal from "./admin";
 
 export default function Navbar({ session }) {
   const pathname = usePathname();
   const [navClass, setNavClass] = useState("");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const buttonRef = useRef(null);
 
   const handleOutsideClick = (e) => {
@@ -71,14 +73,29 @@ export default function Navbar({ session }) {
             </div>
           </div>
           <div className="flex items-center">
-            {session.user.role === "admin" ? (
-              <button
-                title="Add Admin"
-                className="relative flex items-center justify-center p-2 mr-2 rounded-full hover:bg-gray-100 focus:bg-gray-200 focus:bg-opacity-85 focus:outline-none"
-              >
-                <MdGroupAdd className="text-[35px] text-gray-400" />
-              </button>
-            ) : null}
+            {session.user.role === "admin" && (
+              <div className="relative">
+                <button
+                  ref={buttonRef}
+                  title="Add Admin"
+                  onClick={() => setIsModalOpen((prev) => !prev)}
+                  className={`relative flex items-center justify-center p-2 mr-2 rounded-full hover:bg-gray-100
+                                ${
+                                  isModalOpen
+                                    ? "bg-gray-200"
+                                    : "focus:bg-gray-200"
+                                } focus:outline-none`}
+                >
+                  <MdGroupAdd className="text-[35px] text-gray-400" />
+                </button>
+                {isModalOpen && (
+                  <AddAdminsModal
+                    onClose={() => setIsModalOpen(false)}
+                    buttonRef={buttonRef}
+                  />
+                )}
+              </div>
+            )}
             <div className="flex items-center px-2 py-[2px] bg-gray-300 rounded-full w-80 mx-4">
               <FaSearch className="m-2 text-base text-gray-500" />
               <input
