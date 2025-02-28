@@ -3,6 +3,8 @@
 import { FC } from "react";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
+import { format } from "date-fns";
+
 
 interface PemberkasanItem {
   namaDesa: string;
@@ -21,6 +23,11 @@ const ExportButtonPemberkasan: FC<ExportButtonProps> = ({ pemberkasanData }) => 
   const exportToExcel = async () => {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Tabel Data Pemberkasan");
+        // Fungsi untuk memformat tanggal
+        const formatDate = (dateString: string | null) => {
+          if (!dateString) return "-"; // Jika tanggal null atau undefined
+          return format(new Date(dateString), "yyyy-MM-dd"); // Format menjadi yyyy-MM-dd
+        };
 
     // Tambahkan header dengan style
     worksheet.columns = [
@@ -58,9 +65,7 @@ const ExportButtonPemberkasan: FC<ExportButtonProps> = ({ pemberkasanData }) => 
         spanTower: item.spanTower || "-",
         bidangLahan: item.bidangLahan || "-",
         namaPemilik: item.namaPemilik || "-",
-        tanggalPelaksanaan: item.tanggalPelaksanaan
-          ? new Date(item.tanggalPelaksanaan).toLocaleDateString()
-          : "-",
+        tanggalPelaksanaan: formatDate(item.tanggalPelaksanaan),
         keterangan: item.keterangan || "-",
       });
     });

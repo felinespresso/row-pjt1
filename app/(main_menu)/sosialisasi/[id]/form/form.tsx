@@ -274,244 +274,254 @@ const FormSosialisasi = ({ session }: { session: any }) => {
 
   return (
     <div className="px-6 pt-32 pb-20">
-      {isSubmitting && <SaveLoading />}
-      <motion.div
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: 20 }}
-        transition={{
-          type: "spring",
-          stiffness: 300,
-          damping: 30,
-        }}
-        className="p-6 mb-6 bg-white rounded-lg shadow-lg"
-      >
-        {session.user.role === "admin" ? (
-          <form onSubmit={handleSubmit}>
-            <div className="pt-2 bg-transparent border-2 border-gray-400 rounded-md">
-              <div className="flex items-center justify-between px-4 m-4">
-                <h2 className="text-xl font-bold">Form Sosialisasi</h2>
-                <div className="flex justify-end space-x-4">
-                  <button
-                    type="button"
-                    onClick={handleCancel}
-                    className="w-32 px-4 py-2 font-semibold text-gray-500 transition duration-200 ease-in-out bg-white border-2 border-gray-500 rounded-lg hover:-translate-1 hover:scale-110 hover:bg-gray-200"
-                  >
-                    BATAL
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-32 px-4 py-2 font-semibold text-white transition duration-200 ease-in-out rounded-lg bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3"
-                  >
-                    {isSubmitting ? "MENYIMPAN..." : "SIMPAN"}
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <div className="flex items-center justify-between mb-2 row">
-                  <label className="block ml-3 text-sm font-semibold text-black">
-                    Lokasi
-                  </label>
-                  <div className="w-8/12 mr-3">
-                    <select
-                      className={`w-full p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400 ${
-                        formErrors.identifikasiId
-                          ? "border-red-500"
-                          : "border-gray-400"
-                      }`}
-                      value={formData.identifikasiId}
-                      onChange={(e) => handleLocationChange(e.target.value)}
+      {session.user.role === "admin" ? (
+        <div>
+          {isSubmitting && <SaveLoading />}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+            transition={{
+              type: "spring",
+              stiffness: 300,
+              damping: 30,
+            }}
+            className="p-6 mb-6 bg-white rounded-lg shadow-lg"
+          >
+            <form onSubmit={handleSubmit}>
+              <div className="pt-2 bg-transparent border-2 border-gray-400 rounded-md">
+                <div className="flex items-center justify-between px-4 m-4">
+                  <h2 className="text-xl font-bold">Form Sosialisasi</h2>
+                  <div className="flex justify-end space-x-4">
+                    <button
+                      type="button"
+                      onClick={handleCancel}
+                      className="w-32 px-4 py-2 font-semibold text-gray-500 transition duration-200 ease-in-out bg-white border-2 border-gray-500 rounded-lg hover:-translate-1 hover:scale-110 hover:bg-gray-200"
                     >
-                      {!formData.identifikasiId && (
-                        <option value="">Pilih lokasi...</option>
-                      )}
-                      {identifikasiList.map((item) => (
-                        <option key={item.id} value={item.id}>
-                          {item.namadesa} - {item.spantower}
-                        </option>
-                      ))}
-                    </select>
-                    {formErrors.identifikasiId && (
-                      <p className="mt-1 text-sm text-red-500">
-                        {formErrors.identifikasiId}
-                      </p>
-                    )}
-                    <div className="flex justify-between mt-2">
-                      {/* Tampilkan nama desa di sebelah kiri */}
-                      {selectedLocation && (
-                        <p className="text-gray-600">
-                          Desa: {selectedLocation.namadesa}
+                      BATAL
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="w-32 px-4 py-2 font-semibold text-white transition duration-200 ease-in-out rounded-lg bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3"
+                    >
+                      {isSubmitting ? "MENYIMPAN..." : "SIMPAN"}
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-2 row">
+                    <label className="block ml-3 text-sm font-semibold text-black">
+                      Lokasi
+                    </label>
+                    <div className="w-8/12 mr-3">
+                      <select
+                        className={`w-full p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400 ${
+                          formErrors.identifikasiId
+                            ? "border-red-500"
+                            : "border-gray-400"
+                        }`}
+                        value={formData.identifikasiId}
+                        onChange={(e) => handleLocationChange(e.target.value)}
+                      >
+                        {!formData.identifikasiId && (
+                          <option value="">Pilih lokasi...</option>
+                        )}
+                        {identifikasiList.map((item) => (
+                          <option key={item.id} value={item.id}>
+                            {item.namadesa} - {item.spantower}
+                          </option>
+                        ))}
+                      </select>
+                      {formErrors.identifikasiId && (
+                        <p className="mt-1 text-sm text-red-500">
+                          {formErrors.identifikasiId}
                         </p>
                       )}
-                      {/* Tampilkan span tower di sebelah kanan */}
-                      {selectedLocation && (
-                        <p className="text-gray-600">
-                          Span Tower: {selectedLocation.spantower}
+                      <div className="flex justify-between mt-2">
+                        {/* Tampilkan nama desa di sebelah kiri */}
+                        {selectedLocation && (
+                          <p className="text-gray-600">
+                            Desa: {selectedLocation.namadesa}
+                          </p>
+                        )}
+                        {/* Tampilkan span tower di sebelah kanan */}
+                        {selectedLocation && (
+                          <p className="text-gray-600">
+                            Span Tower: {selectedLocation.spantower}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between mb-2 row">
+                    <label className="block ml-3 text-sm font-semibold text-black">
+                      Tanggal Pelaksanaan
+                    </label>
+                    <div className="w-8/12 mr-3">
+                      <input
+                        type="date"
+                        value={formData.tanggalPelaksanaan}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            tanggalPelaksanaan: e.target.value,
+                          })
+                        }
+                        className={`w-full p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400 ${
+                          formErrors.tanggalPelaksanaan
+                            ? "border-red-500"
+                            : "border-gray-400"
+                        }`}
+                      />
+                      {formErrors.tanggalPelaksanaan && (
+                        <p className="mt-1 text-sm text-red-500">
+                          {formErrors.tanggalPelaksanaan}
                         </p>
                       )}
                     </div>
                   </div>
-                </div>
 
-                <div className="flex items-center justify-between mb-2 row">
-                  <label className="block ml-3 text-sm font-semibold text-black">
-                    Tanggal Pelaksanaan
-                  </label>
-                  <div className="w-8/12 mr-3">
-                    <input
-                      type="date"
-                      value={formData.tanggalPelaksanaan}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          tanggalPelaksanaan: e.target.value,
-                        })
-                      }
-                      className={`w-full p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400 ${
-                        formErrors.tanggalPelaksanaan
-                          ? "border-red-500"
-                          : "border-gray-400"
-                      }`}
-                    />
-                    {formErrors.tanggalPelaksanaan && (
-                      <p className="mt-1 text-sm text-red-500">
-                        {formErrors.tanggalPelaksanaan}
-                      </p>
-                    )}
+                  <div className="flex items-center justify-between row">
+                    <label className="block ml-3 text-sm font-semibold text-black">
+                      Keterangan
+                    </label>
+                    <div className="w-8/12 mr-3">
+                      <input
+                        type="text"
+                        placeholder="Masukkan keterangan"
+                        value={formData.keterangan}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            keterangan: e.target.value,
+                          })
+                        }
+                        className={`w-full p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400 ${
+                          formErrors.keterangan
+                            ? "border-red-500"
+                            : "border-gray-400"
+                        }`}
+                      />
+                      {formErrors.keterangan && (
+                        <p className="mt-1 text-sm text-red-500">
+                          {formErrors.keterangan}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                </div>
 
-                <div className="flex items-center justify-between row">
-                  <label className="block ml-3 text-sm font-semibold text-black">
-                    Keterangan
-                  </label>
-                  <div className="w-8/12 mr-3">
-                    <input
-                      type="text"
-                      placeholder="Masukkan keterangan"
-                      value={formData.keterangan}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          keterangan: e.target.value,
-                        })
-                      }
-                      className={`w-full p-2 border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-300 ease-in-out hover:border-blue-400 ${
-                        formErrors.keterangan
-                          ? "border-red-500"
-                          : "border-gray-400"
-                      }`}
-                    />
-                    {formErrors.keterangan && (
-                      <p className="mt-1 text-sm text-red-500">
-                        {formErrors.keterangan}
-                      </p>
-                    )}
+                  <div className="flex items-center justify-between row">
+                    <label className="block ml-3 text-sm font-semibold text-black">
+                      Berita Acara
+                    </label>
+                    <div className="flex items-center w-8/12 mr-3">
+                      <input
+                        type="file"
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            beritaAcara: e.target.files?.[0] || null,
+                          })
+                        }
+                        className="w-full p-2 transition duration-300 ease-in-out border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                        accept=".pdf"
+                      />
+                    </div>
                   </div>
-                </div>
 
-                <div className="flex items-center justify-between row">
-                  <label className="block ml-3 text-sm font-semibold text-black">
-                    Berita Acara
-                  </label>
-                  <div className="flex items-center w-8/12 mr-3">
-                    <input
-                      type="file"
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          beritaAcara: e.target.files?.[0] || null,
-                        })
-                      }
-                      className="w-full p-2 transition duration-300 ease-in-out border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                      accept=".pdf"
-                    />
+                  <div className="flex items-center justify-between row">
+                    <label className="block ml-3 text-sm font-semibold text-black">
+                      Daftar Hadir
+                    </label>
+                    <div className="flex items-center w-8/12 mr-3">
+                      <input
+                        type="file"
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            daftarHadir: e.target.files?.[0] || null,
+                          })
+                        }
+                        className="w-full p-2 transition duration-300 ease-in-out border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                        accept=".pdf"
+                      />
+                    </div>
                   </div>
-                </div>
 
-                <div className="flex items-center justify-between row">
-                  <label className="block ml-3 text-sm font-semibold text-black">
-                    Daftar Hadir
-                  </label>
-                  <div className="flex items-center w-8/12 mr-3">
-                    <input
-                      type="file"
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          daftarHadir: e.target.files?.[0] || null,
-                        })
-                      }
-                      className="w-full p-2 transition duration-300 ease-in-out border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                      accept=".pdf"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between rounded-b row">
-                  <label className="block ml-3 text-sm font-semibold text-black">
-                    Evidence
-                  </label>
-                  <div className="w-8/12 mr-3">
-                    {evidenceList.map((evidence, index) => (
-                      <div key={index} className="flex items-center mb-2">
-                        <input
-                          type="file"
-                          onChange={(e) =>
-                            handleEvidenceChange(
-                              index,
-                              e.target.files?.[0] || null
-                            )
-                          }
-                          className="w-full p-2 transition duration-300 ease-in-out border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                          accept="image/*"
-                        />
-                        {index === 0 ? (
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setEvidenceList([...evidenceList, { file: null }])
+                  <div className="flex items-center justify-between rounded-b row">
+                    <label className="block ml-3 text-sm font-semibold text-black">
+                      Evidence
+                    </label>
+                    <div className="w-8/12 mr-3">
+                      {evidenceList.map((evidence, index) => (
+                        <div key={index} className="flex items-center mb-2">
+                          <input
+                            type="file"
+                            onChange={(e) =>
+                              handleEvidenceChange(
+                                index,
+                                e.target.files?.[0] || null
+                              )
                             }
-                            className="ml-4 text-3xl"
-                          >
-                            <MdAddCircleOutline className="text-color3" />
-                          </button>
-                        ) : (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const newList = evidenceList.filter(
-                                (_, i) => i !== index
-                              );
-                              setEvidenceList(newList);
-                            }}
-                            className="ml-4 text-3xl"
-                          >
-                            <MdRemoveCircleOutline className="text-red-500" />
-                          </button>
-                        )}
-                      </div>
-                    ))}
+                            className="w-full p-2 transition duration-300 ease-in-out border-2 border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                            accept="image/*"
+                          />
+                          {index === 0 ? (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setEvidenceList([
+                                  ...evidenceList,
+                                  { file: null },
+                                ])
+                              }
+                              className="ml-4 text-3xl"
+                            >
+                              <MdAddCircleOutline className="text-color3" />
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const newList = evidenceList.filter(
+                                  (_, i) => i !== index
+                                );
+                                setEvidenceList(newList);
+                              }}
+                              className="ml-4 text-3xl"
+                            >
+                              <MdRemoveCircleOutline className="text-red-500" />
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </form>
-        ) : (
+            </form>
+          </motion.div>
+          <SuccessPopup
+            message="Data berhasil disimpan"
+            isVisible={showSuccessPopup}
+            onClose={() => setShowSuccessPopup(false)}
+          />
+        </div>
+      ) : (
+        <div>
           <Link href={`/sosialisasi/${id}`}>
             <button className="flex items-center gap-2 text-blue-3 hover:text-blue-4">
               <FaArrowLeft /> Kembali
             </button>
           </Link>
-        )}
-      </motion.div>
-      <SuccessPopup
-        message="Data berhasil disimpan"
-        isVisible={showSuccessPopup}
-        onClose={() => setShowSuccessPopup(false)}
-      />
+          <p className="flex items-center justify-center m-4 text-gray-500 text-2xl font-bold text-center py-48">
+            404 | HALAMAN TIDAK DITEMUKAN
+          </p>
+        </div>
+      )}
     </div>
   );
 };

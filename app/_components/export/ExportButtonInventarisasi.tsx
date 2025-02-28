@@ -1,6 +1,7 @@
 import { FC } from "react";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
+import { format } from "date-fns";
 
 interface JenisBangunan {
   jnsbangunan: {
@@ -31,8 +32,8 @@ interface InventarisasiItem {
   pekerjaan: string;
   alashak: string;
   luastanah: string;
-  jnsbangunan: JenisBangunan[];
-  jnstanaman: JenisTanaman[];
+  jnsbangunan?: JenisBangunan[];
+  jnstanaman?: JenisTanaman[];
 }
 
 interface ExportButtonProps {
@@ -44,15 +45,20 @@ const ExportButtonInventarisasi: FC<ExportButtonProps> = ({
 }) => {
   const exportToExcel = async () => {
     const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet("Data Inventarisasi");
+    const worksheet = workbook.addWorksheet("Tabel Data Inventarisasi");
+    // Fungsi untuk memformat tanggal
+    const formatDate = (dateString: string | null) => {
+      if (!dateString) return "-"; // Jika tanggal null atau undefined
+      return format(new Date(dateString), "yyyy-MM-dd"); // Format menjadi yyyy-MM-dd
+    };
 
-    // Tambahkan header dengan style
+    // Definisi kolom
     worksheet.columns = [
       { header: "NO.", key: "no", width: 5 },
-      { header: "SPAN", key: "span", width: 15 },
-      { header: "BIDANG LAHAN", key: "bidanglahan", width: 15 },
-      { header: "TANGGAL PELAKSANAAN", key: "tanggalPelaksanaan", width: 20 },
-      { header: "NAMA PEMILIK", key: "namapemilik", width: 25 },
+      { header: "NO. SPAN TOWER", key: "span", width: 25 },
+      { header: "BIDANG LAHAN", key: "bidanglahan", width: 25 },
+      { header: "TANGGAL PELAKSANAAN", key: "tanggalPelaksanaan", width: 30 },
+      { header: "NAMA PEMILIK", key: "namapemilik", width: 30 },
       { header: "NIK", key: "nik", width: 20 },
       { header: "TTL", key: "ttl", width: 20 },
       { header: "DESA/KELURAHAN", key: "desakelurahan", width: 20 },
@@ -62,20 +68,21 @@ const ExportButtonInventarisasi: FC<ExportButtonProps> = ({
       { header: "ALAS HAK", key: "alashak", width: 15 },
       { header: "LUAS TANAH", key: "luastanah", width: 15 },
       { header: "NAMA BANGUNAN", key: "namabangunan", width: 25 },
-      { header: "LUAS BANGUNAN", key: "luasbangunan", width: 15 },
+      { header: "LUAS BANGUNAN", key: "luasbangunan", width: 25 },
       { header: "NAMA TANAMAN", key: "namatanaman", width: 25 },
       { header: "PRODUKTIF", key: "produktif", width: 15 },
       { header: "BESAR", key: "besar", width: 15 },
       { header: "KECIL", key: "kecil", width: 15 },
     ];
 
+    // Styling untuk header (baris pertama)
     worksheet.getRow(1).eachCell((cell) => {
       cell.font = { bold: true, size: 12, color: { argb: "FFFFFF" } };
       cell.alignment = { horizontal: "center", vertical: "middle" };
       cell.fill = {
         type: "pattern",
         pattern: "solid",
-        fgColor: { argb: "4F81BD" },
+        fgColor: { argb: "4F81BD" }, // Background color
       };
       cell.border = {
         top: { style: "thin" },
@@ -85,34 +92,80 @@ const ExportButtonInventarisasi: FC<ExportButtonProps> = ({
       };
     });
 
+    let currentRow = 2; // Mulai dari baris kedua (setelah header)
+
     inventarisasiData.forEach((item, index) => {
-      worksheet.addRow({
-        no: index + 1,
-        span: item.span || "-",
-        bidanglahan: item.bidanglahan || "-",
-        tanggalPelaksanaan: item.pelaksanaan
-          ? new Date(item.pelaksanaan).toLocaleDateString()
-          : "-",
-        namapemilik: item.namapemilik || "-",
-        nik: item.nik || "-",
-        ttl: item.ttl || "-",
-        desakelurahan: item.desakelurahan || "-",
-        kecamatan: item.kecamatan || "-",
-        kabupatenkota: item.kabupatenkota || "-",
-        pekerjaan: item.pekerjaan || "-",
-        alashak: item.alashak || "-",
-        luastanah: item.luastanah || "-",
-        namabangunan: item.jnsbangunan[0]?.jnsbangunan.namabangunan || "-",
-        luasbangunan: item.jnsbangunan[0]?.jnsbangunan.luasbangunan || "-",
-        namatanaman: item.jnstanaman[0]?.jnstanaman.namatanaman || "-",
-        produktif: item.jnstanaman[0]?.jnstanaman.produktif || "-",
-        besar: item.jnstanaman[0]?.jnstanaman.besar || "-",
-        kecil: item.jnstanaman[0]?.jnstanaman.kecil || "-",
+      const jnsBangunan = item.jnsbangunan ?? []; // Jika undefined, jadikan array kosong
+      const jnsTanaman = item.jnstanaman ?? []; // Jika undefined, jadikan array kosong
+
+      const maxLength = Math.max(jnsBangunan.length, jnsTanaman.length) || 1; // Minimal 1 agar tetap bisa insert row
+      const startRow = currentRow; // Baris awal untuk merge
+
+      for (let i = 0; i < maxLength; i++) {
+        worksheet.addRow({
+          no: index + 1,
+          span: item.span || "-",
+          bidanglahan: item.bidanglahan || "-",
+          tanggalPelaksanaan: formatDate(item.pelaksanaan),
+          namapemilik: item.namapemilik || "-",
+          nik: item.nik || "-",
+          ttl: item.ttl || "-",
+          desakelurahan: item.desakelurahan || "-",
+          kecamatan: item.kecamatan || "-",
+          kabupatenkota: item.kabupatenkota || "-",
+          pekerjaan: item.pekerjaan || "-",
+          alashak: item.alashak || "-",
+          luastanah: item.luastanah || "-",
+          namabangunan: jnsBangunan[i]?.jnsbangunan?.namabangunan ?? "-",
+          luasbangunan: jnsBangunan[i]?.jnsbangunan?.luasbangunan ?? "-",
+          namatanaman: jnsTanaman[i]?.jnstanaman?.namatanaman ?? "-",
+          produktif: jnsTanaman[i]?.jnstanaman?.produktif ?? "-",
+          besar: jnsTanaman[i]?.jnstanaman?.besar ?? "-",
+          kecil: jnsTanaman[i]?.jnstanaman?.kecil ?? "-",
+        });
+
+        currentRow++; // Naikkan ke baris berikutnya
+      }
+
+      // Merge kolom utama jika ada lebih dari satu baris
+      if (maxLength > 1) {
+        [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E",
+          "F",
+          "G",
+          "H",
+          "I",
+          "J",
+          "K",
+          "L",
+          "M",
+        ].forEach((col) => {
+          worksheet.mergeCells(`${col}${startRow}:${col}${currentRow - 1}`);
+        });
+      }
+    });
+
+    // Styling untuk setiap cell data
+    worksheet.eachRow((row, rowNumber) => {
+      if (rowNumber === 1) return; // Skip header row
+      row.eachCell((cell) => {
+        cell.alignment = { horizontal: "center", vertical: "middle" };
+        cell.border = {
+          top: { style: "thin" },
+          left: { style: "thin" },
+          bottom: { style: "thin" },
+          right: { style: "thin" },
+        };
       });
     });
 
+    // Simpan file
     const buffer = await workbook.xlsx.writeBuffer();
-    saveAs(new Blob([buffer]), "Data Inventarisasi.xlsx");
+    saveAs(new Blob([buffer]), "Tabel Data Inventarisasi.xlsx");
   };
 
   return (

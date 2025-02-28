@@ -11,8 +11,10 @@ import { useAlert } from "@/app/_contexts/AlertContext";
 import SaveLoading from "@/app/_components/SaveLoading";
 import SuccessPopup from "@/app/_components/SuccessPopup";
 import { any } from "zod";
+import Link from "next/link";
+import { FaArrowLeft } from "react-icons/fa";
 
-const FormInventarisasi: React.FC = () => {
+const FormInventarisasi = ({ session }: { session: any }) => {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -631,77 +633,90 @@ const FormInventarisasi: React.FC = () => {
 
   return (
     <div className="relative px-6 pt-32 pb-20">
-      {/* Loading overlay dengan backdrop blur */}
-      {isSaving && <SaveLoading />}
+      {session.user.role === "admin" ? (
+        <div>
+          {/* Loading overlay dengan backdrop blur */}
+          {isSaving && <SaveLoading />}
 
-      <motion.div
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: 20 }}
-        transition={{
-          type: "spring",
-          stiffness: 300,
-          damping: 30,
-        }}
-      >
-        <div className="p-6 mb-6 bg-white rounded-lg shadow-lg">
-          <form onSubmit={handleSubmit}>
-            <div className="pt-2 bg-transparent border-2 border-gray-400 rounded-md">
-              <div className="flex items-center justify-between px-4 m-4">
-                <h2 className="text-xl font-bold">Form Inventarisasi</h2>
-                <div className="flex justify-end space-x-4">
-                  <button
-                    type="button"
-                    onClick={() => router.push(`/inventarisasi/${id}`)}
-                    className="w-32 px-4 py-2 font-semibold text-gray-500 transition duration-200 ease-in-out bg-white border-2 border-gray-500 rounded-lg hover:-translate-1 hover:scale-110 hover:bg-gray-200"
-                  >
-                    BATAL
-                  </button>
-                  {currentStep > 1 && (
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+            transition={{
+              type: "spring",
+              stiffness: 300,
+              damping: 30,
+            }}
+            className="p-6 mb-6 bg-white rounded-lg shadow-lg"
+          >
+            <form onSubmit={handleSubmit}>
+              <div className="pt-2 bg-transparent border-2 border-gray-400 rounded-md">
+                <div className="flex items-center justify-between px-4 m-4">
+                  <h2 className="text-xl font-bold">Form Inventarisasi</h2>
+                  <div className="flex justify-end space-x-4">
                     <button
                       type="button"
-                      onClick={() => setCurrentStep(currentStep - 1)}
-                      className="px-4 py-2 font-semibold transition duration-200 ease-in-out bg-white border-2 rounded-lg hover:-translate-1 hover:scale-110 hover:bg-gray-200 text-blue-2 border-blue-2 w-38"
+                      onClick={() => router.push(`/inventarisasi/${id}`)}
+                      className="w-32 px-4 py-2 font-semibold text-gray-500 transition duration-200 ease-in-out bg-white border-2 border-gray-500 rounded-lg hover:-translate-1 hover:scale-110 hover:bg-gray-200"
                     >
-                      SEBELUMNYA
+                      BATAL
                     </button>
-                  )}
-                  {currentStep < 3 && (
-                    <button
-                      type="button"
-                      onClick={() => setCurrentStep(currentStep + 1)}
-                      className="px-4 py-2 font-semibold text-white transition duration-200 ease-in-out rounded-lg bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3 w-38"
-                    >
-                      SELANJUTNYA
-                    </button>
-                  )}
-                  {currentStep === 3 && (
-                    <button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className={`transition ease-in-out duration-200 bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3 px-4 py-2 text-white rounded-lg font-semibold w-32 ${
-                        isSubmitting ? "bg-gray-400 cursor-not-allowed" : ""
-                      }`}
-                    >
-                      {isSubmitting ? "MENYIMPAN..." : "SIMPAN"}
-                    </button>
-                  )}
+                    {currentStep > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => setCurrentStep(currentStep - 1)}
+                        className="px-4 py-2 font-semibold transition duration-200 ease-in-out bg-white border-2 rounded-lg hover:-translate-1 hover:scale-110 hover:bg-gray-200 text-blue-2 border-blue-2 w-38"
+                      >
+                        SEBELUMNYA
+                      </button>
+                    )}
+                    {currentStep < 3 && (
+                      <button
+                        type="button"
+                        onClick={() => setCurrentStep(currentStep + 1)}
+                        className="px-4 py-2 font-semibold text-white transition duration-200 ease-in-out rounded-lg bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3 w-38"
+                      >
+                        SELANJUTNYA
+                      </button>
+                    )}
+                    {currentStep === 3 && (
+                      <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className={`transition ease-in-out duration-200 bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3 px-4 py-2 text-white rounded-lg font-semibold w-32 ${
+                          isSubmitting ? "bg-gray-400 cursor-not-allowed" : ""
+                        }`}
+                      >
+                        {isSubmitting ? "MENYIMPAN..." : "SIMPAN"}
+                      </button>
+                    )}
+                  </div>
                 </div>
+                <hr />
+                {currentStep === 1 && renderStepOne()}
+                {currentStep === 2 && renderStepTwo()}
+                {currentStep === 3 && renderStepThree()}
               </div>
-              <hr />
-              {currentStep === 1 && renderStepOne()}
-              {currentStep === 2 && renderStepTwo()}
-              {currentStep === 3 && renderStepThree()}
-            </div>
-          </form>
+            </form>
+          </motion.div>
+          <SuccessPopup
+            message="Data berhasil disimpan"
+            isVisible={showSuccessPopup}
+            onClose={() => setShowSuccessPopup(false)}
+          />
         </div>
-      </motion.div>
-
-      <SuccessPopup
-        message={successMessage}
-        isVisible={showSuccessPopup}
-        onClose={() => setShowSuccessPopup(false)}
-      />
+      ) : (
+        <div>
+          <Link href={`/inventarisasi/${id}`}>
+            <button className="flex items-center gap-2 text-blue-3 hover:text-blue-4">
+              <FaArrowLeft /> Kembali
+            </button>
+          </Link>
+          <p className="flex items-center justify-center m-4 text-gray-500 text-2xl font-bold text-center py-48">
+            404 | HALAMAN TIDAK DITEMUKAN
+          </p>
+        </div>
+      )}
     </div>
   );
 };
