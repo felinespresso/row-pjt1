@@ -1,6 +1,8 @@
 import { FC } from "react";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
+import { format } from "date-fns";
+
 
 interface PengumumanItem {
   namaDesa: string;
@@ -19,6 +21,11 @@ const ExportButtonPengumuman: FC<ExportButtonPengumumanProps> = ({
   const exportToExcel = async () => {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Tabel Data Pengumuman Hasil Inventarisasi");
+        // Fungsi untuk memformat tanggal
+        const formatDate = (dateString: string | null) => {
+          if (!dateString) return "-"; // Jika tanggal null atau undefined
+          return format(new Date(dateString), "yyyy-MM-dd"); // Format menjadi yyyy-MM-dd
+        };
 
     // Header dengan style
     worksheet.columns = [
@@ -57,9 +64,7 @@ const ExportButtonPengumuman: FC<ExportButtonPengumumanProps> = ({
         no: index + 1,
         namaDesa: item.namaDesa || "-",
         spanTower: item.spanTower || "-",
-        tanggalPelaksanaan: item.tanggalPelaksanaan
-          ? new Date(item.tanggalPelaksanaan).toLocaleDateString()
-          : "-",
+        tanggalPelaksanaan: formatDate(item.tanggalPelaksanaan),
         keterangan: item.keterangan || "-",
       });
     });

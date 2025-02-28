@@ -17,7 +17,7 @@ export default async function MenuLayout({ children, modal }) {
         <div className="wrapper hover_collapse"> 
             <HoverHandler/> 
             <NavSidebar session={session}/> 
-            <div className="max-h-full min-h-screen px-10 bg-gray-200 main_container"> 
+            <div className="max-h-full min-h-screen pl-[330px] bg-gray-200 main_container pr-8 transition-[padding] duration-200 ease-in-out"> 
                 { children } 
             </div> 
             { modal } 

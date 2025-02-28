@@ -1,6 +1,7 @@
 import { FC } from "react";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
+import { format } from "date-fns";
 
 interface ProyekItem {
   id: number;
@@ -19,6 +20,11 @@ const ExportButton: FC<ExportButtonDashboardProps> = ({ currentItems }) => {
   const exportToExcel = async () => {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Tabel Daftar Proyek ROW");
+    // Fungsi untuk memformat tanggal
+    const formatDate = (date: Date | string | null) => {
+      if (!date) return "-";
+      return format(new Date(date), "yyyy-MM-dd");
+    };
 
     // Header dengan style
     worksheet.columns = [
@@ -63,12 +69,8 @@ const ExportButton: FC<ExportButtonDashboardProps> = ({ currentItems }) => {
         namaproyek: item.namaproyek || "-",
         nomorkontrak: item.nomorkontrak || "-",
         kodeproyek: item.kodeproyek || "-",
-        tanggalkontrak: item.tanggalkontrak
-          ? new Date(item.tanggalkontrak).toLocaleDateString()
-          : "-",
-        tanggalakhirkontrak: item.tanggalakhirkontrak
-          ? new Date(item.tanggalakhirkontrak).toLocaleDateString()
-          : "-",
+        tanggalkontrak: formatDate(item.tanggalkontrak),
+        tanggalakhirkontrak: formatDate(item.tanggalakhirkontrak),
       });
     });
 

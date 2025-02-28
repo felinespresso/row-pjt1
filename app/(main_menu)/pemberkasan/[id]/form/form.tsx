@@ -290,6 +290,8 @@ const ForPemberkasan = ({ session }: { session: any }) => {
 
   return (
     <div className="px-6 pt-32 pb-20">
+      {session.user.role === "admin" ? (
+        <div>
       {isSubmitting && <SaveLoading />}
       <motion.div
         initial={{ opacity: 0, x: -20 }}
@@ -302,7 +304,6 @@ const ForPemberkasan = ({ session }: { session: any }) => {
         }}
         className="p-6 mb-6 bg-white rounded-lg shadow-lg"
       >
-        {session.user.role === "admin" ? (
           <form onSubmit={handleSubmit}>
             <div className="pt-2 bg-transparent border-2 border-gray-400 rounded-md">
               <div className="flex items-center justify-between px-4 m-4">
@@ -528,20 +529,26 @@ const ForPemberkasan = ({ session }: { session: any }) => {
                 </div>
               </div>
             </div>
-          </form>
-        ) : (
+            </form>
+          </motion.div>
+          <SuccessPopup
+            message="Data berhasil disimpan"
+            isVisible={showSuccessPopup}
+            onClose={() => setShowSuccessPopup(false)}
+          />
+        </div>
+      ) : (
+        <div>
           <Link href={`/pemberkasan/${id}`}>
             <button className="flex items-center gap-2 text-blue-3 hover:text-blue-4">
               <FaArrowLeft /> Kembali
             </button>
           </Link>
-        )}
-      </motion.div>
-      <SuccessPopup
-        message="Data berhasil disimpan"
-        isVisible={showSuccessPopup}
-        onClose={() => setShowSuccessPopup(false)}
-      />
+          <p className="flex items-center justify-center m-4 text-gray-500 text-2xl font-bold text-center py-48">
+            404 | HALAMAN TIDAK DITEMUKAN
+          </p>
+        </div>
+      )}
     </div>
   );
 };
