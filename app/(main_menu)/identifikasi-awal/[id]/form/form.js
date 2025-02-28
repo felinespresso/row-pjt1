@@ -115,16 +115,10 @@ const FormIdentifikasiAwal = ({ session }) => {
 
   return (
     <div className="px-6 pt-32 pb-20">
-<<<<<<< HEAD
       {session.user.role === "admin" ? (
       <div>
       {isSubmitting && <SaveLoading />}
       <div className="p-6 bg-white rounded-lg shadow-lg">
-=======
-      {isSubmitting && <SaveLoading />}
-      <div className="p-6 bg-white rounded-lg shadow-lg">
-        {session.user.role === "admin" ? (
->>>>>>> 186443b (oiia)
           <form action={formAction} onSubmit={handleFormSubmit}>
             <div className="pt-2 bg-transparent border-2 border-gray-400 rounded-md">
               <div className="flex items-center justify-between px-4 m-4">
@@ -355,41 +349,27 @@ const FormIdentifikasiAwal = ({ session }) => {
               </span>
             </div>
           </form>
-<<<<<<< HEAD
           </div>
           </div>
         ): (
         <div>
-=======
-        ) : (
->>>>>>> 186443b (oiia)
           <Link href={`/identifikasi-awal/${id}`}>
             <button className="flex items-center gap-2 text-blue-3 hover:text-blue-4">
               <FaArrowLeft /> Kembali
             </button>
           </Link>
-<<<<<<< HEAD
           <p className="flex items-center justify-center m-4 text-gray-500 text-2xl font-bold text-center py-48">
             404 | HALAMAN TIDAK DITEMUKAN
           </p>
         </div>
     )}
     <SuccessPopup
-=======
-        )}
-      </div>
-      <SuccessPopup
->>>>>>> 186443b (oiia)
         message="Data berhasil disimpan"
         isVisible={showSuccessPopup}
         onClose={() => setShowSuccessPopup(false)}
       />
     </div>
-<<<<<<< HEAD
    );
-=======
-  );
->>>>>>> 186443b (oiia)
 };
 
 export default FormIdentifikasiAwal;
