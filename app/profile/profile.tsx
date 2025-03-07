@@ -20,7 +20,7 @@ const Profile = ({ session }: any) => {
   const [password, setPassword] = useState("");
   const [initialUsername, setInitialUsername] = useState(session.user.username);
   const [isPasswordChanged, setIsPasswordChanged] = useState(false);
-  const [imageUrl, setImageUrl] = useState(session.user.image || "/avatar.png");
+  const [imageUrl, setImageUrl] = useState(session.user.image || "/avatar.jpg");
   const [isPending, startTransition] = useTransition();
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);

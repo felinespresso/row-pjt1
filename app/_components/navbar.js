@@ -96,14 +96,14 @@ export default function Navbar({ session }) {
                 )}
               </div>
             )}
-            <div className="flex items-center px-2 py-[2px] bg-gray-300 rounded-full w-80 mx-4">
+            {/* <div className="flex items-center px-2 py-[2px] bg-gray-300 rounded-full w-80 mx-4">
               <FaSearch className="m-2 text-base text-gray-500" />
               <input
                 type="text"
                 placeholder="Search"
                 className="flex-1 ml-1 text-sm font-medium placeholder-gray-500 bg-gray-300 outline-none"
               />
-            </div>
+            </div> */}
             <div className="relative ">
               <button
                 ref={buttonRef}

@@ -11,7 +11,7 @@ export const LoginButton = () => {
     <button
       type="submit"
       disabled={pending}
-      className={`w-full max-w-[364px] py-2 font-bold text-color3 border-2 border-white rounded-full tracking-[0.5px] cursor-pointer text-sm my-9 
+      className={`w-full max-w-[364px] py-2 font-bold text-color3 border-2 border-white rounded-full tracking-[0.5px] cursor-pointer text-sm my-12
             transition duration-300 ease-in-out ${
               pending
                 ? "bg-white text-color3 font-semibold tracking-[0.5px]" // Hover styles for "pending" state

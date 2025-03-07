@@ -92,14 +92,14 @@ export default function NavSidebar({ session }) {
                 )}
               </div>
             )}
-            <div className="flex items-center px-2 py-[2px] bg-gray-300 rounded-full w-80 mx-8">
+            {/* <div className="flex items-center px-2 py-[2px] bg-gray-300 rounded-full w-80 mx-8">
               <FaSearch className="m-2 text-base text-gray-500" />
               <input
                 type="text"
                 placeholder="Search"
                 className="flex-1 ml-1 text-sm font-medium placeholder-gray-500 bg-gray-300 outline-none"
               />
-            </div>
+            </div> */}
             <button>
               <Link href="/dashboard" className="mx-3">
                 <FaArrowRight className="mr-6 text-base text-gray-500" />

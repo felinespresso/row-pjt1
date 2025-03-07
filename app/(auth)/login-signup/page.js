@@ -33,8 +33,8 @@ export default function Login_SignUp() {
     const container = document.getElementById("container");
     const registerLink = document.getElementById("sign-up");
     const loginLink = document.getElementById("login");
-    const forgotPassword = document.getElementById("forgotyourpassword");
-    const toLogin = document.getElementById("back-login");
+    // const forgotPassword = document.getElementById("forgotyourpassword");
+    // const toLogin = document.getElementById("back-login");
     // const signIn = document.getElementById("log-in");
 
     registerLink.addEventListener("click", () => {
@@ -44,12 +44,12 @@ export default function Login_SignUp() {
       container.classList.remove("active");
     });
 
-    forgotPassword.addEventListener("click", () => {
-      container.classList.add("action");
-    });
-    toLogin.addEventListener("click", () => {
-      container.classList.remove("action");
-    });
+    // forgotPassword.addEventListener("click", () => {
+    //   container.classList.add("action");
+    // });
+    // toLogin.addEventListener("click", () => {
+    //   container.classList.remove("action");
+    // });
 
     // registerLink.addEventListener('click', () => {
     //   container.classList.add("back");
@@ -132,13 +132,13 @@ export default function Login_SignUp() {
                   {signInState?.error?.password}
                 </span>
               </div>
-              <a
+              {/* <a
                 href="#"
                 className="self-end mt-3 mr-3 text-xs font-bold text-right cursor-pointer text-color4 active:text-shadow-custom"
                 id="forgotyourpassword"
               >
                 Forgot your password?
-              </a>
+              </a> */}
               <LoginButton />
               <span className="text-xs text-white">
                 Don't have an account?
