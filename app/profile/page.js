@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import Profile from "./profile";
+import Navbar from "../_components/navbar";
 
 const profilPage = async() => {
   const session = await auth();
@@ -10,7 +11,11 @@ const profilPage = async() => {
   // });
 
   return (
-    <Profile session={session}/>
+    <div className="max-h-full min-h-screen bg-gray-200">
+      <Navbar session={session}/>
+      <Profile session={session}/>
+    </div>
+    
   )
 }
 

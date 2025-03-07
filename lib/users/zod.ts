@@ -4,10 +4,6 @@ export const LoginSchema = object({
   email: string().email("Invalid email. Email address not found."),
   password: string()
     .max(32, "Password must be less than 32 characters. ")
-    .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.-])[A-Za-z\d@$!%*?&.-]{8,}$/,
-      "Password doesn't match criteria. "
-    ),
 });
 
 export const RegisterSchema = object({

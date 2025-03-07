@@ -20,7 +20,7 @@ const Profile = ({ session }: any) => {
   const [password, setPassword] = useState("");
   const [initialUsername, setInitialUsername] = useState(session.user.username);
   const [isPasswordChanged, setIsPasswordChanged] = useState(false);
-  const [imageUrl, setImageUrl] = useState(session.user.image || "/avatar.jpg");
+  const [imageUrl, setImageUrl] = useState(session.user.image || "/avatar.png");
   const [isPending, startTransition] = useTransition();
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -129,7 +129,7 @@ const Profile = ({ session }: any) => {
         href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
         rel="stylesheet"
       />
-      <main className="font-montserrat">
+      <main className="p-12 font-montserrat">
         <div className="h-full px-8 bg-white rounded-lg shadow-lg mx-7 py-7">
           <h1 className="flex items-center text-xl font-bold text-gray-800">
             {isEditing ? "Edit Profile" : "Profile"}
