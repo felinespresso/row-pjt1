@@ -316,6 +316,7 @@ const FormPenebangan = ({ session }: { session: any }) => {
                 </button>
               </div>
             </div>
+            <hr className="border border-gray-400" />
 
             <div>
               <div className="flex items-center justify-between mb-2 row">
@@ -528,7 +529,7 @@ const FormPenebangan = ({ session }: { session: any }) => {
               <FaArrowLeft /> Kembali
             </button>
           </Link>
-          <p className="flex items-center justify-center m-4 text-gray-500 text-2xl font-bold text-center py-48">
+          <p className="flex items-center justify-center py-48 m-4 text-2xl font-bold text-center text-gray-500">
             404 | HALAMAN TIDAK DITEMUKAN
           </p>
         </div>

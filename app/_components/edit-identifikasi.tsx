@@ -1,10 +1,12 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { editIdentifikasi } from "@/lib/identifikasi/action";
-import React, { useActionState } from "react";
-import { SubmitButton } from "./buttons";
+import React, { useActionState, useState, useEffect, useTransition } from "react";
 import "../(main_menu)/identifikasi-awal/[id]/form/globals.css";
 import type { Evidences, Identifikasi } from "@prisma/client";
+import { motion } from "framer-motion";
+import SaveLoading from "@/app/_components/SaveLoading";
+import SuccessPopup from "@/app/_components/SuccessPopup";
 
 const EditIdentifikasiAwal = ({
   data,
@@ -16,25 +18,69 @@ const EditIdentifikasiAwal = ({
   const router = useRouter();
   const EditIdentifikasiWithId = editIdentifikasi.bind(null, data.id, itemId);
   const [state, formAction] = useActionState(EditIdentifikasiWithId, null);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
-  // const [evidenceInputs, setEvidenceInputs] = useState(data.evidence || []);
-  // const [additionalEvidenceInputs, setAdditionalEvidenceInputs] = useState([]);
-  // const addEvidenceInput = () => {
-  //     setAdditionalEvidenceInputs([
-  //         ...additionalEvidenceInputs,
-  //         { id: additionalEvidenceInputs.length + 1 }
-  //     ]);
-  // };
+  // Fetch data dan atur loading state
+  useEffect(() => {
+    // Simulasi loading untuk menampilkan animasi
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 500); // Waktu loading yang singkat untuk menampilkan animasi
 
-  // const removeEvidenceInput = (id) => {
-  //     setAdditionalEvidenceInputs((prev) => prev.filter((input) => input.id !== id));
-  //     setEvidenceInputs(evidenceInputs.filter((input) => input.id !== id));
-  // };
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Pantau status isPending untuk mengatur submitting
+  useEffect(() => {
+    if (isPending) {
+      setSubmitting(true);
+    } else {
+      const timer = setTimeout(() => {
+        setSubmitting(false);
+      }, 1000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isPending]);
+
+  // Fungsi untuk menangani submit form
+  const handleSubmit = async (formData: FormData) => {
+    startTransition(async () => {
+      await formAction(formData);
+      setShowSuccessPopup(true);
+      // Redirect setelah 2 detik
+      setTimeout(() => {
+        router.push(`/identifikasi-awal/${itemId}`);
+      }, 2000);
+    });
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="w-12 h-12 border-t-2 border-b-2 border-blue-500 rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="px-6 pt-32 pb-20">
-      <div className="p-6 bg-white rounded-lg shadow-lg">
-        <form action={formAction}>
+      {submitting && <SaveLoading />}
+      <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: 20 }}
+        transition={{
+          type: "spring",
+          stiffness: 300,
+          damping: 30,
+        }}
+        className="p-6 bg-white rounded-lg shadow-lg"
+      >
+        <form action={handleSubmit}>
           <div className="pt-2 bg-transparent border-2 border-gray-400 rounded-md">
             <div className="flex items-center justify-between px-4 m-4">
               <h2 className="text-xl font-bold">Form Edit Identifikasi Awal</h2>
@@ -43,10 +89,16 @@ const EditIdentifikasiAwal = ({
                   type="button"
                   onClick={() => router.push(`/identifikasi-awal/${itemId}`)}
                   className="w-32 px-4 py-2 font-semibold text-gray-500 transition duration-200 ease-in-out bg-white border-2 border-gray-500 rounded-lg hover:-translate-1 hover:scale-110 hover:bg-gray-200"
-                    >
+                >
                   BATAL
                 </button>
-                <SubmitButton label="update" />
+                <button
+                  type="submit"
+                  disabled={submitting || isPending}
+                  className="w-32 px-4 py-2 font-semibold text-white transition duration-200 ease-in-out rounded-lg bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3"
+                >
+                  {submitting || isPending ? "MENYIMPAN..." : "SIMPAN"}
+                </button>
               </div>
             </div>
             <hr className="border border-gray-400" />
@@ -120,8 +172,8 @@ const EditIdentifikasiAwal = ({
                   </div>
                 </div>
               </div>
-              <div className="h-full pb-2 bg-white">
-                <div className="flex items-center justify-between h-16 px-4 ">
+              <div className="h-full pb-2 bg-white rounded-b">
+                <div className="flex items-center justify-between h-16 px-4">
                   <label className="block ml-4 text-base font-semibold text-black">
                     Hasil Foto Udara <span className="text-red-500">*</span>
                   </label>
@@ -155,7 +207,13 @@ const EditIdentifikasiAwal = ({
             </span>
           </div>
         </form>
-      </div>
+      </motion.div>
+
+      <SuccessPopup
+        message="Data berhasil diperbarui"
+        isVisible={showSuccessPopup}
+        onClose={() => setShowSuccessPopup(false)}
+      />
     </div>
   );
 };

@@ -14,7 +14,7 @@ import {
 } from "react-icons/fa";
 import { MdVisibility, MdVisibilityOff, MdVpnKey } from "react-icons/md";
 import React, { useEffect, useActionState, useState } from "react";
-import { signUpCredentials, signInCredentials } from "@/lib/actions";
+import { signUpCredentials, signInCredentials } from "@/lib/users/actions";
 import { SignupButton, LoginButton } from "@/app/_components/button";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -341,7 +341,7 @@ export default function Login_SignUp() {
           >
             {/* Tombol close "X" */}
             <button
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+              className="absolute text-gray-500 top-2 right-2 hover:text-gray-700"
               onClick={() => setShowPopup(false)}
             >
               <FaTimes className="text-2xl" />

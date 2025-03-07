@@ -281,7 +281,7 @@ const FormMusyawarah = ({ session }: { session: any }) => {
           <form onSubmit={handleSubmit}>
             <div className="pt-2 bg-transparent border-2 border-gray-400 rounded-md">
               <div className="flex items-center justify-between px-4 m-4">
-                <h2 className="text-xl font-bold">Form Sosialisasi</h2>
+                <h2 className="text-xl font-bold">Form Musyawarah</h2>
                 <div className="flex justify-end space-x-4">
                   <button
                     type="button"
@@ -299,6 +299,7 @@ const FormMusyawarah = ({ session }: { session: any }) => {
                   </button>
                 </div>
               </div>
+              <hr className="border border-gray-400" />
 
               <div>
                 <div className="flex items-center justify-between mb-2 row">
@@ -504,7 +505,7 @@ const FormMusyawarah = ({ session }: { session: any }) => {
               <FaArrowLeft /> Kembali
             </button>
           </Link>
-          <p className="flex items-center justify-center m-4 text-gray-500 text-2xl font-bold text-center py-48">
+          <p className="flex items-center justify-center py-48 m-4 text-2xl font-bold text-center text-gray-500">
             404 | HALAMAN TIDAK DITEMUKAN
           </p>
         </div>

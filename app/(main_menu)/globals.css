@@ -93,8 +93,8 @@ nav:not(.sidebar) {
 
 .hover_collapse .main_container {
   width: 100%;
-  padding-left: 130px;
-  padding-right: 50px;
+  padding-left: 7rem;
+  /* padding-right: 1rem; */
   /* padding-top: 110px;  */
   /* padding-bottom: 82px;  */
 }

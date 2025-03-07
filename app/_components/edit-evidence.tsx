@@ -1,9 +1,12 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { editEvidence } from "@/lib/identifikasi/action";
-import React, { useActionState } from "react";
+import React, { useActionState, useState, useEffect, useTransition } from "react";
 import { SubmitButton } from "./buttons";
 import type { Evidences } from "@prisma/client";
+import { motion } from "framer-motion";
+import SaveLoading from "./SaveLoading";
+import SuccessPopup from "./SuccessPopup";
 
 const EditEvidence = ({
   data,
@@ -22,11 +25,71 @@ const EditEvidence = ({
     identifikasiId
   );
   const [state, formAction] = useActionState(EditIdentifikasiWithId, null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [isPending, startTransition] = useTransition();
+
+  // Loading effect
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Effect untuk mengatur loading state saat submit
+  useEffect(() => {
+    if (isPending) {
+      setIsSubmitting(true);
+    } else {
+      const timer = setTimeout(() => {
+        setIsSubmitting(false);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [isPending]);
+
+  // Handle form submission
+  const handleSubmit = async (formData: FormData) => {
+    startTransition(async () => {
+      try {
+        await formAction(formData);
+        setShowSuccessPopup(true);
+        setTimeout(() => {
+          router.back();
+        }, 2000);
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    });
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="w-12 h-12 border-t-2 border-b-2 border-blue-500 rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="px-6 pt-32 pb-20">
-      <div className="p-6 bg-white rounded-lg shadow-lg">
-        <form action={formAction}>
+      {/* Tampilkan SaveLoading saat isSubmitting true */}
+      {isSubmitting && <SaveLoading />}
+      
+      <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: 20 }}
+        transition={{
+          type: "spring",
+          stiffness: 300,
+          damping: 30,
+        }}
+        className="p-6 mb-6 bg-white rounded-lg shadow-lg"
+      >
+        <form action={handleSubmit}>
           <div className="pt-2 bg-transparent border-2 border-gray-400 rounded-md">
             <div className="flex items-center justify-between px-4 m-4">
               <h2 className="text-xl font-bold">Form Edit Evidence</h2>
@@ -35,10 +98,11 @@ const EditEvidence = ({
                   type="button"
                   onClick={() => router.back()}
                   className="w-32 px-4 py-2 font-semibold text-gray-500 transition duration-200 ease-in-out bg-white border-2 border-gray-500 rounded-lg hover:-translate-1 hover:scale-110 hover:bg-gray-200"
+                  disabled={isSubmitting}
                 >
                   BATAL
                 </button>
-                <SubmitButton label="update" />
+                <SubmitButton label="SIMPAN" disabled={isSubmitting} />
               </div>
             </div>
             <hr className="border border-gray-400" />
@@ -124,7 +188,13 @@ const EditEvidence = ({
             </span>
           </div>
         </form>
-      </div>
+      </motion.div>
+
+      <SuccessPopup
+        message="Data berhasil diperbarui"
+        isVisible={showSuccessPopup}
+        onClose={() => setShowSuccessPopup(false)}
+      />
     </div>
   );
 };

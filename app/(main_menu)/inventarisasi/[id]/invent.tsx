@@ -340,12 +340,12 @@ const TabelInventarisasi = ({ session }: { session: any }) => {
               rowSpan={maxRows}
             >
               <div className="flex justify-center space-x-3">
-                {/* <button
+                <button
                   onClick={() => router.push(`/inventarisasi/${id}/edit/${item.id}`)}
                   className="flex px-[6px] py-1 transition duration-100 ease-in-out rounded-md bg-color5 hover:-translate-1 hover:scale-110 hover:shadow-lg"
                 >
                   <MdOutlineEdit className="text-xl text-white" />
-                </button> */}
+                </button>
                 <button
                   onClick={() => handleDelete(item.id)}
                   className="flex  px-[6px] py-1 transition duration-100 ease-in-out bg-red-500 rounded-md hover:-translate-1 hover:scale-110 hover:shadow-lg"
@@ -505,9 +505,9 @@ const TabelInventarisasi = ({ session }: { session: any }) => {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
         transition={{ duration: 0.3 }}
-        className="container mx-auto"
+        className="p-6 bg-white rounded-lg shadow-lg"
       >
-        <div className="p-6 bg-white rounded-lg shadow-lg">
+        {/* <div className="p-6 bg-white rounded-lg shadow-lg"> */}
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-2xl font-bold text-gray-800">
               Tabel Inventarisasi
@@ -654,7 +654,7 @@ const TabelInventarisasi = ({ session }: { session: any }) => {
           <div className="mx-8 mt-8">
             <Pagination totalPages={totalPages} />
           </div>
-        </div>
+        {/* </div> */}
       </motion.div>
 
       {showConfirmDelete && (

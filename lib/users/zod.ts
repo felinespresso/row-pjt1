@@ -22,10 +22,21 @@ export const RegisterSchema = object({
   confirmpassword: string()
     .max(32, "Password must be less than 32 characters. ")
     .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.-])[A-Za-z\d@$!%*?&.-]{8,}$/,
       "Password doesn't match criteria. "
     ),
 }).refine((data) => data.password === data.confirmpassword, {
   message: "Confirm password is incorrect.",
   path: ["confirmpassword"],
+});
+
+export const ProfileSchema = object({
+  username: string().min(1, "Username must be more than 1 character."),
+  password: string()
+    .max(32, "Password must be less than 32 characters. ")
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.-])[A-Za-z\d@$!%*?&.-]{8,}$/,
+      "Password doesn't match criteria. "
+    )
+    .optional(),
 });

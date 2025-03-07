@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear,
+input[type="password"]::-webkit-password-toggle-button {
+    color: #779FE5;
+    filter: brightness(1) saturate(100%) invert(60%) sepia(23%) saturate(700%) hue-rotate(180deg) brightness(95%) contrast(150%) opacity(100%);
+}

@@ -188,9 +188,21 @@ export async function DELETE(request: NextRequest) {
     const { id } = await request.json();
     const inventId = Number(id);
 
-    // 🔹 Periksa apakah data inventarisasi ada
+    // Periksa apakah data inventarisasi ada
     const existingInvent = await prisma.inventarisasi.findUnique({
       where: { id: inventId },
+      include: {
+        jnsbangunan: {
+          include: {
+            jnsbangunan: true,
+          },
+        },
+        jnstanaman: {
+          include: {
+            jnstanaman: true,
+          },
+        },
+      },
     });
 
     if (!existingInvent) {
@@ -200,22 +212,47 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    // 🔹 Hapus data bangunan terkait dari tabel `inventbangunan`
-    await prisma.inventbangunan.deleteMany({
-      where: { inventId: inventId },
+    // Hapus file formulir jika ada
+    if (existingInvent.formulir) {
+      await del(existingInvent.formulir);
+    }
+
+    // Mulai transaksi untuk menghapus semua data terkait
+    await prisma.$transaction(async (prisma) => {
+      // 1. Hapus data inventbangunan
+      await prisma.inventbangunan.deleteMany({
+        where: { inventId: inventId },
+      });
+
+      // 2. Hapus data jenisbangunan yang terkait
+      for (const bangunan of existingInvent.jnsbangunan) {
+        await prisma.jenisbangunan.delete({
+          where: { id: bangunan.jnsbangunan.id },
+        });
+      }
+
+      // 3. Hapus data inventtanaman
+      await prisma.inventtanaman.deleteMany({
+        where: { inventId: inventId },
+      });
+
+      // 4. Hapus data jenistanaman yang terkait
+      for (const tanaman of existingInvent.jnstanaman) {
+        await prisma.jenistanaman.delete({
+          where: { id: tanaman.jnstanaman.id },
+        });
+      }
+
+      // 5. Terakhir, hapus data inventarisasi
+      await prisma.inventarisasi.delete({
+        where: { id: inventId },
+      });
     });
 
-    // 🔹 Hapus data tanaman terkait dari tabel `inventtanaman`
-    await prisma.inventtanaman.deleteMany({
-      where: { inventId: inventId },
-    });
-
-    // 🔹 Hapus data inventarisasi
-    await prisma.inventarisasi.delete({
-      where: { id: inventId },
-    });
-
-    return NextResponse.json({ success: true, message: "Data berhasil dihapus" }, { status: 200 });
+    return NextResponse.json(
+      { success: true, message: "Data berhasil dihapus" },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("❌ Error deleting inventarisasi:", error);
     return NextResponse.json(

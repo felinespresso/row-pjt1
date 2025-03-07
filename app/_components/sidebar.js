@@ -1,10 +1,6 @@
 "use client";
 import { usePathname, useRouter } from "next/navigation";
-<<<<<<< HEAD
 import { useEffect, useState, useRef } from "react";
-=======
-import { useEffect, useState } from "react";
->>>>>>> 186443b (oiia)
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -120,11 +116,11 @@ export default function NavSidebar({ session }) {
                 <FaPen className="mt-1 text-lg transition-transform duration-200 justify-self-end hover:scale-110 filter hover:drop-shadow-[0_4px_6px_rgba(0,0,0,0.3)] icon mx-4 text-white" />
               </Link>
               <Image
-                src={session.user.image || "/avatar.png"}
+                src={session.user.image || "/avatar.jpg"}
                 alt="My Icon"
                 width={60}
                 height={60}
-                className={`my-3 rounded-full justify-self-center photo ${
+                className={`my-3 rounded-full justify-self-center photo object-cover aspect-square ${
                   pathname.startsWith("/profile")
                     ? "border-2 rounded-full border-color8"
                     : ""

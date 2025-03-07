@@ -7,26 +7,24 @@ import { FaFileImage, FaRegTrashAlt } from "react-icons/fa";
 import { useParams } from "next/navigation";
 import { del } from "@vercel/blob";
 
-export const SubmitButton = ({ label }: { label: string }) => {
+interface SubmitButtonProps {
+  label: string;
+  disabled?: boolean;
+}
+
+export const SubmitButton = ({ label, disabled }: SubmitButtonProps) => {
   const { pending } = useFormStatus();
+  
   return (
     <button
       type="submit"
-      disabled={pending}
-      className={`transition ease-in-out duration-200 ${
-        pending
-          ? "bg-gray-400"
-          : "bg-blue-2 hover:-translate-1 hover:scale-110 hover:bg-blue-3"
-      }
-        px-9 py-2 text-white rounded-lg font-semibold`}
+      disabled={pending || disabled}
+      className={`w-32 px-4 py-2 font-semibold text-white transition duration-200 ease-in-out rounded-lg hover:-translate-1 hover:scale-110 
+      ${pending || disabled 
+        ? "bg-gray-400 cursor-not-allowed" 
+        : "bg-blue-2 hover:bg-blue-3"}`}
     >
-      {label === "save" ? (
-        <span>{pending ? "MENYIMPAN..." : "SIMPAN"}</span>
-      ) : (
-        <span className="uppercase">
-          {pending ? "MEMPERBARUI..." : "SIMPAN"}
-        </span>
-      )}
+      {pending ? "Menyimpan..." : label.toUpperCase()}
     </button>
   );
 };
